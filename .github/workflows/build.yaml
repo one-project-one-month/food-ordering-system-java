@@ -34,4 +34,4 @@ jobs:
           key: gradle-${{ github.sha }}-cache-key
 
       - name: Build the app
-        run: ./gradlew clean build -x test --no-daemon
+        run: ./gradlew clean assemble --no-daemon

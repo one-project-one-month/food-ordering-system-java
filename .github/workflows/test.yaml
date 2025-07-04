@@ -29,3 +29,5 @@ jobs:
 
       - name: Test Application
         run: ./gradlew test --no-daemon
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/testdb
