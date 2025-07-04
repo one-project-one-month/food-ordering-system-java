@@ -1,0 +1,37 @@
+name: Build Java App
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      cache-hit: ${{ steps.cache.outputs.cache-hit }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set Up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+
+      - name: Grant execute permission for Gradle
+        if: runner.os != 'Windows'
+        run: chmod +x ./gradlew
+
+      - name: Cache Gradle
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ github.sha }}-cache-key
+
+      - name: Build the app
+        run: ./gradlew clean build --no-daemon
