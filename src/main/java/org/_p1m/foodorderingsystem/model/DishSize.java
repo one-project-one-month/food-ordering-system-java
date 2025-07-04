@@ -22,11 +22,15 @@ public class DishSize extends MasterData {
     @JoinColumn(name = "menu_id", nullable = false)
     private Menu menu;
 
+    @Column(name = "dish_size_img")
+    private String dishSizeImg;
+
     public DishSize() {}
 
-    public DishSize(final String name, final BigDecimal price, final Menu menu) {
+    public DishSize(final String name, final BigDecimal price, final Menu menu, final String dishSizeImg) {
         this.name = name;
         this.price = price;
         this.menu = menu;
+        this.dishSizeImg = dishSizeImg;
     }
 }

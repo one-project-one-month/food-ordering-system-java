@@ -53,6 +53,11 @@ public class User extends MasterData {
     )
     private Set<Restaurant> restaurants = new HashSet<>();
 
+    @OneToMany(mappedBy = "deliveryUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<RestaurantVendor> vendorAssignments = new HashSet<>();
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AddCartData> cartData = new HashSet<>();
 
     public User() {}
 
@@ -110,5 +115,15 @@ public class User extends MasterData {
     public void removeReceivedRating(final Rating rating) {
         this.receivedRatings.remove(rating);
         rating.setDeliveryUser(null);
+    }
+
+    public void addVendorAssignment(RestaurantVendor vendorAssignment) {
+        this.vendorAssignments.add(vendorAssignment);
+        vendorAssignment.setDeliveryUser(this);
+    }
+
+    public void removeVendorAssignment(RestaurantVendor vendorAssignment) {
+        this.vendorAssignments.remove(vendorAssignment);
+        vendorAssignment.setDeliveryUser(null);
     }
 }
