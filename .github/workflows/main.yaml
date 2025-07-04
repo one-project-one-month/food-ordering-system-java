@@ -25,6 +25,10 @@ jobs:
   build:
     uses: ./.github/workflows/build.yaml
 
+  test:
+    needs: build
+    uses: ./.github/workflows/test.yaml
+
   publish:
     needs: build
     if: github.event_name == 'pull_request' && github.base_ref == 'dev'
