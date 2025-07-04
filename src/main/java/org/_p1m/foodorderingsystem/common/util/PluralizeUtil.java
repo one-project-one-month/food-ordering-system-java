@@ -11,6 +11,10 @@ public final class PluralizeUtil {
 
         final String lowerCaseWord = word.toLowerCase();
 
+        if (lowerCaseWord.endsWith("a")) {
+            return word;
+        }
+
         if (lowerCaseWord.endsWith("y") && !isVowel(lowerCaseWord.charAt(lowerCaseWord.length() - 2))) {
             return word.substring(0, word.length() - 1) + "ies";
         } else if (lowerCaseWord.endsWith("s") || lowerCaseWord.endsWith("x") || lowerCaseWord.endsWith("z") || lowerCaseWord.endsWith("ch") || lowerCaseWord.endsWith("sh")) {
