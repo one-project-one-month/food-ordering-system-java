@@ -1,0 +1,35 @@
+name: CI & Publish Workflow
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - 'ft/*'
+      - 'dev-*'
+  pull_request:
+    branches:
+      - main
+      - dev
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+
+  #test:
+  #  needs: build
+  #  uses: ./.github/workflows/test.yaml
+
+  publish:
+    needs: build
+    if: github.event_name == 'pull_request' && github.base_ref == 'dev'
+    uses: ./.github/workflows/publish.yaml
