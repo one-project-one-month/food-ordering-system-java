@@ -1,10 +1,8 @@
-package org._p1m.foodorderingsystem.features.users.request;
+package org._p1m.foodorderingsystem.features.users.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class UserCreateRequest {
     private String email;
     private String password;
