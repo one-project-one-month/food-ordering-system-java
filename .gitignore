@@ -26,6 +26,10 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+### Eclipse ###
+.metadata/
+tmp/
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
