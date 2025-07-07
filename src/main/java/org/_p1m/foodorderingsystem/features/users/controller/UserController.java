@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("${api.base.path}/users")
 public class UserController {
 
     private final UserService userService;
