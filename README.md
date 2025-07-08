@@ -355,4 +355,8 @@ git push origin <your-ticket-branch>   # Push to your remote branch
 ## **📘 Development Guide 001**
 
 [Folder Structure](https://www.notion.so/Development-Guide-001-2287c768d231809d9cefd3c977be4e4a?pvs=21)
+
+## 📘 Development Guide 002
+
+[Git & GitHub Workflow Guide](https://www.notion.so/Development-Guide-002-2287c768d23180a8879fc340b5f5be64?pvs=21)
  
