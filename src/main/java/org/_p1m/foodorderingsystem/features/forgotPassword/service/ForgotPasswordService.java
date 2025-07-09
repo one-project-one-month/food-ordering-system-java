@@ -1,4 +1,9 @@
 package org._p1m.foodorderingsystem.features.forgotPassword.service;
 
-public class ForgotPasswordService {
+
+public interface ForgotPasswordService {
+
+    void sendResetCode(String email);
+
+    boolean verifyResetCode(String email, long code);
 }
