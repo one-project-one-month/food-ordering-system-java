@@ -3,6 +3,8 @@ package org._p1m.foodorderingsystem.features.menus.dto.request;
 
 import lombok.Data;
 import org._p1m.foodorderingsystem.common.constant.Status;
+import org._p1m.foodorderingsystem.model.DishSize;
+import org._p1m.foodorderingsystem.model.Extra;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,21 +24,10 @@ public class CreateMenuRequest {
 
     private Long categoryId;
 
-    private List<DishSizeRequest> dishSizes;
+    private List<DishSize> dishSizes;
 
-    private List<ExtraRequest> extras;
+    private List<Extra> extras;
 
-    @Data
-    public static class DishSizeRequest {
-        private String name;
-        private BigDecimal price;
-        private String dishSizeImg;
-    }
 
-    @Data
-    public static class ExtraRequest {
-        private String name;
-        private BigDecimal price;
-    }
 }
 
