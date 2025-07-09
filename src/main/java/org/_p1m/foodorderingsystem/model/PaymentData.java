@@ -38,9 +38,9 @@ public class PaymentData extends MasterData {
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
 
-    @OneToOne
-    @JoinColumn(name = "rating_id")
-    private Rating rating;
+//    @OneToOne
+//    @JoinColumn(name = "rating_id")
+//    private Rating rating;
 
     @OneToOne(mappedBy = "payment")
     private OrderData order;
