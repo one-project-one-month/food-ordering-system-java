@@ -4,7 +4,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org._p1m.foodorderingsystem.features.forgotPassword.dto.request.ForgotPasswordRequest;
 import org._p1m.foodorderingsystem.features.forgotPassword.service.ForgotPasswordService;
+<<<<<<< HEAD
 import org.springframework.beans.factory.annotation.Autowired;
+=======
+>>>>>>> 2846308 (Merge pull request #34 from one-project-one-month/ft/001_LoginSignUp)
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "ForgotPassword API", description = "Endpoints for forgotPassword Features")
 public class ForgotPasswordController {
-
 
     private final ForgotPasswordService forgotPasswordService;
 
