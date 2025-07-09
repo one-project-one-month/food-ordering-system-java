@@ -1,18 +1,15 @@
 package org._p1m.foodorderingsystem.features.forgotPassword.controller;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org._p1m.foodorderingsystem.features.forgotPassword.dto.request.ForgotPasswordRequest;
 import org._p1m.foodorderingsystem.features.forgotPassword.service.ForgotPasswordService;
-<<<<<<< HEAD
-import org.springframework.beans.factory.annotation.Autowired;
-=======
->>>>>>> 2846308 (Merge pull request #34 from one-project-one-month/ft/001_LoginSignUp)
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("${api.base.path}/forgotPassword")
