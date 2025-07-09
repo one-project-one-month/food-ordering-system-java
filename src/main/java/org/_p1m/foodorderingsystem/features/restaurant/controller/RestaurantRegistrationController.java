@@ -1,11 +1,12 @@
-package org._p1m.foodorderingsystem.features.restaurant_registration.controller;
+package org._p1m.foodorderingsystem.features.restaurant.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
-import org._p1m.foodorderingsystem.features.restaurant_registration.dto.request.RestaurantCreateRequest;
-import org._p1m.foodorderingsystem.features.restaurant_registration.dto.request.RestaurantUpdateRequest;
-import org._p1m.foodorderingsystem.features.restaurant_registration.srevice.RestaurantRegistrationService;
+import org._p1m.foodorderingsystem.features.restaurant.dto.request.RestaurantCreateRequest;
+import org._p1m.foodorderingsystem.features.restaurant.dto.request.RestaurantUpdateRequest;
+import org._p1m.foodorderingsystem.features.restaurant.srevice.RestaurantRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class RestaurantRegistrationController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse> createRestaurant(@RequestBody RestaurantCreateRequest restaurantRequest,final HttpServletRequest request) {
+    public ResponseEntity<ApiResponse> createRestaurant(@Valid @RequestBody RestaurantCreateRequest restaurantRequest, final HttpServletRequest request) {
         final ApiResponse response = this.restaurantRegistrationService.createRestaurant(restaurantRequest);
         return ResponseUtils.buildResponse(request, response);
     }
@@ -40,7 +41,7 @@ public class RestaurantRegistrationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateRestaurant(@RequestBody RestaurantUpdateRequest restaurantUpdateRequest,
+    public ResponseEntity<ApiResponse> updateRestaurant(@Valid @RequestBody RestaurantUpdateRequest restaurantUpdateRequest,
                                                         @PathVariable Long id,
                                                         HttpServletRequest request){
         final ApiResponse response = this.restaurantRegistrationService.updateRestaurant(id,restaurantUpdateRequest);

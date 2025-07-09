@@ -1,4 +1,4 @@
-package org._p1m.foodorderingsystem.features.restaurant_registration.dto.response;
+package org._p1m.foodorderingsystem.features.restaurant.dto.response;
 
 import lombok.Data;
 

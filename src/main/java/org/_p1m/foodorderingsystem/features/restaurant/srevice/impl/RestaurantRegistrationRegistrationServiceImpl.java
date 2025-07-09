@@ -1,4 +1,4 @@
-package org._p1m.foodorderingsystem.features.restaurant_registration.srevice.impl;
+package org._p1m.foodorderingsystem.features.restaurant.srevice.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -6,13 +6,13 @@ import org._p1m.foodorderingsystem.common.constant.Status;
 import org._p1m.foodorderingsystem.config.exceptions.DuplicateEntityException;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
-import org._p1m.foodorderingsystem.features.restaurant_registration.dto.request.RestaurantCreateRequest;
-import org._p1m.foodorderingsystem.features.restaurant_registration.dto.request.RestaurantUpdateRequest;
-import org._p1m.foodorderingsystem.features.restaurant_registration.dto.response.RestaurantDetailResponseDto;
-import org._p1m.foodorderingsystem.features.restaurant_registration.dto.response.RestaurantResponseDto;
-import org._p1m.foodorderingsystem.features.restaurant_registration.dto.response.RestaurantUpdateResponseDto;
-import org._p1m.foodorderingsystem.features.restaurant_registration.repository.RestaurantRegistrationRepository;
-import org._p1m.foodorderingsystem.features.restaurant_registration.srevice.RestaurantRegistrationService;
+import org._p1m.foodorderingsystem.features.restaurant.dto.request.RestaurantCreateRequest;
+import org._p1m.foodorderingsystem.features.restaurant.dto.request.RestaurantUpdateRequest;
+import org._p1m.foodorderingsystem.features.restaurant.dto.response.RestaurantDetailResponseDto;
+import org._p1m.foodorderingsystem.features.restaurant.dto.response.RestaurantResponseDto;
+import org._p1m.foodorderingsystem.features.restaurant.dto.response.RestaurantUpdateResponseDto;
+import org._p1m.foodorderingsystem.features.restaurant.repository.RestaurantRegistrationRepository;
+import org._p1m.foodorderingsystem.features.restaurant.srevice.RestaurantRegistrationService;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
 import org._p1m.foodorderingsystem.model.Restaurant;
 import org._p1m.foodorderingsystem.model.User;

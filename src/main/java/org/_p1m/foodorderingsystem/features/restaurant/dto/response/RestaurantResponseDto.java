@@ -1,9 +1,10 @@
-package org._p1m.foodorderingsystem.features.restaurant_registration.dto.request;
+package org._p1m.foodorderingsystem.features.restaurant.dto.response;
 
 import lombok.Data;
 
 @Data
-public class RestaurantCreateRequest {
+public class RestaurantResponseDto {
+
     private String restaurantName;
     private String contactNumber;
     private String restaurantImage;
