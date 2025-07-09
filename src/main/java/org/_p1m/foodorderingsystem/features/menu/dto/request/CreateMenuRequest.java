@@ -1,4 +1,4 @@
-package org._p1m.foodorderingsystem.features.menus.dto.request;
+package org._p1m.foodorderingsystem.features.menu.dto.request;
 
 
 import jakarta.validation.Valid;
@@ -7,8 +7,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org._p1m.foodorderingsystem.common.constant.Status;
-import org._p1m.foodorderingsystem.model.DishSize;
-import org._p1m.foodorderingsystem.model.Extra;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,7 +21,7 @@ public class CreateMenuRequest {
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
     private BigDecimal price;
 
-    @NotBlank(message = "Dish image URL is required")
+    @NotBlank(message = "Dish image  is required")
     private String dishImg;
 
     @NotNull(message = "Status is required")

@@ -1,4 +1,4 @@
-package org._p1m.foodorderingsystem.features.menus.repository;
+package org._p1m.foodorderingsystem.features.menu.repository;
 
 import org._p1m.foodorderingsystem.model.Menu;
 import org.springframework.data.jpa.repository.JpaRepository;
