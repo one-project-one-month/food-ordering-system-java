@@ -1,8 +1,8 @@
-package org._p1m.foodorderingsystem.features.restaurant_registration.srevice;
+package org._p1m.foodorderingsystem.features.restaurant.srevice;
 
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
-import org._p1m.foodorderingsystem.features.restaurant_registration.dto.request.RestaurantCreateRequest;
-import org._p1m.foodorderingsystem.features.restaurant_registration.dto.request.RestaurantUpdateRequest;
+import org._p1m.foodorderingsystem.features.restaurant.dto.request.RestaurantCreateRequest;
+import org._p1m.foodorderingsystem.features.restaurant.dto.request.RestaurantUpdateRequest;
 import org.springframework.stereotype.Service;
 
 @Service

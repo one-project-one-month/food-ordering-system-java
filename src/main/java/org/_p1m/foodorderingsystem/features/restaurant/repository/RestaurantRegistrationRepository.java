@@ -1,4 +1,4 @@
-package org._p1m.foodorderingsystem.features.restaurant_registration.repository;
+package org._p1m.foodorderingsystem.features.restaurant.repository;
 
 import org._p1m.foodorderingsystem.common.constant.Status;
 import org._p1m.foodorderingsystem.model.Restaurant;
