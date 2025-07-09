@@ -10,9 +10,7 @@ import org._p1m.foodorderingsystem.features.menus.repository.ManageMenuRepositor
 import org._p1m.foodorderingsystem.features.menus.service.ManageMenuService;
 import org._p1m.foodorderingsystem.features.restaurants.repository.RestaurantRepository;
 import org._p1m.foodorderingsystem.features.users.dto.response.UserResponseDto;
-import org._p1m.foodorderingsystem.model.Category;
-import org._p1m.foodorderingsystem.model.Menu;
-import org._p1m.foodorderingsystem.model.Restaurant;
+import org._p1m.foodorderingsystem.model.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,8 +45,16 @@ public class ManageMenuServiceImpl implements ManageMenuService {
         menu.setCategory(category);
         menu.setRestaurant(restaurant);
 
-        createMenuRequest.getDishSizes().forEach(menu::addDishSize);
-        createMenuRequest.getExtras().forEach(menu::addExtra);
+
+
+        createMenuRequest.getDishSizes().forEach(dishSizeRequest -> {
+         DishSize dishSize =   modelMapper.map(dishSizeRequest, DishSize.class);
+         menu.addDishSize(dishSize);
+        });
+        createMenuRequest.getExtras().forEach(extraRequest -> {
+            Extra extra = modelMapper.map(extraRequest, Extra.class);
+            menu.addExtra(extra);
+        });
 
         this.manageMenuRepository.save(menu);
         CreateMenuResponseDto dto = modelMapper.map(menu, CreateMenuResponseDto.class);

@@ -2,6 +2,7 @@ package org._p1m.foodorderingsystem.features.menus.controller;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
 import org._p1m.foodorderingsystem.features.menus.dto.request.CreateMenuRequest;
@@ -23,7 +24,7 @@ public class ManageMenuController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse> createMenu(@RequestBody CreateMenuRequest createMenuRequest, HttpServletRequest request){
+    public ResponseEntity<ApiResponse> createMenu(@Valid @RequestBody CreateMenuRequest createMenuRequest, HttpServletRequest request){
         final ApiResponse response = this.manageMenuService.createMenu(createMenuRequest);
         return ResponseUtils.buildResponse(request, response);
     }
