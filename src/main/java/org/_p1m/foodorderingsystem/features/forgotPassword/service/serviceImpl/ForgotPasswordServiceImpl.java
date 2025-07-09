@@ -1,4 +1,4 @@
-package org._p1m.foodorderingsystem.features.forgotPassword.service.impl;
+package org._p1m.foodorderingsystem.features.forgotPassword.service.serviceImpl;
 
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -17,8 +17,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-//import static org._p1m.foodorderingsystem.common.storage.LocalStorageService.log;
-
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     private final JavaMailSender javaMailSender;
-
     private final ServerUtil serverUtil;
     private final StringRedisTemplate redisTemplate;
 
@@ -34,8 +31,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     @Value("${spring.mail.username}")
     private String fromMail;
-
-
 
     @Override
     public void sendResetCode(String email) {
@@ -45,7 +40,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
         try {
             sendEmail(email , resetCode);
         } catch (MessagingException | IOException e){
-//            log.warn("Email likely sent but timed out waiting for SMTP response: {}", email, e);
+            log.warn("Email likely sent but timed out waiting for SMTP response: {}", email, e);
 //            log.error("Email sending failed to {}", email, e);
 //            throw new RuntimeException("Failed to send reset code.");
         }

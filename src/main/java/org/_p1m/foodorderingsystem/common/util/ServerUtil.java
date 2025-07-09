@@ -1,7 +1,5 @@
 package org._p1m.foodorderingsystem.common.util;
 
-
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
