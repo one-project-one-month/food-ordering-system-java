@@ -7,9 +7,9 @@ import java.util.Objects;
 
 @Data
 public class ForgotPasswordResponseDto {
-    private long success;
-    private long code;
-    private ArrayList<Objects>meta;
-    private ArrayList<Objects>data;
-    private ArrayList<String>message;
+//    private long success;
+//    private long code;
+//    private ArrayList<Objects>meta;
+//    private ArrayList<Objects>data;
+//    private ArrayList<String>message;
 }
