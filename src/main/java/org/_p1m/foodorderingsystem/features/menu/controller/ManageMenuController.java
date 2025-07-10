@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 
 @RestController
-@RequestMapping("${api.base.path}/auth/menus")
+@RequestMapping("${api.base.path}/menus")
 @Tag(name = "Menu API", description = "Endpoints for managing menus")
 public class ManageMenuController {
 
