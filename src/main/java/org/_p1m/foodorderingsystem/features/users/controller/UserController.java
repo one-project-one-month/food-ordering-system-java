@@ -6,7 +6,6 @@ import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
 import org._p1m.foodorderingsystem.features.users.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,18 +21,15 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("${api.base.path}/users")
 @Tag(name = "User API", description = "Endpoints for managing users")
 public class UserController {
 
     private final UserService userService;
-
-    @Autowired
-    public UserController(final UserService userService) {
-        this.userService = userService;
-    }
 
     @PostMapping
     @Operation(
