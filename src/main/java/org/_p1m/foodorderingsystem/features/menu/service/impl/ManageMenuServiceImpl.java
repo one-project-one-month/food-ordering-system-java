@@ -60,18 +60,4 @@ public class ManageMenuServiceImpl implements ManageMenuService {
                 .data(Map.of("created Menu", dto))
                 .message("Menu created successful.").build();
     }
-
-    public ApiResponse getMenuById(Long menuId) {
-        Menu menu = manageMenuRepository.findById(menuId)
-                .orElseThrow(() -> new EntityNotFoundException("Menu not found!"));
-
-        CreateMenuResponseDto dto = modelMapper.map(menu, CreateMenuResponseDto.class);
-
-        return ApiResponse.builder()
-                .success(1)
-                .code(HttpStatus.OK.value())
-                .data(Map.of("Menu: ", dto))
-                .message("Menu retrieved successfully.")
-                .build();
-    }
 }

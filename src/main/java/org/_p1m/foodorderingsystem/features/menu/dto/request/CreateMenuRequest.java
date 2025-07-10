@@ -21,9 +21,6 @@ public class CreateMenuRequest {
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
     private BigDecimal price;
 
-    @NotBlank(message = "Dish image  is required")
-    private String dishImg;
-
     @NotNull(message = "Status is required")
     private Status status = Status.ACTIVE;
 
