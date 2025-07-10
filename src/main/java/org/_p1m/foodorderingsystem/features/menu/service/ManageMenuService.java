@@ -7,4 +7,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ManageMenuService {
     ApiResponse createMenu(CreateMenuRequest createMenuRequest);
+
+    ApiResponse getMenuById(Long menuId);
 }
