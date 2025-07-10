@@ -1,11 +1,12 @@
-package org._p1m.foodorderingsystem.features.menus.controller;
+package org._p1m.foodorderingsystem.features.menu.controller;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
-import org._p1m.foodorderingsystem.features.menus.dto.request.CreateMenuRequest;
-import org._p1m.foodorderingsystem.features.menus.service.ManageMenuService;
+import org._p1m.foodorderingsystem.features.menu.dto.request.CreateMenuRequest;
+import org._p1m.foodorderingsystem.features.menu.service.ManageMenuService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +24,7 @@ public class ManageMenuController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse> createMenu(@RequestBody CreateMenuRequest createMenuRequest, HttpServletRequest request){
+    public ResponseEntity<ApiResponse> createMenu(@Valid @RequestBody CreateMenuRequest createMenuRequest, HttpServletRequest request){
         final ApiResponse response = this.manageMenuService.createMenu(createMenuRequest);
         return ResponseUtils.buildResponse(request, response);
     }

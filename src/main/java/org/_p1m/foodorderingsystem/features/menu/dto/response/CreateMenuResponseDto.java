@@ -1,9 +1,7 @@
-package org._p1m.foodorderingsystem.features.menus.dto.response;
+package org._p1m.foodorderingsystem.features.menu.dto.response;
 
 import lombok.Data;
 import org._p1m.foodorderingsystem.common.constant.Status;
-import org._p1m.foodorderingsystem.model.DishSize;
-import org._p1m.foodorderingsystem.model.Extra;
 
 import java.math.BigDecimal;
 import java.util.List;

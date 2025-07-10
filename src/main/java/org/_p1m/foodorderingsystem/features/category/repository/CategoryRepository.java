@@ -1,4 +1,4 @@
-package org._p1m.foodorderingsystem.features.categories.repository;
+package org._p1m.foodorderingsystem.features.category.repository;
 
 import org._p1m.foodorderingsystem.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
