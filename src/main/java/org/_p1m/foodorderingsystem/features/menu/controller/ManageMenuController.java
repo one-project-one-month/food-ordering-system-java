@@ -11,7 +11,10 @@ import jakarta.validation.Valid;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
 import org._p1m.foodorderingsystem.features.menu.dto.request.CreateMenuRequest;
+import org._p1m.foodorderingsystem.features.menu.dto.request.UploadMenuImageRequest;
 import org._p1m.foodorderingsystem.features.menu.service.ManageMenuService;
+import org._p1m.foodorderingsystem.features.users.dto.request.UploadProfilePictureRequest;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,7 +54,15 @@ public class ManageMenuController {
     @PostMapping("/{menuId}/menu-img")
     @Operation(
             summary = "Upload Menu image",
-            description = "Uploads a menu picture for the specified menu.",
+            description = "Uploads a menu image for the specified menu.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Multipart form with image file",
+                    required = true,
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(implementation = UploadMenuImageRequest.class)
+                    )
+            ),
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "File uploaded successfully"),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Failed to upload file")
