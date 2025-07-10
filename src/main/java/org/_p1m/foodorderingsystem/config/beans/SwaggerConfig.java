@@ -12,26 +12,26 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 
 @Configuration
 public class SwaggerConfig {
-	@Bean
+    @Bean
     public GroupedOpenApi mainApi() {
         return GroupedOpenApi.builder()
-            .group("v1")
-            .pathsToMatch("/**")
-            .build();
+                .group("v1")
+                .pathsToMatch("/**")
+                .build();
     }
-	
-	@Bean
+
+    @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-            .info(new Info().title("Food Ordering System").version("v1.0.0"))
-            .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
-            .components(new Components().addSecuritySchemes(
-                "Bearer Authentication",
-                new SecurityScheme()
-                    .type(SecurityScheme.Type.HTTP)
-                    .scheme("bearer")
-                    .bearerFormat("JWT")
-            ));
+                .info(new Info().title("Food Ordering System").version("v1.0.0"))
+                .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
+                .components(new Components().addSecuritySchemes(
+                        "Bearer Authentication",
+                        new SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
+                ));
     }
 
 }
