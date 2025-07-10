@@ -79,4 +79,24 @@ public class ManageMenuController {
             return ResponseEntity.badRequest().body("Failed to upload file: " + e.getMessage());
         }
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse> getMenuById(@PathVariable Long id, HttpServletRequest request) {
+        final ApiResponse response = manageMenuService.getMenuById(id);
+        return ResponseUtils.buildResponse(request, response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse> updateManu(@PathVariable Long id,
+                                                  @RequestBody CreateMenuRequest createMenuRequest,
+                                                  HttpServletRequest request) {
+        final ApiResponse response = manageMenuService.updateMenu(id, createMenuRequest);
+        return ResponseUtils.buildResponse(request, response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse> deleteMenu(@PathVariable Long id, HttpServletRequest request) {
+        final ApiResponse response = manageMenuService.deleteMenu(id);
+        return ResponseUtils.buildResponse(request, response);
+    }
 }

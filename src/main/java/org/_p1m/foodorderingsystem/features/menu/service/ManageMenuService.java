@@ -10,4 +10,10 @@ public interface ManageMenuService {
     ApiResponse createMenu(CreateMenuRequest createMenuRequest);
 
     String uploadMenuImage(Long menuId, MultipartFile file);
+
+    ApiResponse getMenuById(Long id);
+
+    ApiResponse updateMenu(Long menuId, CreateMenuRequest request);
+
+    ApiResponse deleteMenu(Long id);
 }
