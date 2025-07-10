@@ -9,12 +9,10 @@ import org._p1m.foodorderingsystem.features.menus.dto.response.CreateMenuRespons
 import org._p1m.foodorderingsystem.features.menus.repository.ManageMenuRepository;
 import org._p1m.foodorderingsystem.features.menus.service.ManageMenuService;
 import org._p1m.foodorderingsystem.features.restaurants.repository.RestaurantRepository;
-import org._p1m.foodorderingsystem.features.users.dto.response.UserResponseDto;
 import org._p1m.foodorderingsystem.model.Category;
 import org._p1m.foodorderingsystem.model.Menu;
 import org._p1m.foodorderingsystem.model.Restaurant;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
