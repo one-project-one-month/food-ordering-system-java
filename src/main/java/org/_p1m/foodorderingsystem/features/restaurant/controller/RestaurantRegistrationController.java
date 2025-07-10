@@ -11,14 +11,19 @@ import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
 import org._p1m.foodorderingsystem.features.restaurant.dto.request.RestaurantCreateRequest;
 import org._p1m.foodorderingsystem.features.restaurant.dto.request.RestaurantUpdateRequest;
-import org._p1m.foodorderingsystem.features.restaurant.srevice.RestaurantRegistrationService;
-import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
+import org._p1m.foodorderingsystem.features.restaurant.dto.request.UploadRestaurantImgRequest;
+import org._p1m.foodorderingsystem.features.restaurant.service.RestaurantRegistrationService;
+import org._p1m.foodorderingsystem.features.users.dto.request.UploadProfilePictureRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 @RestController
-@RequestMapping("${api.base.path}/auth/restaurants")
+@RequestMapping("${api.base.path}/restaurants")
 @Tag(name = "Restaurant API", description = "Endpoints for managing restaurants")
 public class RestaurantRegistrationController {
 
@@ -46,6 +51,41 @@ public class RestaurantRegistrationController {
     public ResponseEntity<ApiResponse> createRestaurant(@Valid @RequestBody RestaurantCreateRequest restaurantRequest, final HttpServletRequest request) {
         final ApiResponse response = this.restaurantRegistrationService.createRestaurant(restaurantRequest);
         return ResponseUtils.buildResponse(request, response);
+    }
+
+    @PostMapping(
+            value = "/{restaurantId}/restaurant-img",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    @Operation(
+            summary = "Upload  picture for restaurant",
+            description = "Uploads a  picture for restaurant with its id",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Multipart form with image file",
+                    required = true,
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(implementation = UploadRestaurantImgRequest.class)
+                    )
+            ),
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "File uploaded successfully"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Failed to upload file")
+            }
+    )
+    public ResponseEntity<?> uploadRestaurantPicture(
+            @Parameter(description = "Restaurant ID", required = true)
+            @PathVariable("restaurantId") final Long restaurantId,
+
+            @Parameter(hidden = true)
+            @RequestParam("file") final MultipartFile file
+    ) {
+        try {
+            final String fileUrl = this.restaurantRegistrationService.uploadRestaurantPicture(restaurantId, file);
+            return ResponseEntity.ok(Map.of("url", fileUrl));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to upload file: " + e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")

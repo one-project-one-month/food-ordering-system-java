@@ -1,8 +1,10 @@
-package org._p1m.foodorderingsystem.features.restaurant.srevice.impl;
+package org._p1m.foodorderingsystem.features.restaurant.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org._p1m.foodorderingsystem.common.constant.Status;
+import org._p1m.foodorderingsystem.common.storage.StorageService;
+import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
 import org._p1m.foodorderingsystem.config.exceptions.DuplicateEntityException;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
@@ -12,13 +14,17 @@ import org._p1m.foodorderingsystem.features.restaurant.dto.response.RestaurantDe
 import org._p1m.foodorderingsystem.features.restaurant.dto.response.RestaurantResponseDto;
 import org._p1m.foodorderingsystem.features.restaurant.dto.response.RestaurantUpdateResponseDto;
 import org._p1m.foodorderingsystem.features.restaurant.repository.RestaurantRegistrationRepository;
-import org._p1m.foodorderingsystem.features.restaurant.srevice.RestaurantRegistrationService;
+import org._p1m.foodorderingsystem.features.restaurant.service.RestaurantRegistrationService;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
+import org._p1m.foodorderingsystem.model.Profile;
 import org._p1m.foodorderingsystem.model.Restaurant;
 import org._p1m.foodorderingsystem.model.User;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +36,12 @@ public class RestaurantRegistrationRegistrationServiceImpl implements Restaurant
   private final UserRepository userRepository;
   private final RestaurantRegistrationRepository restaurantRegistrationRepository;
   private final ModelMapper modelMapper;
+  private StorageService storageService;
+
+    @Autowired
+    public void setStorageService(StorageServiceFactory factory) {
+        this.storageService = factory.getConfiguredStorageService();
+    }
 
 
     @Transactional
@@ -48,7 +60,6 @@ public class RestaurantRegistrationRegistrationServiceImpl implements Restaurant
         restaurant.setOwner(restaurantOwner);
         restaurant.setNrc(restaurantRequest.getNrc());
         restaurant.setRestaurantName(restaurantRequest.getRestaurantName());
-        restaurant.setRestaurantImage(restaurantRequest.getRestaurantImage());
         restaurant.setContactNumber(restaurantRequest.getContactNumber());
         restaurant.setKpayNumber(restaurantRequest.getKpayNumber());
         restaurantRegistrationRepository.save(restaurant);
@@ -107,5 +118,24 @@ public class RestaurantRegistrationRegistrationServiceImpl implements Restaurant
                 .data(Map.of("updated Restaurant", dto))
                 .message("Restaurant Update successful")
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public String uploadRestaurantPicture(Long restaurantId, MultipartFile file) {
+        final Restaurant restaurant = this.restaurantRegistrationRepository.findById(restaurantId)
+                .orElseThrow(() -> new EntityNotFoundException("Restaurant not found for  ID: " + restaurantId));
+
+        final String filename = storageService.store(file);
+
+        final String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/files/")
+                .path(filename)
+                .toUriString();
+
+        restaurant.setRestaurantImage(fileUrl);
+        this.restaurantRegistrationRepository.save(restaurant);
+
+        return fileUrl;
     }
 }
