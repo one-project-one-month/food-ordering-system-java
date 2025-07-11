@@ -17,6 +17,9 @@ import org._p1m.foodorderingsystem.model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -35,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private StorageService storageService;
 
+    private final AuthenticationManager authenticationManager;
 
 
     @Autowired
@@ -82,5 +86,15 @@ public class UserServiceImpl implements UserService {
         this.profileRepository.save(profile);
 
         return fileUrl;
+    }
+
+    @Override
+    public String varifiedUser(User user) {
+        var auth=new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
+        Authentication authentication=authenticationManager.authenticate(auth);
+       if(authentication.isAuthenticated()){
+           return authentication.getPrincipal().toString();
+       }
+        return "%s is wrong credentials".formatted(authentication.getPrincipal().toString());
     }
 }

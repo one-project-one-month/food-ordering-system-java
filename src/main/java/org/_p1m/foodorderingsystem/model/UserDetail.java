@@ -1,11 +1,9 @@
 package org._p1m.foodorderingsystem.model;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import org.springframework.security.core.userdetails.UserDetails;
-import org._p1m.foodorderingsystem.model.User;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class UserDetail implements UserDetails {
@@ -29,6 +27,6 @@ private final User user;
 
     @Override
     public String getUsername() {
-        return "";
+        return user.getEmail();
     }
 }

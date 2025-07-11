@@ -7,6 +7,7 @@ import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
 import org._p1m.foodorderingsystem.features.users.dto.request.UploadProfilePictureRequest;
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
 import org._p1m.foodorderingsystem.features.users.service.UserService;
+import org._p1m.foodorderingsystem.model.User;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,15 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
     private final UserService userService;
+
+	@PostMapping
+	public ResponseEntity<String> varifiedUser(@RequestBody UserCreateRequest userCreateRequest) {
+		User user=new User();
+		user.setEmail(userCreateRequest.getEmail());
+		user.setPassword(userCreateRequest.getPassword());
+		String returnString=userService.varifiedUser(user);
+		return ResponseEntity.ok(returnString);
+	}
     
     @PostMapping
     @Operation(
@@ -51,10 +61,7 @@ public class UserController {
     }
 
 //	Get name
-	@GetMapping
-	public static String getUserName(){
-		return
-	}
+
 //	get name end
 
     @PostMapping(
