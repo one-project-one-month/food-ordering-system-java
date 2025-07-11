@@ -122,7 +122,7 @@ public class RestaurantRegistrationController {
         return ResponseUtils.buildResponse(request, response);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @Operation(
             summary = "Update a restaurant",
             description = "Updates the details of an existing restaurant.",
