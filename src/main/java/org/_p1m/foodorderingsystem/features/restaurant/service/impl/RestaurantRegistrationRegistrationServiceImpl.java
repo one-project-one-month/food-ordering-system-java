@@ -16,7 +16,6 @@ import org._p1m.foodorderingsystem.features.restaurant.dto.response.RestaurantUp
 import org._p1m.foodorderingsystem.features.restaurant.repository.RestaurantRegistrationRepository;
 import org._p1m.foodorderingsystem.features.restaurant.service.RestaurantRegistrationService;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
-import org._p1m.foodorderingsystem.model.Profile;
 import org._p1m.foodorderingsystem.model.Restaurant;
 import org._p1m.foodorderingsystem.model.User;
 import org.modelmapper.ModelMapper;
@@ -26,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 
@@ -86,10 +87,19 @@ public class RestaurantRegistrationRegistrationServiceImpl implements Restaurant
 
     }
 
+    private void deleteFromLocalFolder(String  existingUrl) {
+        if (existingUrl != null && !existingUrl.isEmpty()) {
+            String existingFileName = existingUrl.substring(existingUrl.lastIndexOf("/") + 1);
+            String decodedFilename = URLDecoder.decode(existingFileName, StandardCharsets.UTF_8);
+            storageService.delete(decodedFilename);
+        }
+    }
+
     @Override
     public ApiResponse deleteRestaurant(Long id) {
         Restaurant restaurant = this.restaurantRegistrationRepository.findByIdAndStatus(id,Status.ACTIVE)
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with id" + id));
+        deleteFromLocalFolder(restaurant.getRestaurantImage());
         restaurant.setStatus(Status.INACTIVE);
         this.restaurantRegistrationRepository.save(restaurant);
         return ApiResponse.builder()
@@ -108,7 +118,6 @@ public class RestaurantRegistrationRegistrationServiceImpl implements Restaurant
         restaurant.setId(id);
         restaurant.setNrc(restaurantUpdateRequest.getNrc());
         restaurant.setRestaurantName(restaurantUpdateRequest.getRestaurantName());
-        restaurant.setRestaurantImage(restaurantUpdateRequest.getRestaurantImage());
         restaurant.setContactNumber(restaurantUpdateRequest.getContactNumber());
         restaurant.setKpayNumber(restaurantUpdateRequest.getKpayNumber());
         restaurantRegistrationRepository.save(restaurant);
@@ -125,6 +134,8 @@ public class RestaurantRegistrationRegistrationServiceImpl implements Restaurant
     public String uploadRestaurantPicture(Long restaurantId, MultipartFile file) {
         final Restaurant restaurant = this.restaurantRegistrationRepository.findById(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant not found for  ID: " + restaurantId));
+
+        deleteFromLocalFolder(restaurant.getRestaurantImage());
 
         final String filename = storageService.store(file);
 

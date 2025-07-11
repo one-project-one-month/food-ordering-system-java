@@ -11,9 +11,6 @@ public class RestaurantUpdateRequest {
     @NotBlank(message = "Contact number is required")
     private String contactNumber;
 
-    @NotBlank(message = "Restaurant image is required")
-    private String restaurantImage;
-
     @NotBlank(message = "NRC is required")
     private String nrc;
 
