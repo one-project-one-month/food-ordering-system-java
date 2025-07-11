@@ -16,4 +16,6 @@ public interface ManageMenuService {
     ApiResponse updateMenu(Long menuId, CreateMenuRequest request);
 
     ApiResponse deleteMenu(Long id);
+
+    ApiResponse getAllMenus();
 }

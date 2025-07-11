@@ -80,6 +80,13 @@ public class ManageMenuController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity<ApiResponse> getAllMenus(HttpServletRequest request) {
+        final ApiResponse response = manageMenuService.getAllMenus();
+
+        return ResponseUtils.buildResponse(request, response);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getMenuById(@PathVariable Long id, HttpServletRequest request) {
         final ApiResponse response = manageMenuService.getMenuById(id);
