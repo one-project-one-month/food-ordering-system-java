@@ -23,13 +23,13 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.base.path}/auth/users")
+@RequestMapping("${api.base.path}/users")
 @Tag(name = "User API", description = "Endpoints for managing users")
 public class UserController {
 
     private final UserService userService;
 
-	@PostMapping
+	@PostMapping("/login")
 	public ResponseEntity<String> varifiedUser(@RequestBody UserCreateRequest userCreateRequest) {
 		User user=new User();
 		user.setEmail(userCreateRequest.getEmail());

@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -40,6 +41,8 @@ public class UserServiceImpl implements UserService {
 
     private final AuthenticationManager authenticationManager;
 
+    private final PasswordEncoder passwordEncoder;
+
 
     @Autowired
     public void setStorageService(StorageServiceFactory factory) {
@@ -53,15 +56,15 @@ public class UserServiceImpl implements UserService {
 
         User user = new User();
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(defaultRole);
 
-        Profile profile = new Profile();
-        profile.setName(request.getName());
-        profile.setEmail(request.getEmail());
-        profile.setPhone(request.getPhone());
+//        Profile profile = new Profile();
+//        profile.setName(request.getName());
+//        profile.setEmail(request.getEmail());
+//        profile.setPhone(request.getPhone());
 
-        user.setProfile(profile);
+//        user.setProfile(profile);
 
         userRepository.save(user);
         UserResponseDto dto = modelMapper.map(user, UserResponseDto.class);
