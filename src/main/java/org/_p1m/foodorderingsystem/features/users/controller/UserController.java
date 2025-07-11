@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.base.path}/users")
+@RequestMapping("${api.base.path}/auth/users")
 @Tag(name = "User API", description = "Endpoints for managing users")
 public class UserController {
 
