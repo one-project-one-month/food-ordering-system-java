@@ -11,6 +11,7 @@ public interface SuperAdminService {
 
     public ApiResponse deleteById(final Long id);
 
-    PaginatedApiResponse<SuperAdminDashBoardResponse> getAllUsersPaginated(Pageable pageable);
+    PaginatedApiResponse<SuperAdminDashBoardResponse> getAllUsersPaginated(
+            String keyword, String role, String status, Pageable pageable);
 
 }

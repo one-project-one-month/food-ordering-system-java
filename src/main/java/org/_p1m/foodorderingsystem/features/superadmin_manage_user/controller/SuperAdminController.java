@@ -14,6 +14,7 @@ import org._p1m.foodorderingsystem.features.superadmin_manage_user.service.Super
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +32,7 @@ public class SuperAdminController {
     @DeleteMapping("/user/delete/{id}")
     @Operation(
             summary = "Delete a user",
-            description = "Change user status to Inactive, .",
+            description = "Change user status to Inactive.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "User deleting request",
                     required = true,
@@ -51,12 +52,30 @@ public class SuperAdminController {
 
 
     @GetMapping("/all-users")
+    @Operation(
+            summary = "Fetching Users",
+            description = "Fetching Users with keywords - name,email,phone,address,role and status, returning pagination",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "User Fetching Request",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = UserCreateRequest.class))
+            ),
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Users are fetched successfully"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Invalid Request")
+            }
+    )
     public ResponseEntity<PaginatedApiResponse<SuperAdminDashBoardResponse>> getAllUsers(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String role,
+            @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             HttpServletRequest request
     ) {
-        final PaginatedApiResponse<SuperAdminDashBoardResponse> response = superAdminService.getAllUsersPaginated(PageRequest.of(page, size));
+
+        final Pageable pageable = PageRequest.of(page, size);
+        final PaginatedApiResponse<SuperAdminDashBoardResponse> response = superAdminService.getAllUsersPaginated(keyword,role,status,pageable);
 //        System.out.println(userPage);
 //        Map<String, Object> meta = new HashMap<>();
 //        meta.put("pagination", new PaginationMeta(

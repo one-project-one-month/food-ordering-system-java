@@ -9,19 +9,16 @@ import org._p1m.foodorderingsystem.features.superadmin_manage_user.dto.response.
 import org._p1m.foodorderingsystem.features.superadmin_manage_user.dto.response.SuperAdminDashBoardResponse;
 import org._p1m.foodorderingsystem.features.superadmin_manage_user.service.SuperAdminService;
 import org._p1m.foodorderingsystem.features.users.repository.ProfileRepository;
+import org._p1m.foodorderingsystem.features.users.repository.SuperAdminManageUserRepository;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
-import org._p1m.foodorderingsystem.model.Profile;
 import org._p1m.foodorderingsystem.model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +27,7 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     private final UserRepository userRepo;
     private final ProfileRepository profileRepo;
     private final ModelMapper modelMapper;
+    private final SuperAdminManageUserRepository superAdminManageUserRepo;
 
 
     @Override
@@ -55,20 +53,23 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     }
 
     @Override
-    public PaginatedApiResponse<SuperAdminDashBoardResponse> getAllUsersPaginated(Pageable pageable) {
-        Page<Profile> profilePage = profileRepo.findAll(pageable);
+    public PaginatedApiResponse<SuperAdminDashBoardResponse> getAllUsersPaginated(
+            String keyword, String role, String status, Pageable pageable) {
 
-        List<SuperAdminDashBoardResponse> userResponses = profilePage.getContent().stream().map(profile -> {
-            User user = profile.getUser();
-            return SuperAdminDashBoardResponse.builder()
-                    .id(profile.getId())
-                    .name(profile.getName())
-                    .email(user.getEmail())
-                    .phone(profile.getPhone())
-                    .address(profile.getAddress())
-                    .status(user.getStatus().toString())
-                    .build();
-        }).toList();
+        Status dbStatus = status == null ? null : Status.valueOf(status);
+        Page<SuperAdminDashBoardResponse> profilePage = superAdminManageUserRepo.searchUsers(keyword,role,dbStatus,pageable);
+
+//        List<SuperAdminDashBoardResponse> userResponses = profilePage.getContent().stream().map(profile -> {
+//            User user = profile.getUser();
+//            return SuperAdminDashBoardResponse.builder()
+//                    .id(profile.getId())
+//                    .name(profile.getName())
+//                    .email(profile.getEmail())
+//                    .phone(profile.getPhone())
+//                    .address(profile.getAddress())
+//                    .status(profile.getStatus().toString())
+//                    .build();
+//        }).toList();
 
         return PaginatedApiResponse.<SuperAdminDashBoardResponse>builder().success(1).code(HttpStatus.OK.value())
                 .message("Successfully fetching user data")
@@ -76,7 +77,7 @@ public class SuperAdminServiceImpl implements SuperAdminService {
                 .totalPages(profilePage.getTotalPages())
                 .currentPage(profilePage.getNumber() + 1)
                 .pageSize(profilePage.getSize())
-                .data(userResponses)
+                .data(profilePage.getContent())
                 .build();
     }
 
