@@ -98,4 +98,18 @@ public class UserController {
 	        return ResponseEntity.badRequest().body("Failed to upload file: " + e.getMessage());
 	    }
 	}
+
+	@PostMapping("/verifyAccount")
+	public ResponseEntity<ApiResponse> verifyAccount(@RequestBody Map<String, String> body , HttpServletRequest request){
+			long code = Long.parseLong(body.get("code"));
+			String email = body.get("email");
+			final ApiResponse response = this.userService.verifyAccount(code, email);
+			return ResponseUtils.buildResponse(request, response);
+    }
+
+	@PostMapping("resendCode")
+	public ResponseEntity<ApiResponse> resendCode(@RequestBody Map<String ,String> body , HttpServletRequest request){
+		final ApiResponse response = this.userService.resendCode(body.get("email"));
+		return ResponseUtils.buildResponse(request, response);
+	}
 }

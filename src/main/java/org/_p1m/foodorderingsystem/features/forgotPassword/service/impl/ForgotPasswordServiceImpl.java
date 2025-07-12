@@ -1,6 +1,5 @@
 package org._p1m.foodorderingsystem.features.forgotPassword.service.impl;
 
-import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     private String fromMail;
 
 
-
     @Override
     public void sendResetCode(String email) {
         String resetCode = serverUtil.generateNumericCode(6);
@@ -54,7 +52,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     private void sendEmail(String email, String resetCode) throws MessagingException , IOException{
         String userName = email.split("@")[0];
-        String htmlTemplate = serverUtil.loadTemplate("templates/resetMail.html");
+        String htmlTemplate = serverUtil.loadTemplate("templates/mailTemplates/resetMail.html");
         String htmlContent =htmlTemplate
                 .replace("{{username}}" , userName)
                 .replace("{{code}}" , resetCode);

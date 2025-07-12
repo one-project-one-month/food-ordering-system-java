@@ -14,4 +14,8 @@ public interface UserService {
     public String uploadProfilePicture(final Long userId, final MultipartFile file);
 
     public String varifiedUser(User user);
+
+    public ApiResponse verifyAccount(long code , String email);
+
+    public ApiResponse resendCode(String email);
 }
