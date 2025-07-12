@@ -12,4 +12,5 @@ public class RestaurantResponseDto {
     private String kpayNumber;
     private String createdAt;
     private String updatedAt;
+    private Long resOwnerId;
 }
