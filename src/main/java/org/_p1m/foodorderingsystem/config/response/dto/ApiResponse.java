@@ -13,4 +13,12 @@ public class ApiResponse {
     private Map<String, Object> meta;
     private Object data;
     private String message;
+
+    public ApiResponse(int success, int code, Map<String, Object> meta, Object data, String message) {
+        this.success = success;
+        this.code = code;
+        this.meta = meta;
+        this.data = data;
+        this.message = message;
+    }
 }
