@@ -13,7 +13,6 @@ import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
 import org._p1m.foodorderingsystem.features.menu.dto.request.CreateMenuRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.request.UploadMenuImageRequest;
 import org._p1m.foodorderingsystem.features.menu.service.ManageMenuService;
-import org._p1m.foodorderingsystem.features.users.dto.request.UploadProfilePictureRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -81,6 +80,14 @@ public class ManageMenuController {
     }
 
     @GetMapping
+    @Operation(
+            summary = "Get all Menus",
+            description = "Retrieve list of all menus.",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Menus retrieve successfully"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request")
+            }
+    )
     public ResponseEntity<ApiResponse> getAllMenus(HttpServletRequest request) {
         final ApiResponse response = manageMenuService.getAllMenus();
 
@@ -88,12 +95,38 @@ public class ManageMenuController {
     }
 
     @GetMapping("/{id}")
+    @Operation(
+            summary = "Get a menu by ID",
+            description = "Retrieves a menu by its ID.",
+            parameters = {
+                    @Parameter(name = "id", description = "ID of the menu to retrieve", required = true)
+            },
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Menus retrieve by id successfully"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Menu not found")
+            }
+    )
     public ResponseEntity<ApiResponse> getMenuById(@PathVariable Long id, HttpServletRequest request) {
         final ApiResponse response = manageMenuService.getMenuById(id);
         return ResponseUtils.buildResponse(request, response);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
+    @Operation(
+            summary = "Update a menu",
+            description = "Updates the specified menu by ID.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Request body with new menu data",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = CreateMenuRequest.class))
+            ),
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Menus update successfully"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Menu not found")
+            }
+    )
     public ResponseEntity<ApiResponse> updateManu(@PathVariable Long id,
                                                   @RequestBody CreateMenuRequest createMenuRequest,
                                                   HttpServletRequest request) {
@@ -102,6 +135,18 @@ public class ManageMenuController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(
+            summary = "Delete a menu",
+            description = "Deletes a menu by its ID.",
+            parameters = {
+                    @Parameter(name = "id", description = "ID of the menu to delete", required = true)
+            },
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Menus delete successfully"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Menu not found")
+            }
+    )
     public ResponseEntity<ApiResponse> deleteMenu(@PathVariable Long id, HttpServletRequest request) {
         final ApiResponse response = manageMenuService.deleteMenu(id);
         return ResponseUtils.buildResponse(request, response);

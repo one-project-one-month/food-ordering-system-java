@@ -1,6 +1,8 @@
 package org._p1m.foodorderingsystem.features.menu.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org._p1m.foodorderingsystem.common.storage.StorageService;
+import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.features.category.repository.CategoryRepository;
@@ -12,11 +14,15 @@ import org._p1m.foodorderingsystem.features.menu.service.ManageMenuService;
 import org._p1m.foodorderingsystem.features.restaurant.repository.RestaurantRepository;
 import org._p1m.foodorderingsystem.model.*;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,6 +37,13 @@ public class ManageMenuServiceImpl implements ManageMenuService {
     private final CategoryRepository categoryRepository;
     private final ManageMenuRepository manageMenuRepository;
     private final ModelMapper modelMapper;
+    private StorageService storageService;
+
+    @Autowired
+    public void setStorageService(StorageServiceFactory factory) {
+        this.storageService = factory.getConfiguredStorageService();
+    }
+
 
     @Override
     public ApiResponse createMenu(CreateMenuRequest createMenuRequest) {
@@ -46,11 +59,8 @@ public class ManageMenuServiceImpl implements ManageMenuService {
         menu.setDish(createMenuRequest.getDish());
         menu.setPrice(createMenuRequest.getPrice());
         menu.setStatus(createMenuRequest.getStatus());
-        menu.setDishImg(createMenuRequest.getDishImg());
         menu.setCategory(category);
         menu.setRestaurant(restaurant);
-
-
 
         createMenuRequest.getDishSizes().forEach(dishSizeRequest -> {
          DishSize dishSize =   modelMapper.map(dishSizeRequest, DishSize.class);
@@ -68,35 +78,32 @@ public class ManageMenuServiceImpl implements ManageMenuService {
                 .message("Menu created successful.").build();
     }
 
+    private void deleteFromLocalFolder(String  existingUrl) {
+        if (existingUrl != null && !existingUrl.isEmpty()) {
+            String existingFileName = existingUrl.substring(existingUrl.lastIndexOf("/") + 1);
+            String decodedFilename = URLDecoder.decode(existingFileName, StandardCharsets.UTF_8);
+            storageService.delete(decodedFilename);
+        }
+    }
+
     @Override
     public String uploadMenuImage(Long menuId, MultipartFile file) {
         Menu menu = manageMenuRepository.findById(menuId)
                 .orElseThrow(() -> new EntityNotFoundException("Menu not found!"));
 
-        if(file.isEmpty()){
-           throw new IllegalArgumentException("File is empty!");
-        }
+        deleteFromLocalFolder(menu.getDishImg());
 
-        try {
-            String originalFileName = file.getOriginalFilename();
-            assert originalFileName != null;
-            String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-            String newFileName = "menu_" + menuId + "_" + System.currentTimeMillis() + fileExtension;
+        final String filename = storageService.store(file);
 
-            Path uploadDir = Paths.get("uploads/menu-images");
+        final String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/files/")
+                .path(filename)
+                .toUriString();
 
-            Files.createDirectories(uploadDir);
+        menu.setDishImg(fileUrl);
+        this.manageMenuRepository.save(menu);
 
-            Path filePath = uploadDir.resolve(newFileName);
-            Files.write(filePath, file.getBytes());
-
-            menu.setDishImg(newFileName);
-            manageMenuRepository.save(menu);
-
-            return newFileName;
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to upload image", e);
-        }
+        return fileUrl;
     }
 
     @Override
@@ -122,7 +129,7 @@ public class ManageMenuServiceImpl implements ManageMenuService {
 
         return ApiResponse.builder()
                 .success(1).code(HttpStatus.OK.value())
-                .data(Map.of("Menus: ", menuResponses))
+                .data(Map.of("menus: ", menuResponses))
                 .message("All menus retrieved successfully.").build();
     }
 
@@ -137,12 +144,9 @@ public class ManageMenuServiceImpl implements ManageMenuService {
         Category category = categoryRepository.findByIdAndRestaurantId(request.getCategoryId(), request.getRestaurantId())
                 .orElseThrow(()-> new EntityNotFoundException("Category not found for this restaurant!"));
 
-
-
         menu.setDish(request.getDish());
         menu.setPrice(request.getPrice());
         menu.setStatus(request.getStatus());
-        menu.setDishImg(request.getDishImg());
         menu.setRestaurant(restaurant);
         menu.setCategory(category);
 
@@ -161,6 +165,7 @@ public class ManageMenuServiceImpl implements ManageMenuService {
         Menu menu = manageMenuRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Menu not found!"));
 
+        deleteFromLocalFolder(menu.getDishImg());
         manageMenuRepository.delete(menu);
 
         return ApiResponse.builder().success(1)
