@@ -5,8 +5,8 @@ on:
     branches:
       - main
       - dev
-      - 'ft/*'
-      - 'dev-*'
+      - "ft/*"
+      - "dev-*"
   pull_request:
     branches:
       - main

@@ -1,6 +1,7 @@
 name: Docker Build & Push to GHCR
 
 on:
+  #trigger
   workflow_call:
 
 jobs:
@@ -22,16 +23,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels)
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
+      - name: Get sanitized commit message
+        id: commit_msg
+        run: |
+            RAW_MSG=$(git log -1 --pretty=format:"%s")
+            # Convert to lowercase, replace spaces with dashes, remove illegal characters
+            SAFE_TAG=$(echo "$RAW_MSG" | tr '[:upper:]' '[:lower:]' | sed 's/ /-/g' | sed 's/[^a-z0-9_.-]//g')
+            echo "commit_tag=$SAFE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+            - name: Build & push Docker image
+              uses: docker/build-push-action@v6
+              with:
+                context: .
+                push: true
+                tags: |
+                  ghcr.io/${{ github.repository }}:${{ steps.commit_msg.outputs.commit_tag }}
