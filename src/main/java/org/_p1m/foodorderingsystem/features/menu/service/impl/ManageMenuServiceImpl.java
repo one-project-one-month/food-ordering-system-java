@@ -5,29 +5,31 @@ import org._p1m.foodorderingsystem.common.storage.StorageService;
 import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
+import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
 import org._p1m.foodorderingsystem.features.category.repository.CategoryRepository;
 import org._p1m.foodorderingsystem.features.menu.dto.request.CreateMenuRequest;
-import org._p1m.foodorderingsystem.features.menu.dto.respones.MenuResponse;
-import org._p1m.foodorderingsystem.features.menu.dto.response.CreateMenuResponseDto;
+import org._p1m.foodorderingsystem.features.menu.dto.request.GetAllMenuRequest;
+import org._p1m.foodorderingsystem.features.menu.dto.respones.MenuResponseDto;
 import org._p1m.foodorderingsystem.features.menu.repository.ManageMenuRepository;
 import org._p1m.foodorderingsystem.features.menu.service.ManageMenuService;
 import org._p1m.foodorderingsystem.features.restaurant.repository.RestaurantRepository;
+import org._p1m.foodorderingsystem.features.users.dto.response.AdminDashboardResponseDto;
 import org._p1m.foodorderingsystem.model.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -72,7 +74,7 @@ public class ManageMenuServiceImpl implements ManageMenuService {
         });
 
         this.manageMenuRepository.save(menu);
-        CreateMenuResponseDto dto = modelMapper.map(menu, CreateMenuResponseDto.class);
+        MenuResponseDto dto = modelMapper.map(menu, MenuResponseDto.class);
         return ApiResponse.builder().success(1).code(HttpStatus.CREATED.value())
                 .data(Map.of("created Menu", dto))
                 .message("Menu created successful.").build();
@@ -111,7 +113,7 @@ public class ManageMenuServiceImpl implements ManageMenuService {
         Menu menu = manageMenuRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Menu not found!"));
 
-        CreateMenuResponseDto dto = modelMapper.map(menu, CreateMenuResponseDto.class);
+        MenuResponseDto dto = modelMapper.map(menu, MenuResponseDto.class);
 
         return ApiResponse.builder().success(1)
                 .code(HttpStatus.OK.value())
@@ -120,17 +122,23 @@ public class ManageMenuServiceImpl implements ManageMenuService {
     }
 
     @Override
-    public ApiResponse getAllMenus() {
-        List<Menu> menus = manageMenuRepository.findAll();
+    public PaginatedApiResponse<MenuResponseDto> getAllMenus(GetAllMenuRequest getAllMenuRequest) {
 
-        List<MenuResponse> menuResponses = menus.stream()
-                .map(menu -> modelMapper.map(menu, MenuResponse.class))
-                .toList();
-
-        return ApiResponse.builder()
-                .success(1).code(HttpStatus.OK.value())
-                .data(Map.of("menus: ", menuResponses))
-                .message("All menus retrieved successfully.").build();
+        final int page = getAllMenuRequest.page();
+        final int size = getAllMenuRequest.size();
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Menu> pageResult = manageMenuRepository.findAll(pageable);
+        List<MenuResponseDto> data = pageResult.map(this::mapToDto).toList();
+        return PaginatedApiResponse.<MenuResponseDto>builder()
+                .success(1)
+                .code(HttpStatus.OK.value())
+                .message("Menus retrieved successfully.")
+                .totalItems(pageResult.getTotalElements())
+                .totalPages(pageResult.getTotalPages())
+                .currentPage(page)
+                .pageSize(size)
+                .data(data)
+                .build();
     }
 
     @Override
@@ -152,7 +160,7 @@ public class ManageMenuServiceImpl implements ManageMenuService {
 
         manageMenuRepository.save(menu);
 
-        CreateMenuResponseDto responseDto = modelMapper.map(menu, CreateMenuResponseDto.class);
+        MenuResponseDto responseDto = modelMapper.map(menu, MenuResponseDto.class);
 
         return ApiResponse.builder()
                 .success(1).code(HttpStatus.OK.value())
@@ -172,4 +180,32 @@ public class ManageMenuServiceImpl implements ManageMenuService {
                 .code(HttpStatus.OK.value())
                 .message("Menu Deleted successfully.").build();
     }
+
+    private MenuResponseDto mapToDto(Menu menu) {
+        return new MenuResponseDto(
+                menu.getId(),
+                menu.getDish(),
+                menu.getPrice(),
+                menu.getDishImg(),
+                menu.getStatus(),
+                menu.getRestaurant().getId(),
+                menu.getCategory().getId(),
+                menu.getDishSizes().stream().map(size ->
+                        new MenuResponseDto.DishSizeDto(
+                                size.getId(),
+                                size.getName(),
+                                size.getPrice(),
+                                size.getDishSizeImg()
+                        )
+                ).toList(),
+                menu.getExtras().stream().map(extra ->
+                        new MenuResponseDto.ExtraDto(
+                                extra.getId(),
+                                extra.getName(),
+                                extra.getPrice()
+                        )
+                ).toList()
+        );
+    }
+
 }

@@ -1,7 +1,10 @@
 package org._p1m.foodorderingsystem.features.menu.service;
 
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
+import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
 import org._p1m.foodorderingsystem.features.menu.dto.request.CreateMenuRequest;
+import org._p1m.foodorderingsystem.features.menu.dto.request.GetAllMenuRequest;
+import org._p1m.foodorderingsystem.features.menu.dto.respones.MenuResponseDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,5 +20,5 @@ public interface ManageMenuService {
 
     ApiResponse deleteMenu(Long id);
 
-    ApiResponse getAllMenus();
+    PaginatedApiResponse<MenuResponseDto> getAllMenus(GetAllMenuRequest getAllMenuRequest);
 }

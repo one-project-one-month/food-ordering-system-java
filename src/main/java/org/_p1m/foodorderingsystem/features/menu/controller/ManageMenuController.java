@@ -9,9 +9,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
+import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
 import org._p1m.foodorderingsystem.features.menu.dto.request.CreateMenuRequest;
+import org._p1m.foodorderingsystem.features.menu.dto.request.GetAllMenuRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.request.UploadMenuImageRequest;
+import org._p1m.foodorderingsystem.features.menu.dto.respones.MenuResponseDto;
 import org._p1m.foodorderingsystem.features.menu.service.ManageMenuService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -88,10 +91,10 @@ public class ManageMenuController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request")
             }
     )
-    public ResponseEntity<ApiResponse> getAllMenus(HttpServletRequest request) {
-        final ApiResponse response = manageMenuService.getAllMenus();
+    public ResponseEntity<PaginatedApiResponse<MenuResponseDto>> getAllMenus(@Valid GetAllMenuRequest getAllMenuRequest, HttpServletRequest request) {
+        final PaginatedApiResponse<MenuResponseDto> response = manageMenuService.getAllMenus(getAllMenuRequest);
 
-        return ResponseUtils.buildResponse(request, response);
+        return ResponseUtils.buildPaginatedResponse(request, response);
     }
 
     @GetMapping("/{id}")
