@@ -2,14 +2,21 @@ package org._p1m.foodorderingsystem.features.users.controller;
 
 import java.util.Map;
 
+import org._p1m.foodorderingsystem.common.util.JWTUtil;
+import org._p1m.foodorderingsystem.common.util.ServerUtil;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
+import org._p1m.foodorderingsystem.features.users.dto.request.AuthRequestDto;
 import org._p1m.foodorderingsystem.features.users.dto.request.UploadProfilePictureRequest;
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
+import org._p1m.foodorderingsystem.features.users.dto.response.AuthResponseDto;
 import org._p1m.foodorderingsystem.features.users.service.UserService;
-import org._p1m.foodorderingsystem.model.User;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,14 +35,25 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
     private final UserService userService;
+	private final AuthenticationManager authManager;
+	private final ServerUtil serverUtil;
+	private final JWTUtil jwtUtil;
+
+//	@PostMapping("/login")
+//	public ResponseEntity<String> varifiedUser(@RequestBody UserCreateRequest userCreateRequest) {
+//		User user=new User();
+//		user.setEmail(userCreateRequest.getEmail());
+//		user.setPassword(userCreateRequest.getPassword());
+//		String returnString=userService.varifiedUser(user);
+//		return ResponseEntity.ok(returnString);
+//	}
 
 	@PostMapping("/login")
-	public ResponseEntity<String> varifiedUser(@RequestBody UserCreateRequest userCreateRequest) {
-		User user=new User();
-		user.setEmail(userCreateRequest.getEmail());
-		user.setPassword(userCreateRequest.getPassword());
-		String returnString=userService.varifiedUser(user);
-		return ResponseEntity.ok(returnString);
+	public ResponseEntity<AuthResponseDto> varifyUser(@RequestBody AuthRequestDto request) {
+		Authentication authentication = authManager.authenticate(
+				new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+		String token =serverUtil.generateToken((UserDetails)  authentication.getPrincipal());
+		return ResponseEntity.ok(new AuthResponseDto(token));
 	}
     
     @PostMapping
