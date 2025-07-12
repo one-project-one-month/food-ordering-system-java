@@ -2,19 +2,22 @@ package org._p1m.foodorderingsystem.features.users.controller;
 
 import java.util.Map;
 
+import org._p1m.foodorderingsystem.common.util.JWTUtil;
+import org._p1m.foodorderingsystem.common.util.ServerUtil;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
+import org._p1m.foodorderingsystem.features.users.dto.request.AuthRequestDto;
 import org._p1m.foodorderingsystem.features.users.dto.request.UploadProfilePictureRequest;
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
+import org._p1m.foodorderingsystem.features.users.dto.response.AuthResponseDto;
 import org._p1m.foodorderingsystem.features.users.service.UserService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,11 +30,31 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.base.path}/users")
+@RequestMapping("${api.base.path}/auth/users")
 @Tag(name = "User API", description = "Endpoints for managing users")
 public class UserController {
 
     private final UserService userService;
+	private final AuthenticationManager authManager;
+	private final ServerUtil serverUtil;
+	private final JWTUtil jwtUtil;
+
+//	@PostMapping("/login")
+//	public ResponseEntity<String> varifiedUser(@RequestBody UserCreateRequest userCreateRequest) {
+//		User user=new User();
+//		user.setEmail(userCreateRequest.getEmail());
+//		user.setPassword(userCreateRequest.getPassword());
+//		String returnString=userService.varifiedUser(user);
+//		return ResponseEntity.ok(returnString);
+//	}
+
+	@PostMapping("/login")
+	public ResponseEntity<AuthResponseDto> varifyUser(@RequestBody AuthRequestDto request) {
+		Authentication authentication = authManager.authenticate(
+				new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+		String token =serverUtil.generateToken((UserDetails)  authentication.getPrincipal());
+		return ResponseEntity.ok(new AuthResponseDto(token));
+	}
     
     @PostMapping
     @Operation(
@@ -54,6 +77,10 @@ public class UserController {
         final ApiResponse response = this.userService.createUser(userRequest);
         return ResponseUtils.buildResponse(request, response);
     }
+
+//	Get name
+
+//	get name end
 
     @PostMapping(
     	    value = "/{userId}/profile-picture",
@@ -88,5 +115,19 @@ public class UserController {
 	    } catch (Exception e) {
 	        return ResponseEntity.badRequest().body("Failed to upload file: " + e.getMessage());
 	    }
+	}
+
+	@PostMapping("/verifyAccount")
+	public ResponseEntity<ApiResponse> verifyAccount(@RequestBody Map<String, String> body , HttpServletRequest request){
+			long code = Long.parseLong(body.get("code"));
+			String email = body.get("email");
+			final ApiResponse response = this.userService.verifyAccount(code, email);
+			return ResponseUtils.buildResponse(request, response);
+    }
+
+	@PostMapping("resendCode")
+	public ResponseEntity<ApiResponse> resendCode(@RequestBody Map<String ,String> body , HttpServletRequest request){
+		final ApiResponse response = this.userService.resendCode(body.get("email"));
+		return ResponseUtils.buildResponse(request, response);
 	}
 }
