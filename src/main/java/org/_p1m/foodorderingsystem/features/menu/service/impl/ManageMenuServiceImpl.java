@@ -1,6 +1,7 @@
 package org._p1m.foodorderingsystem.features.menu.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org._p1m.foodorderingsystem.common.storage.StorageService;
 import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
@@ -9,11 +10,10 @@ import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
 import org._p1m.foodorderingsystem.features.category.repository.CategoryRepository;
 import org._p1m.foodorderingsystem.features.menu.dto.request.CreateMenuRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.request.GetAllMenuRequest;
-import org._p1m.foodorderingsystem.features.menu.dto.respones.MenuResponseDto;
+import org._p1m.foodorderingsystem.features.menu.dto.responses.MenuResponseDto;
 import org._p1m.foodorderingsystem.features.menu.repository.ManageMenuRepository;
 import org._p1m.foodorderingsystem.features.menu.service.ManageMenuService;
 import org._p1m.foodorderingsystem.features.restaurant.repository.RestaurantRepository;
-import org._p1m.foodorderingsystem.features.users.dto.response.AdminDashboardResponseDto;
 import org._p1m.foodorderingsystem.model.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +29,8 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ManageMenuServiceImpl implements ManageMenuService {
@@ -157,6 +157,18 @@ public class ManageMenuServiceImpl implements ManageMenuService {
         menu.setStatus(request.getStatus());
         menu.setRestaurant(restaurant);
         menu.setCategory(category);
+
+        menu.getDishSizes().clear();
+        menu.getExtras().clear();
+
+        request.getDishSizes().forEach(dishSizeRequest -> {
+            DishSize dishSize =   modelMapper.map(dishSizeRequest, DishSize.class);
+            menu.addDishSize(dishSize);
+        });
+        request.getExtras().forEach(extraRequest -> {
+            Extra extra = modelMapper.map(extraRequest, Extra.class);
+            menu.addExtra(extra);
+        });
 
         manageMenuRepository.save(menu);
 

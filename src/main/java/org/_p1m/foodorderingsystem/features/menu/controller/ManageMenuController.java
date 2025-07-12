@@ -14,7 +14,7 @@ import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
 import org._p1m.foodorderingsystem.features.menu.dto.request.CreateMenuRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.request.GetAllMenuRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.request.UploadMenuImageRequest;
-import org._p1m.foodorderingsystem.features.menu.dto.respones.MenuResponseDto;
+import org._p1m.foodorderingsystem.features.menu.dto.responses.MenuResponseDto;
 import org._p1m.foodorderingsystem.features.menu.service.ManageMenuService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
