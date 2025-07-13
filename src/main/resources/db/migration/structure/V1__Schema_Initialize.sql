@@ -15,7 +15,7 @@ ALTER TABLE roles
 CREATE TABLE users
 (
     id         BIGINT NOT NULL AUTO_INCREMENT,
-    createdAt  DATETIME(6) NOT NULL,
+    createdAt  DATETIME(6),
     updatedAt  DATETIME(6),
     deletedAt  DATETIME(6),
     status     INTEGER,
