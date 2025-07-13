@@ -11,6 +11,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@Table(name = "users")
 public class User extends MasterData {
     @Column(unique = true)
     private String email;
