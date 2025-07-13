@@ -39,7 +39,7 @@ public class SuperAdminServiceImpl implements SuperAdminService {
         DeletedUserResponse deletedUserResponse = modelMapper.map(user,DeletedUserResponse.class);
 
         deletedUserResponse.setName(userName);
-        deletedUserResponse.setDeletedAt(user.getDeletedAt().toString());
+//        deletedUserResponse.setDeletedAt(user.getDeletedAt().toString());
 
         return ApiResponse.builder().success(1).code(HttpStatus.OK.value())
                 .data(Map.of("Deleted User",deletedUserResponse))
