@@ -1,7 +1,25 @@
 services:
+  db:
+    image: mysql:8
+    container_name: mysql-db
+    environment:
+      MYSQL_DATABASE: food_ordering_system_db
+      MYSQL_USER: root
+      MYSQL_PORT: 3307
+      MYSQL_PASSWORD: root
+    ports:
+      - "3307:3307"
+    volumes:
+      - db_data:/var/lib/mysql
   app:
+    container_name: food_delivery
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_PORT: 3307
+      DB_NAME: food_ordering_system_db
+      DB_USER: root
     ports:
       - "8080:8080"
