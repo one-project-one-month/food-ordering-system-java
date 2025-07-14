@@ -10,15 +10,18 @@ public class StorageServiceFactory {
 
     private final StorageService localStorageService;
     private final StorageService awsS3Service;
+    private final StorageService cloudinaryStorageService;
     private final StorageType configuredStorageType;
 
     @Autowired
     public StorageServiceFactory(
             @Qualifier("localStorageService") final  StorageService localStorageService,
             @Qualifier("awsS3Service") final  StorageService awsS3Service,
+            @Qualifier("cloudinaryStorageService") final StorageService cloudinaryStorageService,
             @Value("${app.storage.type:LOCAL}") final  String storageType) {
         this.localStorageService = localStorageService;
         this.awsS3Service = awsS3Service;
+        this.cloudinaryStorageService = cloudinaryStorageService;
         try {
             this.configuredStorageType = StorageType.valueOf(storageType.toUpperCase());
         } catch (IllegalArgumentException e) {
@@ -37,6 +40,7 @@ public class StorageServiceFactory {
         return switch (storageType) {
             case LOCAL -> localStorageService;
             case AWS_S3 -> awsS3Service;
+            case CLOUDINARY -> cloudinaryStorageService;
         };
     }
 }
