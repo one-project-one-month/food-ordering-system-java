@@ -60,4 +60,6 @@ public interface StorageService {
      * Deletes all stored files.
      */
     void deleteAll();
+
+    String update(MultipartFile newFile, String publicId, String folderName);
 }
