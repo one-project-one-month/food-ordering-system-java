@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Your Account</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f6f8fa; padding: 0; margin: 0; }
+        .container { max-width: 600px; background: #fff; margin: 20px auto; padding: 20px; border-radius: 8px; }
+        .logo img { width: 100px; margin: auto; display: block; }
+        .code { font-size: 24px; text-align: center; margin: 20px 0; color: #5cb85c; }
+        .footer { text-align: center; color: #888; font-size: 12px; margin-top: 30px; }
+        .warning { font-size: 14px; color: #d9534f; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">
+        <img src="cid:logoImage" alt="Logo"/>
+    </div>
+    <h2>Verify your email address</h2>
+    <p>Hello, <strong>{{username}}</strong></p>
+    <p>Thank you for signing up for FoodOrderingSystem!</p>
+    <p>To complete your registration, please use the verification code below:</p>
+    <div class="code">{{code}}</div>
+    <p class="warning">This code is valid for 15 minutes.<br>
+        Please do not share this code with anyone.</p>
+    <p>If you did not create an account, you can safely ignore this email.</p>
+    <div class="footer">&copy; 2025 FoodOrderingSystem. All rights reserved.</div>
+</div>
+</body>
+</html>

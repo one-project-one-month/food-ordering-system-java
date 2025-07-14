@@ -35,7 +35,7 @@ This project is organized using a **hybrid structure** combining **technical par
 | `features/` | Contains business-specific logic grouped by feature/domain (e.g., User, Restaurant, etc.). | Domain Partition | Application/Domain Layer |
 | `model/` | JPA entities used within the database mapping. | Domain Partition | Persistence Layer |
 | `security/` | Security configuration (e.g., JWT, filters). | Technical Partition | Infrastructure Layer |
-| `startup/` | Initialization logic (e.g., seed roles or default users using `CommandLineRunner`). | Technical Partition | Bootstrap/Init Layer |
+| `startup/` | Initialization logic (e.g., seed role or default users using `CommandLineRunner`). | Technical Partition | Bootstrap/Init Layer |
 
 ---
 
@@ -95,7 +95,7 @@ Each `feature/` sub-folder may itself follow mini-layered separation:
 2. **Reuse common enums or converters from `common/`.**
 3. **Use DTOs in `features/` for exposure.**
 4. **All configuration should live in `config/`, including beans.**
-5. **Initialization logic (e.g., seeding roles) belongs in `startup/`.**
+5. **Initialization logic (e.g., seeding role) belongs in `startup/`.**
 6. **Security-related logic (JWT filters, WebSecurityConfigurerAdapter, etc.) belongs in `security/`.**
 7. **Use `exceptions/` for centralized error handling and throw meaningful custom exceptions.**
 

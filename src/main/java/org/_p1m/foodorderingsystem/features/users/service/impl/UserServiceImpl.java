@@ -1,9 +1,11 @@
 package org._p1m.foodorderingsystem.features.users.service.impl;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org._p1m.foodorderingsystem.common.storage.StorageService;
 import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
+import org._p1m.foodorderingsystem.common.util.ServerUtil;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
 import org._p1m.foodorderingsystem.features.users.dto.response.UserResponseDto;
@@ -16,7 +18,12 @@ import org._p1m.foodorderingsystem.model.Role;
 import org._p1m.foodorderingsystem.model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -33,8 +40,13 @@ public class UserServiceImpl implements UserService {
     private final ProfileRepository profileRepository;
     private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
+    private final ServerUtil serverUtil;
     private StorageService storageService;
 
+    private final AuthenticationManager authenticationManager;
+
+    private final PasswordEncoder passwordEncoder;
+    private final StringRedisTemplate redisTemplate;
 
 
     @Autowired
@@ -49,21 +61,24 @@ public class UserServiceImpl implements UserService {
 
         User user = new User();
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(defaultRole);
 
-        Profile profile = new Profile();
-        profile.setName(request.getName());
-        profile.setEmail(request.getEmail());
-        profile.setPhone(request.getPhone());
+//        Profile profile = new Profile();
+//        profile.setName(request.getName());
+//        profile.setEmail(request.getEmail());
+//        profile.setPhone(request.getPhone());
 
-        user.setProfile(profile);
+//        user.setProfile(profile);
 
         userRepository.save(user);
+        this.serverUtil.sendCodeToEmail(user.getEmail() , 15 ,
+                "verifyAccountMail" , "verify-account:");
+
         UserResponseDto dto = modelMapper.map(user, UserResponseDto.class);
         return ApiResponse.builder().success(1).code(HttpStatus.OK.value())
 		.data(Map.of("currentUser", dto))
-		.message("User account created.").build();
+		.message("User account created and send Confirmation Mail.").build();
     }
 
     @Transactional
@@ -83,4 +98,39 @@ public class UserServiceImpl implements UserService {
 
         return fileUrl;
     }
+
+    @Override
+    public String varifiedUser(User user) {
+        var auth=new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
+        Authentication authentication=authenticationManager.authenticate(auth);
+       if(authentication.isAuthenticated()){
+           return authentication.getPrincipal().toString();
+       }
+        return "%s is wrong credentials".formatted(authentication.getPrincipal().toString());
+    }
+
+    @Override
+    public ApiResponse verifyAccount(long code , String email) {
+        String key = "verify-account:" + email;
+        String storedCode = redisTemplate.opsForValue().get(key);
+        boolean valid = storedCode != null && storedCode.equals(String.valueOf(code));
+
+        if (valid) {
+            redisTemplate.delete(key);
+            return new ApiResponse(1, 200, null, new HashMap<>(), "Account verified successfully.");
+        } else {
+            return new ApiResponse(0, 400, null, new HashMap<>(), "Invalid or expired code.");
+        }
+    }
+
+    @Override
+    public ApiResponse resendCode(String email) {
+        try {
+            serverUtil.sendCodeToEmail(email , 15 , "verifyAccountMail" , "verify-account:");
+            return new ApiResponse(1, 200, null, new HashMap<>(), "Resend Mail Sent successfully.");
+        } catch(Exception e){
+            return new ApiResponse(0, 400, null, new HashMap<>(), "Error Sending Mail");
+        }
+    }
+
 }
