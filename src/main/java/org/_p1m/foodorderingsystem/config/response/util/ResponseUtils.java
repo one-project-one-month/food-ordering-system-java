@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.HashMap;
 
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
+import org._p1m.foodorderingsystem.features.processOrder.dto.response.OrderResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -23,5 +24,9 @@ public class ResponseUtils {
         }
 
         return new ResponseEntity<>(response, status);
+    }
+
+    public static Object success(OrderResponseDTO response, String s) {
+        return null;
     }
 }
