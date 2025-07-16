@@ -1,13 +1,10 @@
-package org._p1m.foodorderingsystem.features.addCart.dto.response;
-
+package org._p1m.foodorderingsystem.features.addCart.dto.request;
 
 import lombok.Data;
 
 @Data
-public class AddCartMenuResponse {
+public class AddCartMenuRequest {
 
-
-    private Long cartId;
     private Integer quantity;
     private Long customerId;
     private Long dishSizeId;
