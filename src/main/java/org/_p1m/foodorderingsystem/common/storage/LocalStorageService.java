@@ -108,4 +108,9 @@ public class LocalStorageService implements StorageService {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
         log.info("Deleted all local storage files.");
     }
+
+    @Override
+    public String update(MultipartFile newFile, String publicId, String folderName) {
+        return "";
+    }
 }

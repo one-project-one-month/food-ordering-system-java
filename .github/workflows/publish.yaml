@@ -26,14 +26,13 @@ jobs:
       - name: Get sanitized commit message
         id: commit_msg
         run: |
-            RAW_MSG=$(git log -1 --pretty=format:"%s")
-            # Convert to lowercase, replace spaces with dashes, remove illegal characters
-            SAFE_TAG=$(echo "$RAW_MSG" | tr '[:upper:]' '[:lower:]' | sed 's/ /-/g' | sed 's/[^a-z0-9_.-]//g')
-            echo "commit_tag=$SAFE_TAG" >> $GITHUB_OUTPUT
+          RAW_MSG=$(git log -1 --pretty=format:"%s")
+          SAFE_TAG=$(echo "$RAW_MSG" | tr '[:upper:]' '[:lower:]' | sed 's/ /-/g' | sed 's/[^a-z0-9_.-]//g')
+          echo "commit_tag=$SAFE_TAG" >> $GITHUB_OUTPUT
 
-            - name: Build & push Docker image
-              uses: docker/build-push-action@v6
-              with:
+      - name: Build & push Docker image
+        uses: docker/build-push-action@v6
+        with:
                 context: .
                 push: true
                 tags: |
