@@ -1,10 +1,11 @@
 package org._p1m.foodorderingsystem.model;
 
+import org._p1m.foodorderingsystem.common.entity.MasterData;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
-import org._p1m.foodorderingsystem.common.entity.MasterData;
 
 @Entity
 @Getter

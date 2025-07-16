@@ -2,15 +2,14 @@ package org._p1m.foodorderingsystem.features.users.service.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org._p1m.foodorderingsystem.common.storage.StorageService;
 import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
 import org._p1m.foodorderingsystem.common.util.ServerUtil;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
-import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
 import org._p1m.foodorderingsystem.features.users.dto.response.UserResponseDto;
-import org._p1m.foodorderingsystem.features.users.dto.response.VerifyUserResponseDto;
 import org._p1m.foodorderingsystem.features.users.repository.ProfileRepository;
 import org._p1m.foodorderingsystem.features.users.repository.RoleRepository;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
@@ -74,8 +73,8 @@ public class UserServiceImpl implements UserService {
 //        user.setProfile(profile);
 
         userRepository.save(user);
-        this.serverUtil.sendCodeToEmail(user.getEmail() , 15 ,
-                "verifyAccountMail" , "verify-account:");
+//        this.serverUtil.sendCodeToEmail(user.getEmail() , 15 ,
+//                "verifyAccountMail" , "verify-account:");
 
         UserResponseDto dto = modelMapper.map(user, UserResponseDto.class);
         return ApiResponse.builder().success(1).code(HttpStatus.OK.value())
@@ -130,6 +129,16 @@ public class UserServiceImpl implements UserService {
         try {
             serverUtil.sendCodeToEmail(email , 15 , "verifyAccountMail" , "verify-account:");
             return new ApiResponse(1, 200, null, new HashMap<>(), "Resend Mail Sent successfully.");
+        } catch(Exception e){
+            return new ApiResponse(0, 400, null, new HashMap<>(), "Error Sending Mail");
+        }
+    }
+
+    @Override
+    public ApiResponse verifyEmail(String email) {
+        try {
+            serverUtil.sendCodeToEmail(email , 15 , "verifyAccountMail" , "verify-account:");
+            return new ApiResponse(1, 200, null, new HashMap<>(), "Verify Email Sent successfully.");
         } catch(Exception e){
             return new ApiResponse(0, 400, null, new HashMap<>(), "Error Sending Mail");
         }

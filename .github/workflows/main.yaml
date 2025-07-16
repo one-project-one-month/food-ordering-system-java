@@ -31,5 +31,6 @@ jobs:
 
   publish:
     needs: build
-    if: github.event_name == 'pull_request' && github.base_ref == 'dev'
+    if: (github.event_name == 'pull_request' && github.base_ref == 'main') ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/dev')
     uses: ./.github/workflows/publish.yaml
