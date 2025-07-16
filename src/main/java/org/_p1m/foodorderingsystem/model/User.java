@@ -1,17 +1,24 @@
 package org._p1m.foodorderingsystem.model;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org._p1m.foodorderingsystem.common.entity.MasterData;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import org._p1m.foodorderingsystem.common.entity.MasterData;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-@Table(name = "users")
 public class User extends MasterData {
     @Column(unique = true)
     private String email;
