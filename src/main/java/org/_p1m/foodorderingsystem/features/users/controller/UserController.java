@@ -117,6 +117,13 @@ public class UserController {
 	    }
 	}
 
+	@PostMapping("/verifyEmail")
+	public ResponseEntity<ApiResponse> verifyEmail(@RequestBody Map<String , String> body, HttpServletRequest request){
+		String email = body.get("email");
+		final ApiResponse response = this.userService.verifyEmail(email);
+		return ResponseUtils.buildResponse(request , response);
+	}
+
 	@PostMapping("/verifyAccount")
 	public ResponseEntity<ApiResponse> verifyAccount(@RequestBody Map<String, String> body , HttpServletRequest request){
 			long code = Long.parseLong(body.get("code"));
