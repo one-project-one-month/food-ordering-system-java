@@ -64,4 +64,9 @@ public class AwsS3Service implements StorageService {
     public void deleteAll() {
         log.warn("AWS S3 deleteAll method is not yet implemented.");
     }
+
+    @Override
+    public String update(MultipartFile newFile, String publicId, String folderName) {
+        return "";
+    }
 }
