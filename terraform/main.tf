@@ -193,5 +193,3 @@ resource "aws_db_instance" "app_db" {
   backup_retention_period = 7
   multi_az                = false #optional
 }
-
-
