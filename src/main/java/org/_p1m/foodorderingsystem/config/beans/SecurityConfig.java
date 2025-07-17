@@ -25,6 +25,13 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+	private static final String[] SWAGGER_WHITELIST = {
+		"/swagger-ui/**",
+		"/v3/api-docs/**",
+		"/swagger-resources/**",
+		"/swagger-resources"
+	};
+	
     @Autowired
     private UserDetailsService userDetailService;
 //    private UserDetailServiceImpl userDetailService;
@@ -56,12 +63,12 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable()).
                 authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(SWAGGER_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }

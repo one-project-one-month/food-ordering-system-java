@@ -23,7 +23,7 @@ jobs:
       - name: Grant execute permission for Gradle
         if: runner.os != 'Windows'
         run: chmod +x ./gradlew
-
+        
  # if gradle has new dependencies installed generate the new cache key
       - name: Generate Gradle Cache Key
         id: gradle-cache-key
@@ -42,3 +42,6 @@ jobs:
 
       - name: Build the app
         run: ./gradlew clean assemble --no-daemon
+
+      - name: Run Flyway Validate
+        run: ./gradlew flywayValidate

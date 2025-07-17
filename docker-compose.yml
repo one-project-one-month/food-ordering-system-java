@@ -27,11 +27,13 @@ services:
       DB_PASSWORD: admin
     ports:
       - "8080:8080"
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     depends_on:
       - mysql-db
     ports:
+      #application is running on localhost port 8080. For phpmyadmin port 8081
       - "8081:80"
     environment:
       PMA_HOST: mysql-db
