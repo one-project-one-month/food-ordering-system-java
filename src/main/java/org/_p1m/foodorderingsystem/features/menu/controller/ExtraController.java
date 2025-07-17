@@ -63,7 +63,7 @@ public class ExtraController {
             }
     )
     public ResponseEntity<ApiResponse> updateExtra(@Valid @RequestBody  UpdateExtraRequest updateExtraRequest,
-                                                      @PathVariable final Long extraId,
+    		@PathVariable(name="extraId") final Long extraId,
                                                       HttpServletRequest request){
         final ApiResponse response = this.extraService.updateDishSize(extraId,updateExtraRequest);
         return ResponseUtils.buildResponse(request, response);
@@ -74,7 +74,7 @@ public class ExtraController {
             summary = "Delete Extra",
             description = "Deletes Extra by its ID.",
             parameters = {
-                    @Parameter(name = "id", description = "Extra Id  to delete", required = true)
+                    @Parameter(name = "extraId", description = "Extra Id  to delete", required = true)
             },
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Extra delete successfully"),
@@ -82,7 +82,7 @@ public class ExtraController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Extra not found")
             }
     )
-    public ResponseEntity<ApiResponse> deleteExtra(@PathVariable Long extraId, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse> deleteExtra(@PathVariable(name="extraId") Long extraId, HttpServletRequest request) {
         final ApiResponse response = this.extraService.deleteMenu(extraId);
         return ResponseUtils.buildResponse(request, response);
     }
