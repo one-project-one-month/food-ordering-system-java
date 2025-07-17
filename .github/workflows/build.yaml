@@ -42,3 +42,6 @@ jobs:
 
       - name: Build the app
         run: ./gradlew clean assemble --no-daemon
+
+      - name: Run Flyway Validate
+        run: ./gradlew flywayValidate
