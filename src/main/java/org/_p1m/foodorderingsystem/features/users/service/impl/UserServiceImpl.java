@@ -58,13 +58,13 @@ public class UserServiceImpl implements UserService {
     
     @Transactional
     public ApiResponse createUser(UserCreateRequest request) {
-        final Role defaultRole = roleRepository.findByName("CUSTOMER")
-                .orElseThrow(() -> new EntityNotFoundException("Default role 'CUSTOMER' not found."));
+        final Role role = roleRepository.findByName(request.getRole())
+                .orElseThrow(() -> new EntityNotFoundException("Role not found."));
 
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(defaultRole);
+        user.setRole(role);
 
 //        Profile profile = new Profile();
 //        profile.setName(request.getName());
