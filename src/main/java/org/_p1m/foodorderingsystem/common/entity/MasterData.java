@@ -41,6 +41,6 @@ public abstract class MasterData {
 
     public void delete() {
         this.setStatus(Status.INACTIVE);
-//        this.setDeletedAt(LocalDateTime.now());
+        this.setDeletedAt(LocalDateTime.now());
     }
 }
