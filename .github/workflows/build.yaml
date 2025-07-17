@@ -23,15 +23,22 @@ jobs:
       - name: Grant execute permission for Gradle
         if: runner.os != 'Windows'
         run: chmod +x ./gradlew
+        
+ # if gradle has new dependencies installed generate the new cache key
+      - name: Generate Gradle Cache Key
+        id: gradle-cache-key
+        run: |
+            echo "key=gradle-${{ hashFiles('**/build.gradle', '**/build.gradle.kts', '**/settings.gradle', '**/settings.gradle.kts') }}" >> "$GITHUB_OUTPUT"
 
-      - name: Cache Gradle
-        id: cache
+      - name: Cache Gradle Dependencies
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ github.sha }}-cache-key
+                path: |
+                  ~/.gradle/caches
+                  ~/.gradle/wrapper
+                key: ${{ steps.gradle-cache-key.outputs.key }}
+                restore-keys: |
+                  gradle-
 
       - name: Build the app
         run: ./gradlew clean assemble --no-daemon
