@@ -21,19 +21,19 @@ public abstract class MasterData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @CreatedDate
-//    @Column(
-//            nullable = false,
-//            updatable = false
-//    )
-//    private LocalDateTime createdAt;
+    @CreatedDate
+    @Column(
+            nullable = false,
+            updatable = false
+    )
+    private LocalDateTime createdAt;
 
-//    @LastModifiedDate
-//    @Column(insertable = false)
-//    private LocalDateTime updatedAt;
-//
-//    @Column
-//    private LocalDateTime deletedAt;
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
+
+    @Column
+    private LocalDateTime deletedAt;
 
     @Column
     @Convert(converter = StatusConverter.class)
