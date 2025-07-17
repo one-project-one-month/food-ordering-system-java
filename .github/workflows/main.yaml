@@ -28,6 +28,8 @@ jobs:
   #test:
   #  needs: build
   #  uses: ./.github/workflows/test.yaml
+  migrate:
+    uses: ./.github/workflows/migration.yaml
 
   publish:
     needs: build

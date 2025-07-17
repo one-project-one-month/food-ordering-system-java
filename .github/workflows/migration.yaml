@@ -1,0 +1,35 @@
+name: Flyway Migration test
+
+on:
+  workflow_call:
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_DATABASE: food_ordering_system_db
+          MYSQL_USER: admin
+          MYSQL_PASSWORD: admin
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3307:3307
+    environment:
+      DB_HOST: localhost
+      DB_PORT: 3307
+      DB_NAME: food_ordering_system_db
+      DB_USER: admin
+      DB_PASSWORD: admin
+      SPRING_PROFILES_ACTIVE: uat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: 17
+      - name: Run Flyway Migrate
+        run: ./gradlew flywayMigrate
+
+      - name: Run Flyway Info (Checkpoint)
+        run: ./gradlew flywayInfo
