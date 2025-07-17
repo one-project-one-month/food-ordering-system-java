@@ -63,6 +63,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable()).
                 authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
+
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
