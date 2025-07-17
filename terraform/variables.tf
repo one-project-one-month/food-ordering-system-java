@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-=======
-
-//
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
 variable "aws_region" {
 
   description = "The AWS region to deploy resources in"
@@ -33,7 +28,6 @@ variable "public_subnet_name" {
 
 }
 
-<<<<<<< HEAD
 variable "private_subnet_a" {
   description = "The name of the private subnet"
   type        = string
@@ -45,12 +39,6 @@ variable "private_subnet_b" {
   description = "The name of the private subnet"
   type        = string
   default     = "private-subnet_1b"
-=======
-variable "private_subnet_name" {
-  description = "The name of the private subnet"
-  type        = string
-  default     = "private-subnet"
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
 
 }
 
@@ -61,10 +49,6 @@ variable "public_route_table_name" {
 
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
 variable "private_route_table_name" {
   description = "The name of the private route table"
   type        = string
@@ -85,11 +69,6 @@ variable "eip_id" {
 
 }
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
 variable "igw_destination_cidr_block" {
   description = "The destination CIDR block for the internet gateway"
   type        = string
@@ -115,10 +94,7 @@ variable "private_sg_name" {
 
 }
 
-<<<<<<< HEAD
 /*------------------- Compute Layer ------------------------------------------- */
-=======
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
 variable "instance_type" {
   description = "The type of the instance"
   type        = string
@@ -137,20 +113,12 @@ variable "public_server_name" {
   description = "The name of the public server"
   type        = string
 
-<<<<<<< HEAD
 }
 
-=======
-
-}
-
-
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
 variable "private_server_name" {
   description = "The name of the private server"
   type        = string
 
-<<<<<<< HEAD
 }
 
 variable "db_admin_user" {
@@ -162,11 +130,3 @@ variable "db_password" {
   description = "database password"
   type        = string
 }
-
-
-
-=======
-
-}
-
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16

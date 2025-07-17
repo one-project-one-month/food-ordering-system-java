@@ -1,7 +1,5 @@
 package org._p1m.foodorderingsystem.features.addCart.service.impl;
 
-<<<<<<< HEAD
-
 import lombok.RequiredArgsConstructor;
 import org._p1m.foodorderingsystem.features.Menu.repository.DishSizeRepo;
 import org._p1m.foodorderingsystem.features.Menu.repository.ExtraRepo;
@@ -61,9 +59,4 @@ public class AddCartMenuServiceImpl implements AddCartMenuService {
         response.setExtraId(saved.getExtra() != null ? saved.getExtra().getId() : null);
         return response;
     }
-
-
-=======
-public class AddCartMenuServiceImpl {
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
 }

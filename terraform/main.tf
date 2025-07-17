@@ -3,20 +3,12 @@
 resource "aws_vpc" "this" {
   cidr_block = var.cidr_block
 
-<<<<<<< HEAD
-=======
-
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
   tags = {
     Name = var.vpc_name
   }
 }
 
 
-<<<<<<< HEAD
-=======
-//subnet coqnfiguration App
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
 resource "aws_subnet" "public_subnet" {
 
   vpc_id = aws_vpc.this.id
@@ -28,18 +20,12 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
-<<<<<<< HEAD
 // private subnet for the mutiple AZ
 resource "aws_subnet" "private_subnet_a" {
-=======
-// DB
-resource "aws_subnet" "private_subnet" {
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
   vpc_id     = aws_vpc.this.id
   cidr_block = cidrsubnet(aws_vpc.this.cidr_block, 8, 1)
 
   tags = {
-<<<<<<< HEAD
     Name = var.private_subnet_a
   }
 }
@@ -56,12 +42,6 @@ resource "aws_subnet" "private_subnet_b" {
 
 
 
-=======
-    Name = var.private_subnet_name
-  }
-}
-
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.this.id
 
@@ -89,23 +69,6 @@ resource "aws_internet_gateway" "this" {
 
 }
 
-<<<<<<< HEAD
-=======
-// NAT gateway are created in the public subnet to allow private subnet to access the internet
-resource "aws_nat_gateway" "this" {
-
-  allocation_id = data.aws_eip.this.id
-  #NAT gateway is created in the public subnet
-  subnet_id = aws_subnet.public_subnet.id
-  tags = {
-    Name = var.nat_gateway_name
-
-  }
-  depends_on = [aws_internet_gateway.this]
-}
-
-
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
 /* -------------------------- Routing Layer ---------------------------------------------------*/
 resource "aws_route_table_association" "public_rt_association" {
   subnet_id      = aws_subnet.public_subnet.id
@@ -116,37 +79,18 @@ resource "aws_route_table_association" "public_rt_association" {
 // routing connection for the public subnet to the internet gateway
 resource "aws_route" "public_rt" {
   route_table_id         = aws_route_table.public_route_table.id
-<<<<<<< HEAD
   destination_cidr_block = var.igw_destination_cidr_block
-=======
-  destination_cidr_block = var.igw_destination_cidr_block // the income traffic to the private subnet
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
   gateway_id             = aws_internet_gateway.this.id
 
 }
 
 
-<<<<<<< HEAD
 /*resource "aws_route_table_association" "private_rt_association_a" {
   subnet_id      = aws_subnet.private_subnet_a.id
   route_table_id = aws_route_table.private_route_table.id
   // the income traffic to the private subnet
 } */
 
-=======
-
-resource "aws_route_table_association" "private_rt_association" {
-  subnet_id      = aws_subnet.private_subnet.id
-  route_table_id = aws_route_table.private_route_table.id
-  // the income traffic to the private subnet
-}
-
-resource "aws_route" "private_rt" {
-  route_table_id         = aws_route_table.private_route_table.id
-  destination_cidr_block = var.igw_destination_cidr_block // this is also internet traffic but outbound only using nat gateway
-  nat_gateway_id         = aws_nat_gateway.this.id        // for network restriction
-}
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
 
 
 resource "aws_security_group" "public_sg" {
@@ -157,7 +101,6 @@ resource "aws_security_group" "public_sg" {
     Name = "allow_tls"
   }
 
-<<<<<<< HEAD
 
   ingress {
     from_port   = 8080
@@ -175,17 +118,6 @@ resource "aws_security_group" "public_sg" {
 
   }
 
-=======
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"         // SSH port
-    cidr_blocks = ["0.0.0.0/0"] // all coming from internet
-  }
-
-
-
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
   egress {
     from_port   = 0
     to_port     = 0
@@ -204,17 +136,10 @@ resource "aws_security_group" "private_sg" {
   }
 
   ingress {
-<<<<<<< HEAD
     from_port = 3306
     to_port   = 3306
     protocol  = "tcp"
     #allow only income traffic form the application
-=======
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-    #white listing the income traffic from public server. Using secuiryt group id cause the server IPs can various don't use for the white listing
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
     security_groups = [aws_security_group.public_sg.id]
   }
 
@@ -227,7 +152,6 @@ resource "aws_security_group" "private_sg" {
 
 }
 
-<<<<<<< HEAD
 // Grouping private instance for multiple Az
 
 resource "aws_db_subnet_group" "this" {
@@ -236,8 +160,6 @@ resource "aws_db_subnet_group" "this" {
     aws_subnet.private_subnet_b.id  # AZ-2
   ]
 }
-=======
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
 
 /* -------------------------- Compute Layer ---------------------------------------------------*/
 
@@ -259,7 +181,6 @@ resource "aws_instance" "public_instance" {
 
 }
 
-<<<<<<< HEAD
 resource "aws_db_instance" "app_db" {
   identifier              = "myapp-db"
   engine                  = "mysql"
@@ -272,20 +193,3 @@ resource "aws_db_instance" "app_db" {
   backup_retention_period = 7
   multi_az                = false #optional
 }
-
-
-=======
-resource "aws_instance" "private_instance" {
-
-  ami             = data.aws_ami.ubuntu.id
-  instance_type   = var.instance_type
-  key_name        = data.aws_key_pair.this.key_name
-  subnet_id       = aws_subnet.private_subnet.id
-  security_groups = [aws_security_group.private_sg.id]
-
-  tags = {
-    Name = var.private_server_name
-  }
-
-}
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16

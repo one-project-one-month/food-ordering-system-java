@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //package org._p1m.foodorderingsystem.features.addCart.controller;
 //
 //import org.springframework.web.bind.annotation.RestController;
@@ -29,13 +28,3 @@ public class AddCartMenuController {
         return ResponseEntity.ok(response);
     }
 }
-
-=======
-package org._p1m.foodorderingsystem.features.addCart.controller;
-
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class AddCartMenuController {
-}
->>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
