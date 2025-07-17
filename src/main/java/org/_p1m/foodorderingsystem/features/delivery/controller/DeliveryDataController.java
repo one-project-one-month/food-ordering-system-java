@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("${api.base.path}/assignDelivery")
+@RequestMapping("${api.base.path}/delivery-data")
 @Tag(name = "Delivery Assign API", description = "Endpoints for Assign delivery")
 public class DeliveryDataController {
 
@@ -21,7 +21,7 @@ public class DeliveryDataController {
         this.deliveryDataService = deliveryDataService;
     }
 
-   @PatchMapping
+   @PatchMapping("/assignDelivery")
     public ResponseEntity<ApiResponse> assignDelivery(@Valid @RequestBody AssignDeliveryRequest assignDeliveryRequest, HttpServletRequest request){
        final ApiResponse response = this.deliveryDataService.assignDelivery(assignDeliveryRequest);
        return ResponseUtils.buildResponse(request, response);

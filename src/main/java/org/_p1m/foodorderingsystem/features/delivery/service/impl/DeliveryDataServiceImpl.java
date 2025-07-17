@@ -69,6 +69,13 @@ public class DeliveryDataServiceImpl implements DeliveryDataService {
     @Override
     public ApiResponse getAllDeliveryStaffData(Long restaurantId) {
         List<RestaurantVendor> restaurantVendors = this.restaurantVendorRepository.findByRestaurantId(restaurantId);
+
+        if(restaurantVendors.isEmpty()){
+            return ApiResponse.builder().success(1).code(HttpStatus.OK.value())
+                    .message("No delivery in this restaurant")
+                    .build();
+        }
+
     // if we want free delivery staffs
 //        List<RestaurantVendor> activeVendors = restaurantVendors.stream()
 //                .filter(v -> v.getStatus() == Status.ACTIVE)
@@ -80,7 +87,7 @@ public class DeliveryDataServiceImpl implements DeliveryDataService {
                 ))
                 .toList();
 
-        return ApiResponse.builder().success(1).code(HttpStatus.CREATED.value())
+        return ApiResponse.builder().success(1).code(HttpStatus.OK.value())
                 .data(Map.of("Delivery Staff Data", dto))
                 .message("Retrieve Delivery Staff Data Successfully")
                 .build();
