@@ -1,4 +1,4 @@
-name: Build Java App
+name: Flyway Migration test
 
 on:
   workflow_call:
