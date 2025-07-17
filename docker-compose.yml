@@ -20,11 +20,12 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      DB_HOST: mysql-db
+      DB_HOST: localhost
       DB_PORT: 3306
       DB_NAME: food_ordering_system_db
       DB_USER: admin
       DB_PASSWORD: admin
+      SPRING_PROFILES_ACTIVE: uat
     ports:
       - "8080:8080"
 
