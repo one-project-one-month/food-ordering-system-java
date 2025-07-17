@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 //package org._p1m.foodorderingsystem.features.Menu.repository;
 //
 //public interface DishSizeRepo {
@@ -11,3 +12,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DishSizeRepo extends JpaRepository<DishSize, Long> {
 }
+=======
+package org._p1m.foodorderingsystem.features.Menu.repository;
+
+public interface DishSizeRepo {
+}
+>>>>>>> abd80909b36f3e696ff4113794f19fecddc94d16
