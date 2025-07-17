@@ -9,15 +9,14 @@ jobs:
       mysql:
         image: mysql:8
         env:
-          MYSQL_DATABASE: food_ordering_system_db
-          MYSQL_USER: admin
-          MYSQL_PASSWORD: admin
-          MYSQL_ROOT_PASSWORD: root
+            FLYWAY_DB_URL: jdbc:mysql://127.0.0.1:3306/food_ordering_system_db?createDatabaseIfNotExist=true
+            FLYWAY_DB_USER: admin
+            FLYWAY_DB_PASSWORD: admin
         ports:
-          - 3307:3307
+          - 3306:3306
     environment:
       DB_HOST: localhost
-      DB_PORT: 3307
+      DB_PORT: 3306
       DB_NAME: food_ordering_system_db
       DB_USER: admin
       DB_PASSWORD: admin

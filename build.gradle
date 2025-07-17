@@ -47,6 +47,13 @@ dependencies {
 	implementation("com.cloudinary:cloudinary-http45:1.39.0")
 }
 
+// for CI migration
+flyway {
+	url = "jdbc:mysql://${System.getenv('DB_HOST') ?: 'localhost'}:${System.getenv('DB_PORT') ?: '3306'}/${System.getenv('DB_NAME') ?: 'food_ordering_system_db'}?createDatabaseIfNotExist=true"
+	user = System.getenv('DB_USER') ?: 'admin'
+	password = System.getenv('DB_PASSWORD') ?: 'admin'
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
