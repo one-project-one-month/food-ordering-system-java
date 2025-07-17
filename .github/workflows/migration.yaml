@@ -14,10 +14,10 @@ jobs:
           MYSQL_PASSWORD: admin
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306:3306
-    env:
+          - 3307:3307
+    environment:
       DB_HOST: localhost
-      DB_PORT: 3306
+      DB_PORT: 3307
       DB_NAME: food_ordering_system_db
       DB_USER: admin
       DB_PASSWORD: admin
