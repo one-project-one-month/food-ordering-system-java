@@ -51,7 +51,9 @@ public class DishSizeController {
         return ResponseUtils.buildResponse(request, response);
     }
 
-    @PostMapping("/{dishSizeId}/dishSize-img")
+    @PostMapping(
+    		value="/{dishSizeId}/dishSize-img",
+    		consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Upload DishSize image",
             description = "Uploads dish size image for the specified menu.",
@@ -69,7 +71,7 @@ public class DishSizeController {
             }
     )
     public ResponseEntity<?> uploadDishSizeImage(
-            @Parameter(description = "Dish Size ID") @PathVariable final Long dishSizeId,
+            @Parameter(description = "Dish Size ID") @PathVariable(name="dishSizeId") final Long dishSizeId,
             @Parameter(description = "Image file") @RequestParam("file") final MultipartFile file
     ) {
         try {
@@ -95,7 +97,7 @@ public class DishSizeController {
             }
     )
     public ResponseEntity<ApiResponse> updateDishSize(@Valid @RequestBody  UpdateDishSizeRequest updateDishSizeRequest,
-                                                      @PathVariable final Long dishSizeId,
+    		@PathVariable(name="dishSizeId") final Long dishSizeId,
                                                       HttpServletRequest request){
         final ApiResponse response = this.dishSizeService.updateDishSize(dishSizeId,updateDishSizeRequest);
         return ResponseUtils.buildResponse(request, response);
@@ -106,7 +108,7 @@ public class DishSizeController {
             summary = "Delete Dish Size",
             description = "Deletes Dish Size by its ID.",
             parameters = {
-                    @Parameter(name = "id", description = "Dish Size Id  to delete", required = true)
+                    @Parameter(name = "dishSizeId", description = "Dish Size Id  to delete", required = true)
             },
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Dish size delete successfully"),
@@ -114,7 +116,7 @@ public class DishSizeController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Extra not found")
             }
     )
-    public ResponseEntity<ApiResponse> deleteDishSize(@PathVariable Long dishSizeId, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse> deleteDishSize(@PathVariable(name="dishSizeId") Long dishSizeId, HttpServletRequest request) {
         final ApiResponse response = this.dishSizeService.deleteMenu(dishSizeId);
         return ResponseUtils.buildResponse(request, response);
     }
