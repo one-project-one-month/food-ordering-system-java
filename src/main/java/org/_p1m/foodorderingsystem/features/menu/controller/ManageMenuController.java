@@ -1,4 +1,4 @@
-package org._p1m.foodorderingsystem.features.menu.controller;
+package org._p1m.foodorderingsystem.features.Menu.controller;
 
 
 import io.swagger.v3.oas.annotations.Operation;

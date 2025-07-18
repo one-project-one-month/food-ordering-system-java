@@ -10,12 +10,14 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
     @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http.csrf(csrf-> csrf.disable()).
-                authorizeHttpRequests(auth->auth
-                        .requestMatchers("/auth/**").permitAll()
-                )
+        http.csrf(csrf-> csrf.disable())
+//                        .
+//                authorizeHttpRequests(auth->auth
+//                        .requestMatchers("/auth/**", "/api/v1/requestOrder/**").permitAll()
+//                )
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
         return http.build();
   }
 }
+
