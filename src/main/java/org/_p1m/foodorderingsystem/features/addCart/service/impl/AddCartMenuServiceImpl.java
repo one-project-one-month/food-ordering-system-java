@@ -1,25 +1,64 @@
 package org._p1m.foodorderingsystem.features.addCart.service.impl;
 
-import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
-import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
+import lombok.RequiredArgsConstructor;
+import org._p1m.foodorderingsystem.features.Menu.repository.DishSizeRepo;
+import org._p1m.foodorderingsystem.features.Menu.repository.ExtraRepo;
 import org._p1m.foodorderingsystem.features.addCart.dto.request.AddCartMenuRequest;
+import org._p1m.foodorderingsystem.features.addCart.dto.response.AddCartMenuResponse;
 import org._p1m.foodorderingsystem.features.addCart.repository.AddCartMenuRepo;
-import org._p1m.foodorderingsystem.model.AddCartData;
-import org.springframework.http.HttpStatus;
+import org._p1m.foodorderingsystem.features.addCart.service.AddCartMenuService;
+import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
+import org._p1m.foodorderingsystem.model.*;
 
-import java.util.Map;
+import org.springframework.stereotype.Service;
 
-public class AddCartMenuServiceImpl {
+import java.util.Optional;
 
-    private AddCartMenuRepo addCartMenuRepo;
+@Service
+@RequiredArgsConstructor
+public class AddCartMenuServiceImpl implements AddCartMenuService {
 
-    public ApiResponse getCartById(Long id) {
-        AddCartData addCartData = addCartMenuRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cart not found!"));
 
-        return ApiResponse.builder()
-                .success(1).code(HttpStatus.OK.value())
-                .data(Map.of("Cart data: ", addCartData))
-                .message("Cart retrieved.").build();
+    private final AddCartMenuRepo cartRepo;
+    private final UserRepository userRepository;
+    private final DishSizeRepo dishSizeRepository;
+    private final ExtraRepo extraRepository;
+
+    @Override
+    public AddCartMenuResponse addToCart(AddCartMenuRequest request) {
+        User user = userRepository.findById(request.getCustomerId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        DishSize dishSize = null;
+        if (request.getDishSizeId() != null) {
+            dishSize = dishSizeRepository.findById(request.getDishSizeId())
+                    .orElseThrow(() -> new RuntimeException("DishSize not found"));
+        }
+
+        Extra extra = null;
+        if (request.getExtraId() != null) {
+            extra = extraRepository.findById(request.getExtraId())
+                    .orElseThrow(() -> new RuntimeException("Extra not found"));
+        }
+
+        AddCartData cart = new AddCartData(
+                request.getQuantity(),
+                user,
+                dishSize,
+                extra,
+                null
+        );
+
+        AddCartData saved = cartRepo.save(cart);
+
+        AddCartMenuResponse response = new AddCartMenuResponse();
+        response.setCartId(saved.getId());
+        response.setQuantity(saved.getQuantity());
+        response.setCustomerId(saved.getCustomer().getId());
+        response.setDishSizeId(saved.getDishSize() != null ? saved.getDishSize().getId() : null);
+        response.setExtraId(saved.getExtra() != null ? saved.getExtra().getId() : null);
+        return response;
     }
+
+
 }

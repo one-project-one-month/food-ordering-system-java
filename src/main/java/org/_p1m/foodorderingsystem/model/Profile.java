@@ -18,9 +18,6 @@ public class Profile extends MasterData {
     @Column(unique = true)
     private String nrc;
 
-    @Column(unique = true, nullable = false)
-    private String email;
-
     @Column(unique = true)
     private String phone;
 

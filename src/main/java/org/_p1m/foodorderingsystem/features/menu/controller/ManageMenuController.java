@@ -1,6 +1,29 @@
 package org._p1m.foodorderingsystem.features.Menu.controller;
 
 
+import java.util.Map;
+
+import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
+import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
+import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
+import org._p1m.foodorderingsystem.features.menu.dto.request.CreateMenuRequest;
+import org._p1m.foodorderingsystem.features.menu.dto.request.GetAllMenuRequest;
+import org._p1m.foodorderingsystem.features.menu.dto.request.UploadMenuImageRequest;
+import org._p1m.foodorderingsystem.features.menu.dto.responses.MenuResponseDto;
+import org._p1m.foodorderingsystem.features.menu.service.ManageMenuService;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -8,20 +31,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
-import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
-import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
-import org._p1m.foodorderingsystem.features.menu.dto.request.CreateMenuRequest;
-import org._p1m.foodorderingsystem.features.menu.dto.request.GetAllMenuRequest;
-import org._p1m.foodorderingsystem.features.menu.dto.request.UploadMenuImageRequest;
-import org._p1m.foodorderingsystem.features.menu.dto.respones.MenuResponseDto;
-import org._p1m.foodorderingsystem.features.menu.service.ManageMenuService;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("${api.base.path}/menus")
@@ -53,7 +62,9 @@ public class ManageMenuController {
         return ResponseUtils.buildResponse(request, response);
     }
 
-    @PostMapping("/{menuId}/menu-img")
+    @PostMapping(
+    		value="/{menuId}/menu-img",
+    		consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Upload Menu image",
             description = "Uploads a menu image for the specified menu.",
@@ -71,7 +82,7 @@ public class ManageMenuController {
             }
     )
     public ResponseEntity<?> uploadMenuImage(
-            @Parameter(description = "Menu ID") @PathVariable final Long menuId,
+            @Parameter(description = "Menu ID") @PathVariable("menuId") final Long menuId,
             @Parameter(description = "Image file") @RequestParam("file") final MultipartFile file
     ) {
         try {
@@ -110,7 +121,7 @@ public class ManageMenuController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Menu not found")
             }
     )
-    public ResponseEntity<ApiResponse> getMenuById(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse> getMenuById(@PathVariable(name="id") Long id, HttpServletRequest request) {
         final ApiResponse response = manageMenuService.getMenuById(id);
         return ResponseUtils.buildResponse(request, response);
     }
@@ -130,7 +141,7 @@ public class ManageMenuController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Menu not found")
             }
     )
-    public ResponseEntity<ApiResponse> updateManu(@PathVariable Long id,
+    public ResponseEntity<ApiResponse> updateManu(@PathVariable(name="id") Long id,
                                                   @RequestBody CreateMenuRequest createMenuRequest,
                                                   HttpServletRequest request) {
         final ApiResponse response = manageMenuService.updateMenu(id, createMenuRequest);
@@ -150,7 +161,7 @@ public class ManageMenuController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Menu not found")
             }
     )
-    public ResponseEntity<ApiResponse> deleteMenu(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse> deleteMenu(@PathVariable(name="id") Long id, HttpServletRequest request) {
         final ApiResponse response = manageMenuService.deleteMenu(id);
         return ResponseUtils.buildResponse(request, response);
     }
