@@ -10,6 +10,7 @@ import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
 import org._p1m.foodorderingsystem.features.category.repository.CategoryRepository;
 import org._p1m.foodorderingsystem.features.menu.dto.request.CreateMenuRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.request.GetAllMenuRequest;
+import org._p1m.foodorderingsystem.features.menu.dto.request.UpdateMenuRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.responses.MenuResponseDto;
 import org._p1m.foodorderingsystem.features.menu.repository.ManageMenuRepository;
 import org._p1m.foodorderingsystem.features.menu.service.ManageMenuService;
@@ -142,20 +143,16 @@ public class ManageMenuServiceImpl implements ManageMenuService {
     }
 
     @Override
-    public ApiResponse updateMenu(Long menuId, CreateMenuRequest request) {
+    public ApiResponse updateMenu(Long menuId, UpdateMenuRequest request) {
         Menu menu = manageMenuRepository.findById(menuId)
                 .orElseThrow(() -> new EntityNotFoundException("Menu not found!"));
 
-        Restaurant restaurant = restaurantRepository.findById(request.getRestaurantId())
-                .orElseThrow(() -> new EntityNotFoundException("Restaurant not found!"));
-
-        Category category = categoryRepository.findByIdAndRestaurantId(request.getCategoryId(), request.getRestaurantId())
-                .orElseThrow(()-> new EntityNotFoundException("Category not found for this restaurant!"));
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(()-> new EntityNotFoundException("Category not found!"));
 
         menu.setDish(request.getDish());
         menu.setPrice(request.getPrice());
         menu.setStatus(request.getStatus());
-        menu.setRestaurant(restaurant);
         menu.setCategory(category);
 
         menu.getDishSizes().clear();
