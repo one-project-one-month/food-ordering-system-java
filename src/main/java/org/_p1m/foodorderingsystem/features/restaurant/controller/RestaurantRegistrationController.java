@@ -1,5 +1,27 @@
 package org._p1m.foodorderingsystem.features.restaurant.controller;
 
+import java.util.Map;
+
+import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
+import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
+import org._p1m.foodorderingsystem.features.restaurant.dto.request.RestaurantCreateRequest;
+import org._p1m.foodorderingsystem.features.restaurant.dto.request.RestaurantUpdateRequest;
+import org._p1m.foodorderingsystem.features.restaurant.dto.request.UploadRestaurantImgRequest;
+import org._p1m.foodorderingsystem.features.restaurant.service.RestaurantRegistrationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -7,20 +29,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
-import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
-import org._p1m.foodorderingsystem.features.restaurant.dto.request.RestaurantCreateRequest;
-import org._p1m.foodorderingsystem.features.restaurant.dto.request.RestaurantUpdateRequest;
-import org._p1m.foodorderingsystem.features.restaurant.dto.request.UploadRestaurantImgRequest;
-import org._p1m.foodorderingsystem.features.restaurant.service.RestaurantRegistrationService;
-import org._p1m.foodorderingsystem.features.users.dto.request.UploadProfilePictureRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("${api.base.path}/restaurants")
@@ -93,14 +101,15 @@ public class RestaurantRegistrationController {
             summary = "Get restaurant detail",
             description = "Get Restaurant detail by its ID.",
             parameters = {
-                    @Parameter(name = "id", description = "Restaurant ID", required = true)
+                    @Parameter(name = "id",description = "Restaurant ID", required = true)
             },
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Restaurant details retrieved successfully"),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Restaurant not found")
             }
     )
-    public ResponseEntity<ApiResponse> restaurantDetail(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse> restaurantDetail(
+    @PathVariable(name = "id") Long id, HttpServletRequest request) {
         final ApiResponse response = this.restaurantRegistrationService.restaurantDetail(id);
         return ResponseUtils.buildResponse(request, response);
     }
@@ -110,14 +119,14 @@ public class RestaurantRegistrationController {
             summary = "Delete a restaurant",
             description = "Deletes a restaurant from the system by its ID.",
             parameters = {
-                    @Parameter(name = "id", description = "Restaurant ID", required = true)
+                    @Parameter(name = "id",description = "Restaurant ID", required = true)
             },
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Restaurant deleted successfully"),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Restaurant not found")
             }
     )
-    public ResponseEntity<ApiResponse> deleteRestaurant(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse> deleteRestaurant(@PathVariable(name = "id") Long id, HttpServletRequest request) {
         final ApiResponse response = this.restaurantRegistrationService.deleteRestaurant(id);
         return ResponseUtils.buildResponse(request, response);
     }
@@ -131,8 +140,8 @@ public class RestaurantRegistrationController {
                     required = true,
                     content = @Content(schema = @Schema(implementation = RestaurantUpdateRequest.class))
             ),
-            parameters = {
-                    @Parameter(name = "id", description = "Restaurant ID", required = true)
+    		parameters = {
+                    @Parameter(name = "id",description = "Restaurant ID", required = true)
             },
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Restaurant updated successfully"),
@@ -140,9 +149,9 @@ public class RestaurantRegistrationController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Restaurant not found")
             }
     )
-    public ResponseEntity<ApiResponse> updateRestaurant(@Valid @RequestBody RestaurantUpdateRequest restaurantUpdateRequest,
-                                                        @PathVariable Long id,
-                                                        HttpServletRequest request) {
+    public ResponseEntity<ApiResponse> updateRestaurant(
+    		@Valid @RequestBody RestaurantUpdateRequest restaurantUpdateRequest,
+    		 @PathVariable(name = "id") Long id, HttpServletRequest request) {
         final ApiResponse response = this.restaurantRegistrationService.updateRestaurant(id, restaurantUpdateRequest);
         return ResponseUtils.buildResponse(request, response);
 

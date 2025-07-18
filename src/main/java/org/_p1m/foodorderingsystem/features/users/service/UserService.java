@@ -18,4 +18,6 @@ public interface UserService {
     public ApiResponse verifyAccount(long code , String email);
 
     public ApiResponse resendCode(String email);
+
+    public ApiResponse verifyEmail(String email);
 }
