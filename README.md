@@ -359,4 +359,3 @@ git push origin <your-ticket-branch>   # Push to your remote branch
 ## 📘 Development Guide 002
 
 [Git & GitHub Workflow Guide](https://www.notion.so/Development-Guide-002-2287c768d23180a8879fc340b5f5be64?pvs=21)
- 

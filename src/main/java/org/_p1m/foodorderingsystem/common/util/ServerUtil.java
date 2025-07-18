@@ -42,7 +42,7 @@ public class ServerUtil {
 
     @Value("${jwt.secret}")
     private String SecretKey;
-    private final long ExpireTime=2000;
+    private final long ExpireTime=1000*60*60;
 
     public String getSecretKey() {
         return SecretKey;

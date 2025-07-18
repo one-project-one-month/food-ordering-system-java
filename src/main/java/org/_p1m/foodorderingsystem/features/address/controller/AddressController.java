@@ -55,7 +55,7 @@ public class AddressController {
                         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Address not found")
                 }
         )
-        public ResponseEntity<ApiResponse> addressDetail(@PathVariable Long id, HttpServletRequest request) {
+        public ResponseEntity<ApiResponse> addressDetail(@PathVariable(name="id") Long id, HttpServletRequest request) {
                 final ApiResponse response = this.addressService.getAddress(id);
                 return ResponseUtils.buildResponse(request, response);
         }
@@ -79,7 +79,7 @@ public class AddressController {
                 }
         )
         public ResponseEntity<ApiResponse> updateAddress(@Valid @RequestBody AddressUpdateRequestDto addressUpdateRequestDto,
-                                                         @PathVariable Long id,
+                                                         @PathVariable(name="id") Long id,
                                                          HttpServletRequest request) {
                 final ApiResponse response = this.addressService.updateAddress(id, addressUpdateRequestDto);
                 return ResponseUtils.buildResponse(request, response);
@@ -98,7 +98,7 @@ public class AddressController {
                         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Address not found")
                 }
         )
-        public ResponseEntity<ApiResponse> deleteAddress(@PathVariable Long id, HttpServletRequest request) {
+        public ResponseEntity<ApiResponse> deleteAddress(@PathVariable(name="id") Long id, HttpServletRequest request) {
                 final ApiResponse response = this.addressService.deleteAddress(id);
                 return ResponseUtils.buildResponse(request, response);
         }
