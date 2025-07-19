@@ -2,7 +2,7 @@
 //
 //public interface DishSizeRepo {
 //}
-package org._p1m.foodorderingsystem.features.Menu.repository;
+package org._p1m.foodorderingsystem.features.menu.repository;
 
 import org._p1m.foodorderingsystem.model.DishSize;
 import org.springframework.data.jpa.repository.JpaRepository;

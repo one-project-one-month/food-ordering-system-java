@@ -1,6 +1,7 @@
 package org._p1m.foodorderingsystem.features.users.service;
 
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
+import org._p1m.foodorderingsystem.features.users.dto.request.AuthRequestDto;
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
 import org._p1m.foodorderingsystem.model.User;
 import org.springframework.stereotype.Service;
@@ -20,4 +21,6 @@ public interface UserService {
     public ApiResponse resendCode(String email);
 
     public ApiResponse verifyEmail(String email);
+
+    public ApiResponse getUserAuthData(AuthRequestDto requestDto , String token);
 }
