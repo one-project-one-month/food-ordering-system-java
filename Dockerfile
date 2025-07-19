@@ -6,6 +6,8 @@ WORKDIR /app
 # Copy Gradle files and download dependencies
 COPY build.gradle settings.gradle gradlew /app/
 COPY gradle /app/gradle
+
+
 RUN ./gradlew dependencies --no-daemon || true
 
 # Copy source code and build

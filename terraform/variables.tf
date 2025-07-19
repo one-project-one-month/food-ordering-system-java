@@ -8,6 +8,7 @@ variable "aws_region" {
 
 // VPC configuration
 variable "cidr_block" {
+
   description = "The CIDR block for the VPC"
   type        = string
 
@@ -32,14 +33,12 @@ variable "private_subnet_a" {
   description = "The name of the private subnet"
   type        = string
   default     = "private-subnet_1b"
-
 }
 
 variable "private_subnet_b" {
   description = "The name of the private subnet"
   type        = string
   default     = "private-subnet_1b"
-
 }
 
 variable "public_route_table_name" {
@@ -75,11 +74,6 @@ variable "igw_destination_cidr_block" {
   default     = "0.0.0.0/0"
 }
 
-variable "nat_gateway_name" {
-  description = "The name of the NAT gateway"
-  type        = string
-
-}
 
 variable "public_sg_name" {
   description = "The name of the public security group"
