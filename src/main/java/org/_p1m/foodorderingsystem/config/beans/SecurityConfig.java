@@ -31,6 +31,11 @@ public class SecurityConfig {
 		"/swagger-resources/**",
 		"/swagger-resources"
 	};
+
+    private static final String[] AUTH_WHITELIST = {
+            "/api/v1/auth/**",
+            "/api/v1/auth/users/verifyEmail"
+    };
 	
     @Autowired
     private UserDetailsService userDetailService;
@@ -62,7 +67,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable()).
                 authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -73,3 +78,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+
