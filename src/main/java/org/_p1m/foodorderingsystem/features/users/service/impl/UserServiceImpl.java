@@ -8,6 +8,7 @@ import org._p1m.foodorderingsystem.common.storage.StorageService;
 import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
 import org._p1m.foodorderingsystem.common.util.ServerUtil;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
+import org._p1m.foodorderingsystem.features.users.dto.request.AuthRequestDto;
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
 import org._p1m.foodorderingsystem.features.users.dto.response.UserResponseDto;
 import org._p1m.foodorderingsystem.features.users.repository.ProfileRepository;
@@ -24,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -142,6 +144,30 @@ public class UserServiceImpl implements UserService {
         } catch(Exception e){
             return new ApiResponse(0, 400, null, new HashMap<>(), "Error Sending Mail");
         }
+    }
+
+    @Override
+    public ApiResponse getUserAuthData(AuthRequestDto requestDto , String token) {
+        User userData = userRepository.findByEmail(requestDto.getEmail());
+        long roleId = userData.getRole().getId();
+        String roleName = userData.getRole().getName();
+
+        Map<String, Object> data = Map.of(
+                "token", token,
+                "userId", userData.getId(),
+                "roleId", roleId,
+                "email", userData.getEmail(),
+                "roleName", roleName
+        );
+
+
+        return ApiResponse.builder()
+                .success(1)
+                .code(200)
+                .meta(null)
+                .data(data)
+                .message("Account Login successfully.")
+                .build();
     }
 
 }

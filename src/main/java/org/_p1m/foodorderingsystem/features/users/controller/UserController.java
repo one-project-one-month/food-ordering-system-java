@@ -11,6 +11,7 @@ import org._p1m.foodorderingsystem.features.users.dto.request.UploadProfilePictu
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
 import org._p1m.foodorderingsystem.features.users.dto.response.AuthResponseDto;
 import org._p1m.foodorderingsystem.features.users.service.UserService;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,12 +49,21 @@ public class UserController {
 //		return ResponseEntity.ok(returnString);
 //	}
 
+//	@PostMapping("/login")
+//	public ResponseEntity<AuthResponseDto> varifyUser(@RequestBody AuthRequestDto request) {
+//		Authentication authentication = authManager.authenticate(
+//				new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+//		String token =serverUtil.generateToken((UserDetails)  authentication.getPrincipal());
+//		return ResponseEntity.ok(new AuthResponseDto(token));
+//	}
+
 	@PostMapping("/login")
-	public ResponseEntity<AuthResponseDto> varifyUser(@RequestBody AuthRequestDto request) {
+	public ResponseEntity<ApiResponse> verifyUser(@RequestBody AuthRequestDto requestDto , HttpServletRequest request){
 		Authentication authentication = authManager.authenticate(
-				new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+				new UsernamePasswordAuthenticationToken(requestDto.getEmail(), requestDto.getPassword()));
 		String token =serverUtil.generateToken((UserDetails)  authentication.getPrincipal());
-		return ResponseEntity.ok(new AuthResponseDto(token));
+		final ApiResponse response = this.userService.getUserAuthData(requestDto , token);
+		return ResponseUtils.buildResponse(request , response);
 	}
     
     @PostMapping
