@@ -1,4 +1,4 @@
-name: CI
+name: Infrastructure Provision with Terraform
 
 on:
   push:
@@ -93,4 +93,4 @@ jobs:
       - name: Terraform apply change
         # apply the change even if scan steps are failed or success
         if: success() || failure()
-        run: terraform apply --auto-approve tfpaln
+        run: terraform apply --auto-approve tfplan
