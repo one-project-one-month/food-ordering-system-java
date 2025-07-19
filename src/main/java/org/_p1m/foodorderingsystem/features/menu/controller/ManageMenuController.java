@@ -1,4 +1,4 @@
-package org._p1m.foodorderingsystem.features.Menu.controller;
+package org._p1m.foodorderingsystem.features.menu.controller;
 
 
 import java.util.Map;
