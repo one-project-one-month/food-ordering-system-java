@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Confirmation</title>
+  <style>
+    @media only screen and (max-width: 600px) {
+      .container {
+        width: 100% !important;
+        padding: 0 !important;
+      }
+
+      .summary-table td {
+        display: block;
+        width: 100% !important;
+      }
+
+      .text-right {
+        text-align: left !important;
+      }
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background: #fff;">
+
+<!-- Wrapper -->
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #ffffff;">
+  <tr>
+    <td align="center">
+
+      <!-- Container -->
+      <table class="container" width="600" cellpadding="0" cellspacing="0" style="border: 1px solid #eee; margin: 20px; width: 100%; max-width: 600px;">
+
+        <!-- Logo -->
+        <tr>
+          <td style="text-align: center; padding: 20px;">
+            <img src="cid:logoImg" alt="Logo" style="height: 50px;">
+          </td>
+        </tr>
+
+        <!-- Header -->
+        <tr>
+          <td style="background-color: #EC5530; padding: 15px; text-align: center; color: white; font-size: 32px;">
+            Order Info
+          </td>
+        </tr>
+
+        <!-- Summary -->
+        <tr>
+          <td style="padding: 20px; background-color: #fce9ec;">
+            <table width="100%" class="summary-table" style="font-size: 14px;">
+              <tr>
+                <td style="vertical-align: top; padding-bottom: 10px;">
+                  <strong>Summary:</strong><br />
+                  Order number: ${orderId}<br />
+                  Order time: ${orderTime}
+                </td>
+                <td style="vertical-align: top;" class="text-right">
+                  <strong >Delivery address:</strong><br />
+                  ${username}<br />
+                  ${address}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Greeting -->
+        <tr>
+          <td style="padding: 20px;">
+            <p><strong>Hey ${greetingName},</strong></p>
+            <p>You're all set! Your order from <strong style="color: #EC5530;">${restaurantName}</strong> will be on its way soon.</p>
+            <p>Need a hand with something? Just head over to the <strong style="color: #EC5530;">Help Center</strong> for assistance.</p>
+          </td>
+        </tr>
+
+        <!-- Order Details -->
+        <tr>
+          <td style="padding: 0 20px;">
+            <table width="100%" cellpadding="10" cellspacing="0" style="background-color: #d8e6eb; font-weight: bold; color: #607d8b;">
+              <tr>
+                <td width="70%">Qty | Item</td>
+                <td align="right">Price</td>
+              </tr>
+            </table>
+            <table width="100%" cellpadding="10" cellspacing="0" style="border-bottom: 1px solid #ccc; font-size: 14px;">
+              ${menuList}
+            </table>
+          </td>
+        </tr>
+
+        <!-- Pricing Summary -->
+        <hr>
+        <tr>
+          <td style="padding: 20px;">
+            <table width="100%" style="font-size: 14px;">
+              <tr>
+                <td style="text-align: right;">Subtotal:</td>
+                <td style="text-align: right; width: 100px;">${subTotal}</td>
+              </tr>
+              <tr>
+                <td style="text-align: right;">Tax:</td>
+                <td style="text-align: right;">$ 0</td>
+              </tr>
+              <tr>
+                <td style="text-align: right;">Delivery Fee:</td>
+                <td style="text-align: right;">$ 0</td>
+              </tr>
+              <tr>
+                <td style="text-align: right; font-weight: bold;">Total:</td>
+                <td style="text-align: right; font-weight: bold;">${orderTotal}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="padding: 15px; text-align: center; font-size: 12px; color: #999;">
+            © 2025 SARML. All rights reserved.
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
