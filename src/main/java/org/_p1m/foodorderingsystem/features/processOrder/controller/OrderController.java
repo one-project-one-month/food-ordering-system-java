@@ -2,7 +2,7 @@ package org._p1m.foodorderingsystem.features.processOrder.controller;
 
 import jakarta.validation.Valid;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
-import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
+import org._p1m.foodorderingsystem.features.processOrder.dto.request.ProcessOrderRequest;
 import org._p1m.foodorderingsystem.features.processOrder.dto.request.UpdateOrderStatusRequestDTO;
 import org._p1m.foodorderingsystem.features.processOrder.dto.response.OrderResponseDTO;
 import org._p1m.foodorderingsystem.features.processOrder.service.OrderService;
@@ -15,14 +15,26 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService){
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
 
-    @PatchMapping ("/{orderId}/process")
+    @PostMapping("/processOrder")
+    public ResponseEntity<ApiResponse> processOrder(@Valid @RequestBody ProcessOrderRequest request) {
+        OrderResponseDTO responseData = orderService.processOrder(request);
+        ApiResponse apiResponse = ApiResponse.builder()
+                .success(1)
+                .code(HttpStatus.CREATED.value())
+                .message("Order processed successfully.")
+                .data(responseData)
+                .build();
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/{orderId}/process")
     public ResponseEntity<ApiResponse> processOrder(
-                @PathVariable Long orderId,
-                @Valid @RequestBody UpdateOrderStatusRequestDTO request) {
+            @PathVariable Long orderId,
+            @Valid @RequestBody UpdateOrderStatusRequestDTO request) {
         OrderResponseDTO responseData = orderService.updateOrderStatus(orderId, request);
         ApiResponse apiResponse = ApiResponse.builder()
                 .success(1)
@@ -33,3 +45,4 @@ public class OrderController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 }
+
