@@ -52,8 +52,8 @@ public class SendOrderConfirmationMailImpl implements SendOrderConfirmationMail 
         OrderData order = orderRepository.findById(orderId).orElseThrow();
         AddCartData cart = order.getAddCartData();
         NumberFormat currencyFormat = NumberFormat.getNumberInstance(Locale.US);
-        currencyFormat.setMaximumFractionDigits(0);  // No decimal
-        currencyFormat.setMinimumFractionDigits(0);  // No decimal
+        currencyFormat.setMaximumFractionDigits(0);
+        currencyFormat.setMinimumFractionDigits(0);
 
         String username = cart.getCustomer().getProfile().getName();
         String userAddress = order.getUserAddress();
