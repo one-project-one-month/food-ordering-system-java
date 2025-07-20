@@ -13,15 +13,19 @@ RUN ./gradlew dependencies --no-daemon || true
 # Copy source code and build
 COPY . /app
 
-RUN ./gradlew clean build -x test --no-daemon
+#RUN ./gradlew clean build -x test --no-daemon
+
+RUN ./gradlew clean bootJar -x test --no-daemon
 
 # Runtime image
 FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-# Copy the built jar from the build stage
-COPY --from=build /app/build/libs/*.jar /app/app.jar
+COPY --from=build /app/build/libs/app.jar /app/app.jar
+
+#for single targeting file
+#COPY --from=build /app/build/app.jar /app/app.jar
 
 EXPOSE 8080
 
