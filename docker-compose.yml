@@ -1,7 +1,58 @@
 services:
+  mysql-db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: food_ordering_system_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 1223
+    ports:
+      - "3306:3306"
+    healthcheck:
+       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+       interval: 10s
+       timeout: 5s
+       retries: 5
+    volumes:
+      - db_data:/var/lib/mysql
+  redis:
+      image: redis:7.2
+      container_name: redis
+      environment:
+        SPRING_DATA_REDIS_HOST: redis
+        SPRING_DATA_REDIS_PORT: 6379
+      ports:
+        - "6379:6379"
+      restart: unless-stopped
+
   app:
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    container_name: food_delivery
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      DB_HOST: mysql-db
+      DB_PORT: 3306
+      DB_NAME: food_ordering_system_db
+      DB_USER: root
+      DB_PASSWORD: root
+      SPRING_PROFILES_ACTIVE: uat
     ports:
       - "8080:8080"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - mysql-db
+    ports:
+      #application is running on localhost port 8080. For phpmyadmin port 8081
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql-db
+      PMA_USER: admin
+      PMA_PASSWORD: 1223
+volumes:
+ db_data:

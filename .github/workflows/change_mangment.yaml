@@ -1,0 +1,96 @@
+name: Infrastructure Provision with Terraform
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: false
+
+# Define the aws account credentials and the job level
+env:
+  #define the logging level
+  TF_LOG: "verbose"
+
+  AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY}}
+  AWS_SECRECT_KEY: ${{secrets.AWS_SECRECT_KEY}}
+  AWS_REGION: "us_east_1"
+  CLUSTER_NAME: ${{vars.CLUSTER_NAME}}
+  VPC_ID: ${{vars.VPC_ID}}
+  SUBNET_IDS: ${{vars.SUBNET_IDS}}
+  BUCKET_NAME: ${{secrets.S3_BUCKET_NAME}}
+
+  #separate the stage file
+  TF_ENV: "dev"
+
+jobs:
+  Terraform:
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+      actions: read
+
+    name: "Terraform workflow"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # AWS Credential setup
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY}}
+          aws-secret-access-key: ${{ secrets.AWS_SECRECT_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      #Set up Terraform on the runner, be the same version with local
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.12.2"
+        # Terraform init cmd from the local
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="bucket=$BUCKET_NAME" \
+            -backend-config="key=envs/${TF_ENV}/terraform.tfstate" \
+            -backend-config="region=$AWS_REGION" \
+
+        #terraform plan and output the plan stage
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan \
+          -out=tfplan \
+          -var "cluster_name=$CLUSTER_NAME" \
+          -var "region=$AWS_REGION" \
+          -var "vpc_id=$VPC_ID" \
+          -var "control_plane_subnet_ids=$SUBNET_IDS"
+
+      #checkov security scanning tools for Terraform
+      - name: Checkov GitHub Action
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          # This will add both a CLI output to the console and create a results.sarif file
+          output_format: cli,sarif
+          output_file_path: console,results.sarif
+
+      #Upload the result file to the github security tap need permission
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+
+        # Results are generated only on a success or failure
+        # File are uploaded even thouse scanning steps are failed or success
+        if: success() || failure()
+        with:
+          sarif_file: results.sarif
+
+      - name: Terraform apply change
+        # apply the change even if scan steps are failed or success
+        if: success() || failure()
+        run: terraform apply --auto-approve tfplan
