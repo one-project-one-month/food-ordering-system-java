@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org._p1m.foodorderingsystem.common.constant.DeliveryStatus;
-import org._p1m.foodorderingsystem.common.constant.OrderStatus;
 import org._p1m.foodorderingsystem.common.converter.DeliveryStatusConverter;
-import org._p1m.foodorderingsystem.common.converter.OrderStatusConverter;
 import org._p1m.foodorderingsystem.common.entity.MasterData;
 
 import java.math.BigDecimal;
@@ -26,10 +24,6 @@ public class OrderData extends MasterData {
 
     @Column(name = "total_amount", nullable = false, precision = 19, scale = 4)
     private BigDecimal totalAmount;
-
-    @Column(name = "order_status", nullable = false) // Rename column
-    @Convert(converter = OrderStatusConverter.class) // Use new converter
-    private OrderStatus orderStatus = OrderStatus.PENDING;
 
     @Column(name = "delivery_status", nullable = false)
     @Convert(converter = DeliveryStatusConverter.class)
