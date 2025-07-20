@@ -23,6 +23,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 COPY --from=build /app/build/libs/app.jar /app/app.jar
+#COPY --from=build /app/build/libs/*.jar /app/app.jar
 
 #for single targeting file
 #COPY --from=build /app/build/app.jar /app/app.jar
