@@ -4,6 +4,7 @@ import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
 import org._p1m.foodorderingsystem.features.payment.dto.PaymentDTO;
 import org._p1m.foodorderingsystem.features.payment.repository.PaymentRepository;
 import org._p1m.foodorderingsystem.features.payment.service.PaymentService;
+import org._p1m.foodorderingsystem.features.restaurant.repository.RestaurantRepository;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
 import org._p1m.foodorderingsystem.model.PaymentData;
 import org._p1m.foodorderingsystem.model.Restaurant;
@@ -11,7 +12,6 @@ import org._p1m.foodorderingsystem.model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org._p1m.foodorderingsystem.features.payment.repository.RestaurantRepository;
 
 
 @Service
