@@ -51,24 +51,39 @@ public class RestaurantRegistrationRegistrationServiceImpl implements Restaurant
         User restaurantOwner = this.userRepository.findById(restaurantRequest.getResOwnerId())
                 .orElseThrow(() -> new EntityNotFoundException("No user found"));
 
-        Optional<Restaurant> exitedRestaurant = this.restaurantRegistrationRepository.findByOwnerId(restaurantRequest.getResOwnerId());
+        Optional<Restaurant> optionalRestaurant = this.restaurantRegistrationRepository.findByOwnerId(restaurantRequest.getResOwnerId());
 
-        if(exitedRestaurant.isPresent()){
-            throw new DuplicateEntityException("Owner can create one restaurant");
+        if(optionalRestaurant.isPresent()){
+            Restaurant existedRestaurant = optionalRestaurant.get();
+            if (existedRestaurant.getStatus() == Status.INACTIVE){
+                existedRestaurant.setStatus(Status.ACTIVE);
+                existedRestaurant.setNrc(restaurantRequest.getNrc());
+                existedRestaurant.setRestaurantName(restaurantRequest.getRestaurantName());
+                existedRestaurant.setContactNumber(restaurantRequest.getContactNumber());
+                existedRestaurant.setKpayNumber(restaurantRequest.getKpayNumber());
+                existedRestaurant.setOwner(restaurantOwner);
+                restaurantRegistrationRepository.save(existedRestaurant);
+                RestaurantResponseDto dto = modelMapper.map(existedRestaurant, RestaurantResponseDto.class);
+                return ApiResponse.builder().success(1).code(HttpStatus.CREATED.value())
+                        .data(Map.of("createdRestaurant", dto))
+                        .message("Restaurant created.").build();
+            }else{
+                throw new DuplicateEntityException("Owner can create one restaurant");
+            }
+        }else{
+            Restaurant restaurant = new Restaurant();
+            restaurant.setOwner(restaurantOwner);
+            restaurant.setNrc(restaurantRequest.getNrc());
+            restaurant.setRestaurantName(restaurantRequest.getRestaurantName());
+            restaurant.setContactNumber(restaurantRequest.getContactNumber());
+            restaurant.setKpayNumber(restaurantRequest.getKpayNumber());
+            restaurantRegistrationRepository.save(restaurant);
+            RestaurantResponseDto dto = modelMapper.map(restaurant, RestaurantResponseDto.class);
+            dto.setResOwnerId(restaurantOwner.getId());
+            return ApiResponse.builder().success(1).code(HttpStatus.CREATED.value())
+                    .data(Map.of("createdRestaurant", dto))
+                    .message("Restaurant created.").build();
         }
-
-        Restaurant restaurant = new Restaurant();
-        restaurant.setOwner(restaurantOwner);
-        restaurant.setNrc(restaurantRequest.getNrc());
-        restaurant.setRestaurantName(restaurantRequest.getRestaurantName());
-        restaurant.setContactNumber(restaurantRequest.getContactNumber());
-        restaurant.setKpayNumber(restaurantRequest.getKpayNumber());
-        restaurantRegistrationRepository.save(restaurant);
-        RestaurantResponseDto dto = modelMapper.map(restaurant, RestaurantResponseDto.class);
-        dto.setResOwnerId(restaurantOwner.getId());
-        return ApiResponse.builder().success(1).code(HttpStatus.CREATED.value())
-                .data(Map.of("createdRestaurant", dto))
-                .message("Restaurant created.").build();
 
     }
 
@@ -112,7 +127,7 @@ public class RestaurantRegistrationRegistrationServiceImpl implements Restaurant
     @Override
     @Transactional
     public ApiResponse updateRestaurant(Long id, RestaurantUpdateRequest restaurantUpdateRequest) {
-        Restaurant restaurant = this.restaurantRegistrationRepository.findByIdAndStatus(id,Status.ACTIVE)
+        Restaurant restaurant = this.restaurantRegistrationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with id" + id));
 
         restaurant.setId(id);
