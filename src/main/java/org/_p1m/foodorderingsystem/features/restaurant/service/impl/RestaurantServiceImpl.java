@@ -34,7 +34,11 @@ public class RestaurantServiceImpl implements RestaurantService {
         List<RestaurantResponseDto> responseDtos = restaurants.stream()
                 .filter(r -> r.getStatus() == Status.ACTIVE) 
  
-                .map(r -> modelMapper.map(r, RestaurantResponseDto.class))
+                .map(r -> {
+                    RestaurantResponseDto dto = modelMapper.map(r, RestaurantResponseDto.class);
+                    dto.setResOwnerId(r.getOwner() != null ? r.getOwner().getId() : null);
+                    return dto;
+                    })
                 .collect(Collectors.toList());
 
         return ApiResponse.builder()
@@ -44,4 +48,22 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .data(Map.of("restaurants", responseDtos))
                 .build();
     }
+
+	@Override
+	public ApiResponse getRestaurantByUserId(Long userId) {
+		List<Restaurant> restaurants = restaurantRepository.findByOwnerIdAndStatus(userId,Status.ACTIVE);
+		List<RestaurantResponseDto> responseDtos = restaurants.stream()
+                .map(r -> {
+                RestaurantResponseDto dto = modelMapper.map(r, RestaurantResponseDto.class);
+                dto.setResOwnerId(r.getOwner() != null ? r.getOwner().getId() : null);
+                return dto;
+                })
+                .collect(Collectors.toList());
+		return ApiResponse.builder()
+                .success(1)
+                .code(HttpStatus.OK.value())
+                .message("Restaurant retrieve by user id successfully")
+                .data(Map.of("restaurants", responseDtos))
+                .build();
+	}
 }
