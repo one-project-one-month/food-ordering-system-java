@@ -5,6 +5,7 @@ import org._p1m.foodorderingsystem.common.constant.Status;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
+import org._p1m.foodorderingsystem.config.response.dto.PaginationMeta;
 import org._p1m.foodorderingsystem.features.order.dto.response.OrderResponseDto;
 import org._p1m.foodorderingsystem.features.superadmin_manage_user.dto.response.DeletedUserResponse;
 import org._p1m.foodorderingsystem.features.superadmin_manage_user.dto.response.SuperAdminDashBoardResponse;
@@ -87,10 +88,10 @@ public class SuperAdminServiceImpl implements SuperAdminService {
                         .build()
                 ).toList();
 
-        Map<String, Object> meta = new HashMap<>();
-        meta.put("totalItems", profilePage.getTotalElements());
-        meta.put("totalPages", profilePage.getTotalPages());
-        meta.put("currentPage", profilePage);
+        PaginationMeta meta = new PaginationMeta();
+        meta.setTotalItems(profilePage.getTotalElements());
+        meta.setTotalPages(profilePage.getTotalPages());
+        meta.setCurrentPage(pageable.getPageNumber()+1);
         return PaginatedApiResponse.<SuperAdminDashBoardResponse>builder()
                 .success(1)
                 .code(HttpStatus.OK.value())

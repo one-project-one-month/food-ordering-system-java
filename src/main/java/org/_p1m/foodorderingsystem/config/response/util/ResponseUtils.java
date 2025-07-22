@@ -35,9 +35,8 @@ public class ResponseUtils {
         if (paginatedResponse.getMeta() == null) {
             final String method = request.getMethod();
             final String endpoint = request.getRequestURI();
-            paginatedResponse.setMeta(new HashMap<>());
-            paginatedResponse.getMeta().put("method", method);
-            paginatedResponse.getMeta().put("endpoint", endpoint);
+            paginatedResponse.getMeta().setMethod(method);
+            paginatedResponse.getMeta().setEndpoint(endpoint);
         }
         return new ResponseEntity<>(paginatedResponse, status);
     }

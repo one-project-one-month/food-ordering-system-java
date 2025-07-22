@@ -11,6 +11,7 @@ import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
+import org._p1m.foodorderingsystem.config.response.dto.PaginationMeta;
 import org._p1m.foodorderingsystem.features.category.repository.CategoryRepository;
 import org._p1m.foodorderingsystem.features.menu.dto.request.CreateMenuRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.request.GetAllMenuRequest;
@@ -135,10 +136,10 @@ public class ManageMenuServiceImpl implements ManageMenuService {
         final int size = getAllMenuRequest.size();
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Menu> pageResult = manageMenuRepository.findAll(pageable);
-        Map<String, Object> meta = new HashMap<>();
-        meta.put("totalItems", pageResult.getTotalElements());
-        meta.put("totalPages", pageResult.getTotalPages());
-        meta.put("currentPage", page);
+        PaginationMeta meta = new PaginationMeta();
+        meta.setTotalItems(pageResult.getTotalElements());
+        meta.setTotalPages(pageResult.getTotalPages());
+        meta.setCurrentPage(page);
         List<MenuResponseDto> data = pageResult.map(this::mapToDto).toList();
         return PaginatedApiResponse.<MenuResponseDto>builder()
                 .success(1)

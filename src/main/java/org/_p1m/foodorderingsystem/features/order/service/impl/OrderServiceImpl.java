@@ -3,6 +3,7 @@ package org._p1m.foodorderingsystem.features.order.service.impl;
 import lombok.RequiredArgsConstructor;
 import org._p1m.foodorderingsystem.common.constant.DeliveryStatus;
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
+import org._p1m.foodorderingsystem.config.response.dto.PaginationMeta;
 import org._p1m.foodorderingsystem.features.menu.dto.responses.MenuResponseDto;
 import org._p1m.foodorderingsystem.features.order.dto.request.OrderRequestDto;
 import org._p1m.foodorderingsystem.features.order.dto.response.OrderResponseDto;
@@ -45,10 +46,10 @@ public class OrderServiceImpl implements OrderService {
                     return dto;
                 })
                 .toList();
-        Map<String, Object> meta = new HashMap<>();
-        meta.put("totalItems", page.getTotalElements());
-        meta.put("totalPages", page.getTotalPages());
-        meta.put("currentPage", page);
+        PaginationMeta meta = new PaginationMeta();
+        meta.setTotalItems(page.getTotalElements());
+        meta.setTotalPages(page.getTotalPages());
+        meta.setCurrentPage(pageable.getPageNumber()+1);
         return PaginatedApiResponse.<OrderResponseDto>builder()
                 .success(1)
                 .code(HttpStatus.OK.value())
