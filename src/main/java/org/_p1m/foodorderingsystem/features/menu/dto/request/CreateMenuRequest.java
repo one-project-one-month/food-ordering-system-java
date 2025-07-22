@@ -30,11 +30,11 @@ public class CreateMenuRequest {
     @NotNull(message = "Category ID is required")
     private Long categoryId;
 
-    @Valid
-    private List<DishSizeRequest> dishSizes;
-
-    @Valid
-    private List<ExtraRequest> extras;
+//    @Valid
+//    private List<DishSizeRequest> dishSizes;
+//
+//    @Valid
+//    private List<ExtraRequest> extras;
 
     @Data
     public static class DishSizeRequest {

@@ -3,6 +3,7 @@ package org._p1m.foodorderingsystem.features.order.service.impl;
 import lombok.RequiredArgsConstructor;
 import org._p1m.foodorderingsystem.common.constant.DeliveryStatus;
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
+import org._p1m.foodorderingsystem.features.menu.dto.responses.MenuResponseDto;
 import org._p1m.foodorderingsystem.features.order.dto.request.OrderRequestDto;
 import org._p1m.foodorderingsystem.features.order.dto.response.OrderResponseDto;
 import org._p1m.foodorderingsystem.features.order.repository.OrderRepo;
@@ -12,9 +13,11 @@ import org._p1m.foodorderingsystem.model.OrderData;
 import org._p1m.foodorderingsystem.model.PaymentData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,20 +45,15 @@ public class OrderServiceImpl implements OrderService {
                     return dto;
                 })
                 .toList();
-
+        Map<String, Object> meta = new HashMap<>();
+        meta.put("totalItems", page.getTotalElements());
+        meta.put("totalPages", page.getTotalPages());
+        meta.put("currentPage", page);
         return PaginatedApiResponse.<OrderResponseDto>builder()
                 .success(1)
-                .code(200)
+                .code(HttpStatus.OK.value())
                 .message("Fetched successfully")
-                .meta(Map.of( // optional meta info
-                        "additionalProp1", Map.of(),
-                        "additionalProp2", Map.of(),
-                        "additionalProp3", Map.of()
-                ))
-                .totalItems(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .currentPage(page.getNumber())
-                .pageSize(page.getSize())
+                .meta(meta)
                 .data(data)
                 .build();
     }

@@ -2,6 +2,7 @@ package org._p1m.foodorderingsystem.config.response.util;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
@@ -31,18 +32,6 @@ public class ResponseUtils {
             PaginatedApiResponse<T> paginatedResponse) {
 
         final HttpStatus status = HttpStatus.valueOf(paginatedResponse.getCode());
-
-//        PaginatedApiResponse<T> paginatedResponse = PaginatedApiResponse.<T>builder()
-//                .success(baseResponse.getSuccess())
-//                .code(baseResponse.getCode())
-//                .message(baseResponse.getMessage())
-//                .totalItems(totalItems)
-//                .totalPages(totalPages)
-//                .currentPage(currentPage)
-//                .pageSize(pageSize)
-//                .data(data)
-//                .build();
-
         if (paginatedResponse.getMeta() == null) {
             final String method = request.getMethod();
             final String endpoint = request.getRequestURI();
@@ -50,7 +39,6 @@ public class ResponseUtils {
             paginatedResponse.getMeta().put("method", method);
             paginatedResponse.getMeta().put("endpoint", endpoint);
         }
-
         return new ResponseEntity<>(paginatedResponse, status);
     }
 }

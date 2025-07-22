@@ -1,7 +1,11 @@
 package org._p1m.foodorderingsystem.features.menu.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org._p1m.foodorderingsystem.common.storage.StorageService;
 import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
@@ -15,7 +19,11 @@ import org._p1m.foodorderingsystem.features.menu.dto.responses.MenuResponseDto;
 import org._p1m.foodorderingsystem.features.menu.repository.ManageMenuRepository;
 import org._p1m.foodorderingsystem.features.menu.service.ManageMenuService;
 import org._p1m.foodorderingsystem.features.restaurant.repository.RestaurantRepository;
-import org._p1m.foodorderingsystem.model.*;
+import org._p1m.foodorderingsystem.model.Category;
+import org._p1m.foodorderingsystem.model.DishSize;
+import org._p1m.foodorderingsystem.model.Extra;
+import org._p1m.foodorderingsystem.model.Menu;
+import org._p1m.foodorderingsystem.model.Restaurant;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,10 +34,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -65,14 +71,14 @@ public class ManageMenuServiceImpl implements ManageMenuService {
         menu.setCategory(category);
         menu.setRestaurant(restaurant);
 
-        createMenuRequest.getDishSizes().forEach(dishSizeRequest -> {
-         DishSize dishSize =   modelMapper.map(dishSizeRequest, DishSize.class);
-         menu.addDishSize(dishSize);
-        });
-        createMenuRequest.getExtras().forEach(extraRequest -> {
-            Extra extra = modelMapper.map(extraRequest, Extra.class);
-            menu.addExtra(extra);
-        });
+//        createMenuRequest.getDishSizes().forEach(dishSizeRequest -> {
+//         DishSize dishSize =   modelMapper.map(dishSizeRequest, DishSize.class);
+//         menu.addDishSize(dishSize);
+//        });
+//        createMenuRequest.getExtras().forEach(extraRequest -> {
+//            Extra extra = modelMapper.map(extraRequest, Extra.class);
+//            menu.addExtra(extra);
+//        });
 
         this.manageMenuRepository.save(menu);
         MenuResponseDto dto = modelMapper.map(menu, MenuResponseDto.class);
@@ -129,15 +135,16 @@ public class ManageMenuServiceImpl implements ManageMenuService {
         final int size = getAllMenuRequest.size();
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Menu> pageResult = manageMenuRepository.findAll(pageable);
+        Map<String, Object> meta = new HashMap<>();
+        meta.put("totalItems", pageResult.getTotalElements());
+        meta.put("totalPages", pageResult.getTotalPages());
+        meta.put("currentPage", page);
         List<MenuResponseDto> data = pageResult.map(this::mapToDto).toList();
         return PaginatedApiResponse.<MenuResponseDto>builder()
                 .success(1)
                 .code(HttpStatus.OK.value())
                 .message("Menus retrieved successfully.")
-                .totalItems(pageResult.getTotalElements())
-                .totalPages(pageResult.getTotalPages())
-                .currentPage(page)
-                .pageSize(size)
+                .meta(meta)
                 .data(data)
                 .build();
     }

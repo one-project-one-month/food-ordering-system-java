@@ -5,6 +5,7 @@ import org._p1m.foodorderingsystem.common.constant.Status;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
+import org._p1m.foodorderingsystem.features.order.dto.response.OrderResponseDto;
 import org._p1m.foodorderingsystem.features.superadmin_manage_user.dto.response.DeletedUserResponse;
 import org._p1m.foodorderingsystem.features.superadmin_manage_user.dto.response.SuperAdminDashBoardResponse;
 import org._p1m.foodorderingsystem.features.superadmin_manage_user.service.SuperAdminService;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -85,13 +87,15 @@ public class SuperAdminServiceImpl implements SuperAdminService {
                         .build()
                 ).toList();
 
-
-        return PaginatedApiResponse.<SuperAdminDashBoardResponse>builder().success(1).code(HttpStatus.OK.value())
-                .message("Successfully fetching user data")
-                .totalItems(profilePage.getTotalElements())
-                .totalPages(profilePage.getTotalPages())
-                .currentPage(profilePage.getNumber() + 1)
-                .pageSize(profilePage.getSize())
+        Map<String, Object> meta = new HashMap<>();
+        meta.put("totalItems", profilePage.getTotalElements());
+        meta.put("totalPages", profilePage.getTotalPages());
+        meta.put("currentPage", profilePage);
+        return PaginatedApiResponse.<SuperAdminDashBoardResponse>builder()
+                .success(1)
+                .code(HttpStatus.OK.value())
+                .message("Fetched successfully")
+                .meta(meta)
                 .data(userResponses)
                 .build();
     }

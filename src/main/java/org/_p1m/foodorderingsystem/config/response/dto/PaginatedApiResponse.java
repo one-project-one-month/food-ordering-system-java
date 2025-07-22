@@ -14,9 +14,9 @@ public class PaginatedApiResponse<T>  {
     private String message;
     private Map<String, Object> meta;
     
-    private long totalItems;
-    private int totalPages;
-    private int currentPage;
-    private int pageSize;
+//    private long totalItems;
+//    private int totalPages;
+//    private int currentPage;
+//    private int pageSize;
     private List<T> data;
 }
