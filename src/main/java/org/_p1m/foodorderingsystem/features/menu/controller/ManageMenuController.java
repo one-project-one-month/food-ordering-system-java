@@ -8,6 +8,7 @@ import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
 import org._p1m.foodorderingsystem.features.menu.dto.request.CreateMenuRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.request.GetAllMenuRequest;
+import org._p1m.foodorderingsystem.features.menu.dto.request.UpdateMenuRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.request.UploadMenuImageRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.responses.MenuResponseDto;
 import org._p1m.foodorderingsystem.features.menu.service.ManageMenuService;
@@ -133,7 +134,7 @@ public class ManageMenuController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Request body with new menu data",
                     required = true,
-                    content = @Content(schema = @Schema(implementation = CreateMenuRequest.class))
+                    content = @Content(schema = @Schema(implementation = UpdateMenuRequest.class))
             ),
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Menus update successfully"),
@@ -142,7 +143,7 @@ public class ManageMenuController {
             }
     )
     public ResponseEntity<ApiResponse> updateManu(@PathVariable(name="id") Long id,
-                                                  @RequestBody CreateMenuRequest createMenuRequest,
+                                                  @RequestBody UpdateMenuRequest createMenuRequest,
                                                   HttpServletRequest request) {
         final ApiResponse response = manageMenuService.updateMenu(id, createMenuRequest);
         return ResponseUtils.buildResponse(request, response);
