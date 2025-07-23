@@ -3,6 +3,7 @@ package org._p1m.foodorderingsystem.features.menu.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
 import org._p1m.foodorderingsystem.features.menu.dto.request.DishSizeRequest;
+import org._p1m.foodorderingsystem.features.menu.dto.request.ExtraRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.request.UpdateDishSizeRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.request.UploadMenuImageRequest;
 import org._p1m.foodorderingsystem.features.menu.service.DishSizeService;
@@ -39,7 +41,16 @@ public class DishSizeController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Request body with new dish size data",
                     required = true,
-                    content = @Content(schema = @Schema(implementation = DishSizeRequest.class))
+            		content = @Content(
+            			    schema = @Schema(implementation = DishSizeRequest.class),
+            			    examples = @ExampleObject(value = """
+            			    {
+            			      "name": "string",
+            			      "price": 0,
+            			      "menuId": 10
+            			    }
+            			    """)
+            			  )
             ),
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Dish Size created successfully"),

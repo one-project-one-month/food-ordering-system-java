@@ -1,20 +1,30 @@
 package org._p1m.foodorderingsystem.features.menu.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org._p1m.foodorderingsystem.common.storage.StorageService;
 import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
+import org._p1m.foodorderingsystem.config.response.dto.PaginationMeta;
 import org._p1m.foodorderingsystem.features.category.repository.CategoryRepository;
 import org._p1m.foodorderingsystem.features.menu.dto.request.CreateMenuRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.request.GetAllMenuRequest;
+import org._p1m.foodorderingsystem.features.menu.dto.request.UpdateMenuRequest;
 import org._p1m.foodorderingsystem.features.menu.dto.responses.MenuResponseDto;
 import org._p1m.foodorderingsystem.features.menu.repository.ManageMenuRepository;
 import org._p1m.foodorderingsystem.features.menu.service.ManageMenuService;
 import org._p1m.foodorderingsystem.features.restaurant.repository.RestaurantRepository;
-import org._p1m.foodorderingsystem.model.*;
+import org._p1m.foodorderingsystem.model.Category;
+import org._p1m.foodorderingsystem.model.DishSize;
+import org._p1m.foodorderingsystem.model.Extra;
+import org._p1m.foodorderingsystem.model.Menu;
+import org._p1m.foodorderingsystem.model.Restaurant;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,10 +35,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -64,14 +72,14 @@ public class ManageMenuServiceImpl implements ManageMenuService {
         menu.setCategory(category);
         menu.setRestaurant(restaurant);
 
-        createMenuRequest.getDishSizes().forEach(dishSizeRequest -> {
-         DishSize dishSize =   modelMapper.map(dishSizeRequest, DishSize.class);
-         menu.addDishSize(dishSize);
-        });
-        createMenuRequest.getExtras().forEach(extraRequest -> {
-            Extra extra = modelMapper.map(extraRequest, Extra.class);
-            menu.addExtra(extra);
-        });
+//        createMenuRequest.getDishSizes().forEach(dishSizeRequest -> {
+//         DishSize dishSize =   modelMapper.map(dishSizeRequest, DishSize.class);
+//         menu.addDishSize(dishSize);
+//        });
+//        createMenuRequest.getExtras().forEach(extraRequest -> {
+//            Extra extra = modelMapper.map(extraRequest, Extra.class);
+//            menu.addExtra(extra);
+//        });
 
         this.manageMenuRepository.save(menu);
         MenuResponseDto dto = modelMapper.map(menu, MenuResponseDto.class);
@@ -128,34 +136,31 @@ public class ManageMenuServiceImpl implements ManageMenuService {
         final int size = getAllMenuRequest.size();
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Menu> pageResult = manageMenuRepository.findAll(pageable);
+        PaginationMeta meta = new PaginationMeta();
+        meta.setTotalItems(pageResult.getTotalElements());
+        meta.setTotalPages(pageResult.getTotalPages());
+        meta.setCurrentPage(page);
         List<MenuResponseDto> data = pageResult.map(this::mapToDto).toList();
         return PaginatedApiResponse.<MenuResponseDto>builder()
                 .success(1)
                 .code(HttpStatus.OK.value())
                 .message("Menus retrieved successfully.")
-                .totalItems(pageResult.getTotalElements())
-                .totalPages(pageResult.getTotalPages())
-                .currentPage(page)
-                .pageSize(size)
+                .meta(meta)
                 .data(data)
                 .build();
     }
 
     @Override
-    public ApiResponse updateMenu(Long menuId, CreateMenuRequest request) {
+    public ApiResponse updateMenu(Long menuId, UpdateMenuRequest request) {
         Menu menu = manageMenuRepository.findById(menuId)
                 .orElseThrow(() -> new EntityNotFoundException("Menu not found!"));
 
-        Restaurant restaurant = restaurantRepository.findById(request.getRestaurantId())
-                .orElseThrow(() -> new EntityNotFoundException("Restaurant not found!"));
-
-        Category category = categoryRepository.findByIdAndRestaurantId(request.getCategoryId(), request.getRestaurantId())
-                .orElseThrow(()-> new EntityNotFoundException("Category not found for this restaurant!"));
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(()-> new EntityNotFoundException("Category not found!"));
 
         menu.setDish(request.getDish());
         menu.setPrice(request.getPrice());
         menu.setStatus(request.getStatus());
-        menu.setRestaurant(restaurant);
         menu.setCategory(category);
 
         menu.getDishSizes().clear();

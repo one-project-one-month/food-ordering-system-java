@@ -1,8 +1,8 @@
 package org._p1m.foodorderingsystem.features.order.controller;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import java.util.Collections;
+import java.util.List;
+
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
 import org._p1m.foodorderingsystem.features.order.dto.request.OrderRequestDto;
 import org._p1m.foodorderingsystem.features.order.dto.response.OrderResponseDto;
@@ -11,15 +11,23 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("${api.base.path}/requestOrder")
 @RequiredArgsConstructor
+@Tag(name = "Order API", description = "Endpoints for managing orders")
 public class OrderController {
 
     private final OrderService orderService;
@@ -43,11 +51,7 @@ public class OrderController {
                 .success(1)
                 .code(201)
                 .message("Order created successfully")
-                .meta(Map.of(
-                        "additionalProp1", Map.of(),
-                        "additionalProp2", Map.of(),
-                        "additionalProp3", Map.of()
-                ))
+                .meta(null)
                 .data(Collections.singletonList(id))
                 .build();
 
@@ -62,7 +66,7 @@ public class OrderController {
                 .success(1)
                 .code(200)
                 .message("Order updated successfully")
-                .meta(Map.of())
+                .meta(null)
                 .data(null)
                 .build();
 
@@ -77,8 +81,8 @@ public class OrderController {
                 .success(1)
                 .code(200)
                 .message("Order fetched successfully")
-                .meta(Map.of())
-                .data((List<OrderResponseDto>) dto)
+                .meta(null)
+                .data(List.of(dto))
                 .build();
 
         return ResponseEntity.ok(response);
@@ -92,7 +96,7 @@ public class OrderController {
                 .success(1)
                 .code(200)
                 .message("Delivery status fetched successfully")
-                .meta(Map.of())
+                .meta(null)
                 .data(Collections.singletonList(status))
                 .build();
 
