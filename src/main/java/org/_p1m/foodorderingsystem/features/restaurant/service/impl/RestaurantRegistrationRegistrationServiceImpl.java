@@ -127,7 +127,7 @@ public class RestaurantRegistrationRegistrationServiceImpl implements Restaurant
     @Override
     @Transactional
     public ApiResponse updateRestaurant(Long id, RestaurantUpdateRequest restaurantUpdateRequest) {
-        Restaurant restaurant = this.restaurantRegistrationRepository.findById(id)
+        Restaurant restaurant = this.restaurantRegistrationRepository.findByIdAndStatus(id,Status.ACTIVE)
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with id" + id));
 
         restaurant.setId(id);
