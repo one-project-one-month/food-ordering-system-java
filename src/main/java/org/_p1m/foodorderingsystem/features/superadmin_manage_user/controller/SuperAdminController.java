@@ -86,7 +86,7 @@ public class SuperAdminController {
 //                page * size + userPage.getNumberOfElements(),
 //                userPage.getTotalElements()
 //        ));
-        return ResponseUtils.buildPaginatedResponse (request, response);
+        return ResponseUtils.buildPaginatedResponse(request, response);
     }
 
     @GetMapping("/test")

@@ -1,11 +1,10 @@
 package org._p1m.foodorderingsystem.config.response.util;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
+import org._p1m.foodorderingsystem.features.processOrder.dto.response.OrderResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -26,7 +25,9 @@ public class ResponseUtils {
 
         return new ResponseEntity<>(response, status);
     }
-    
+    public static Object success(OrderResponseDTO response, String s) {
+        return null;
+    }
     public static <T> ResponseEntity<PaginatedApiResponse<T>> buildPaginatedResponse(
             final HttpServletRequest request,
             PaginatedApiResponse<T> paginatedResponse) {
