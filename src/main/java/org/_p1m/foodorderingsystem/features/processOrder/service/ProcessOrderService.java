@@ -4,7 +4,7 @@ import org._p1m.foodorderingsystem.features.processOrder.dto.request.ProcessOrde
 import org._p1m.foodorderingsystem.features.processOrder.dto.request.UpdateOrderStatusRequestDTO;
 import org._p1m.foodorderingsystem.features.processOrder.dto.response.OrderResponseDTO;
 
-public interface OrderService {
+public interface ProcessOrderService {
     OrderResponseDTO updateOrderStatus(Long orderId, UpdateOrderStatusRequestDTO request);
 
     OrderResponseDTO processOrder(ProcessOrderRequest request);

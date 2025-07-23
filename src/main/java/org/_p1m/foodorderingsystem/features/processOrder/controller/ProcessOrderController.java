@@ -5,17 +5,20 @@ import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.features.processOrder.dto.request.ProcessOrderRequest;
 import org._p1m.foodorderingsystem.features.processOrder.dto.request.UpdateOrderStatusRequestDTO;
 import org._p1m.foodorderingsystem.features.processOrder.dto.response.OrderResponseDTO;
-import org._p1m.foodorderingsystem.features.processOrder.service.OrderService;
+import org._p1m.foodorderingsystem.features.processOrder.service.ProcessOrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/api/orders")
-public class OrderController {
-    private final OrderService orderService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-    public OrderController(OrderService orderService) {
+@RestController
+@Tag(name = "Order API", description = "Endpoints for managing orders")
+@RequestMapping("/${api.base.path}/orders")
+public class ProcessOrderController {
+    private final ProcessOrderService orderService;
+
+    public ProcessOrderController(ProcessOrderService orderService) {
         this.orderService = orderService;
     }
 
