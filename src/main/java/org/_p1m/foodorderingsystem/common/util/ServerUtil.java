@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org._p1m.foodorderingsystem.common.service.EmailService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -36,6 +37,7 @@ public class ServerUtil {
 
     private final StringRedisTemplate redisTemplate;
     private final JavaMailSender javaMailSender;
+    private final EmailService emailService;
 
     @Value("${spring.mail.username}")
     private String fromMail;
@@ -91,7 +93,8 @@ public class ServerUtil {
         helper.setText(htmlContent , true);
         helper.addInline("logoImage", new ClassPathResource("templates/logo/logo.png"));
 
-        javaMailSender.send(message);
+//        javaMailSender.send(message);
+        this.emailService.sendEmail(email, "Your FoodOrderingSystem Password Reset Code", htmlContent);
     }
 
 
