@@ -8,17 +8,21 @@ import org._p1m.foodorderingsystem.features.processOrder.dto.request.UpdateOrder
 import org._p1m.foodorderingsystem.features.processOrder.dto.response.OrderResponseDTO;
 import org._p1m.foodorderingsystem.features.processOrder.repository.DeliveryDataRepository;
 import org._p1m.foodorderingsystem.features.processOrder.repository.OrderRepository;
-import org._p1m.foodorderingsystem.features.processOrder.repository.RestaurantRepository;
-import org._p1m.foodorderingsystem.features.processOrder.repository.RestaurantVendorRepository;
-import org._p1m.foodorderingsystem.features.processOrder.service.OrderService;
+import org._p1m.foodorderingsystem.features.processOrder.service.ProcessOrderService;
+import org._p1m.foodorderingsystem.features.restaurant.repository.RestaurantRepository;
+import org._p1m.foodorderingsystem.features.restaurant_vendors.repository.RestaurantVendorRepository;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
-import org._p1m.foodorderingsystem.model.*;
+import org._p1m.foodorderingsystem.model.DeliveryData;
+import org._p1m.foodorderingsystem.model.OrderData;
+import org._p1m.foodorderingsystem.model.Restaurant;
+import org._p1m.foodorderingsystem.model.RestaurantVendor;
+import org._p1m.foodorderingsystem.model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class OrderServiceImpl implements OrderService {
+public class ProcessOrderServiceImpl implements ProcessOrderService {
     private final OrderRepository orderRepository;
     private final DeliveryDataRepository deliveryDataRepository;
     private final RestaurantVendorRepository restaurantVendorRepository;
@@ -26,7 +30,7 @@ public class OrderServiceImpl implements OrderService {
     private final RestaurantRepository restaurantRepository;
     private final ModelMapper modelMapper;
 
-    public OrderServiceImpl(OrderRepository orderRepository, DeliveryDataRepository deliveryDataRepository, RestaurantVendorRepository restaurantVendorRepository, UserRepository userRepository, RestaurantRepository restaurantRepository, ModelMapper modelMapper) {
+    public ProcessOrderServiceImpl(OrderRepository orderRepository, DeliveryDataRepository deliveryDataRepository, RestaurantVendorRepository restaurantVendorRepository, UserRepository userRepository, RestaurantRepository restaurantRepository, ModelMapper modelMapper) {
         this.orderRepository = orderRepository;
         this.deliveryDataRepository = deliveryDataRepository;
         this.restaurantVendorRepository = restaurantVendorRepository;
