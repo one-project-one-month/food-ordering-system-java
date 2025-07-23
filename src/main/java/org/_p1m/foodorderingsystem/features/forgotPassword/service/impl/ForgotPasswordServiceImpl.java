@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org._p1m.foodorderingsystem.common.service.EmailService;
 import org._p1m.foodorderingsystem.common.util.ServerUtil;
 import org._p1m.foodorderingsystem.features.forgotPassword.service.ForgotPasswordService;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +31,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     private final StringRedisTemplate redisTemplate;
 
     private static final long EXPIRATION_MINUTES = 15;
+    private final EmailService emailService;
 
     @Value("${spring.mail.username}")
     private String fromMail;
@@ -67,7 +69,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
         helper.setText(htmlContent , true);
         helper.addInline("logoImage", new ClassPathResource("templates/logo/logo.png"));
 
-        javaMailSender.send(message);
+//        javaMailSender.send(message);
+        this.emailService.sendEmail(email, "Your FoodOrderingSystem Password Reset Code", htmlContent);
     }
 
     @Override
