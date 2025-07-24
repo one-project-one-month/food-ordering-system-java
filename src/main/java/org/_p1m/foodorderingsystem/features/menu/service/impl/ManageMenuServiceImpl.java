@@ -2,10 +2,11 @@ package org._p1m.foodorderingsystem.features.menu.service.impl;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.criteria.Predicate;
+import org._p1m.foodorderingsystem.common.constant.Status;
 import org._p1m.foodorderingsystem.common.storage.StorageService;
 import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -135,7 +137,8 @@ public class ManageMenuServiceImpl implements ManageMenuService {
         final int page = getAllMenuRequest.page();
         final int size = getAllMenuRequest.size();
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Menu> pageResult = manageMenuRepository.findAll(pageable);
+        Specification<Menu> spec = menuSpecification(getAllMenuRequest);
+        Page<Menu> pageResult = manageMenuRepository.findAll(spec, pageable);
         PaginationMeta meta = new PaginationMeta();
         meta.setTotalItems(pageResult.getTotalElements());
         meta.setTotalPages(pageResult.getTotalPages());
@@ -148,6 +151,35 @@ public class ManageMenuServiceImpl implements ManageMenuService {
                 .meta(meta)
                 .data(data)
                 .build();
+    }
+
+    private Specification<Menu> menuSpecification(GetAllMenuRequest getAllMenuRequest) {
+        return (root, query, cb) -> {
+            Predicate predicate = cb.conjunction();
+
+            if (getAllMenuRequest.dish() != null && !getAllMenuRequest.dish().isBlank()) {
+                predicate = cb.and(predicate,
+                        cb.like(cb.lower(root.get("dish")), "%" + getAllMenuRequest.dish().toLowerCase() + "%"));
+            }
+
+            if (getAllMenuRequest.price() != null) {
+                predicate = cb.and(predicate,
+                        cb.lessThanOrEqualTo(root.get("price"), getAllMenuRequest.price()));
+            }
+
+            if (getAllMenuRequest.categoryId() != null) {
+                predicate = cb.and(predicate,
+                        cb.equal(root.get("category").get("id"), getAllMenuRequest.categoryId()));
+            }
+
+
+            if (getAllMenuRequest.status() != null) {
+                    Status status = Status.valueOf(getAllMenuRequest.status().toUpperCase());
+                    predicate = cb.and(predicate,
+                            cb.equal(root.get("status"), status));
+            }
+            return predicate;
+        };
     }
 
     @Override
