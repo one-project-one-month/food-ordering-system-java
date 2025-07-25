@@ -13,6 +13,7 @@ import org._p1m.foodorderingsystem.features.superadmin_manage_user.service.Super
 import org._p1m.foodorderingsystem.features.users.repository.ProfileRepository;
 import org._p1m.foodorderingsystem.features.users.repository.SuperAdminManageUserRepository;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
+import org._p1m.foodorderingsystem.model.Profile;
 import org._p1m.foodorderingsystem.model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -40,16 +41,14 @@ public class SuperAdminServiceImpl implements SuperAdminService {
         User user = userRepo.findById(id)
                             .orElseThrow(() -> new EntityNotFoundException("User id " + id + " is not Found"));
 
-        String userName = user.getProfile().getName();
-
         user.setStatus(Status.INACTIVE);
         user.delete();
         User updatedUser = userRepo.save(user);
 
         DeletedUserResponse deletedUserResponse = modelMapper.map(user,DeletedUserResponse.class);
 
-        deletedUserResponse.setName(userName);
-//        deletedUserResponse.setDeletedAt(user.getDeletedAt().toString());
+        deletedUserResponse.setDeletedAt(user.getDeletedAt().toString());
+        deletedUserResponse.setRole(user.getRole().getName());
 
         return ApiResponse.builder().success(1).code(HttpStatus.OK.value())
                 .data(Map.of("Deleted User",deletedUserResponse))
