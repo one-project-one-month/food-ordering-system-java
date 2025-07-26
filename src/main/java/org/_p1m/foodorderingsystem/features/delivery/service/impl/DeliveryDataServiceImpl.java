@@ -1,24 +1,34 @@
 package org._p1m.foodorderingsystem.features.delivery.service.impl;
 
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org._p1m.foodorderingsystem.common.constant.DeliveryStatus;
 import org._p1m.foodorderingsystem.common.constant.Status;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
+import org._p1m.foodorderingsystem.features.delivery.dto.request.ApplyDeliveryStaffRequest;
 import org._p1m.foodorderingsystem.features.delivery.dto.request.AssignDeliveryRequest;
+import org._p1m.foodorderingsystem.features.delivery.dto.response.ApplyDeliveryResponse;
 import org._p1m.foodorderingsystem.features.delivery.dto.response.AssignDeliveryResponseDto;
 import org._p1m.foodorderingsystem.features.delivery.dto.response.GetAllVendorsResponseDto;
 import org._p1m.foodorderingsystem.features.delivery.service.DeliveryDataService;
 import org._p1m.foodorderingsystem.features.order.repository.OrderDataRepository;
+import org._p1m.foodorderingsystem.features.restaurant.repository.RestaurantRepository;
 import org._p1m.foodorderingsystem.features.restaurant_vendors.repository.RestaurantVendorRepository;
+import org._p1m.foodorderingsystem.features.users.repository.ProfileRepository;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
-import org._p1m.foodorderingsystem.model.*;
+import org._p1m.foodorderingsystem.model.OrderData;
+import org._p1m.foodorderingsystem.model.Profile;
+import org._p1m.foodorderingsystem.model.Restaurant;
+import org._p1m.foodorderingsystem.model.RestaurantVendor;
+import org._p1m.foodorderingsystem.model.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +37,9 @@ public class DeliveryDataServiceImpl implements DeliveryDataService {
     private final OrderDataRepository orderDataRepository;
     private final UserRepository userRepository;
     private final RestaurantVendorRepository restaurantVendorRepository;
-
+    private final RestaurantRepository restaruantRepository;
+    private final ProfileRepository profileRepository;
+    
     @Override
     @Transactional
     public ApiResponse assignDelivery(AssignDeliveryRequest assignDeliveryRequest) {
@@ -52,7 +64,6 @@ public class DeliveryDataServiceImpl implements DeliveryDataService {
         this.restaurantVendorRepository.updateDeliveryStatus(assignDeliveryRequest.getRestaurantId(),
                 assignDeliveryRequest.getDeliveryId(),
                 Status.INACTIVE);
-
 
         AssignDeliveryResponseDto dto = new AssignDeliveryResponseDto(
                 orderData.getId(),
@@ -92,4 +103,49 @@ public class DeliveryDataServiceImpl implements DeliveryDataService {
                 .message("Retrieve Delivery Staff Data Successfully")
                 .build();
     }
+
+	@Override
+	public ApiResponse applyRestaurantByDeliveryStaff(ApplyDeliveryStaffRequest request) {
+		Restaurant restaurant = this.restaruantRepository.findById(request.getRestaurantId())
+        .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with id: "+request.getRestaurantId()));
+		User user = this.userRepository.findById(request.getUserId())
+		        .orElseThrow(() -> new EntityNotFoundException("User not found with id: "+request.getUserId()));
+		Profile profile = this.profileRepository.findByUser_Id(request.getUserId())
+		.orElseThrow(() -> new EntityNotFoundException("User's profile not found with id: "+request.getUserId()));
+		if(profile.getCount().equals(3)) {
+			return ApiResponse.builder().success(0).code(HttpStatus.OK.value())
+	                .data(null)
+	                .message("You can't apply more than three restaurants.")
+	                .build();
+		}
+		boolean alreadyApplied = restaurantVendorRepository.existsByRestaurantIdAndDeliveryUserId(
+			    request.getRestaurantId(), request.getUserId());
+
+			if (alreadyApplied) {
+			    return ApiResponse.builder()
+			            .success(0)
+			            .code(HttpStatus.OK.value())
+			            .data(null)
+			            .message("You have already applied to this restaurant.")
+			            .build();
+			}
+		RestaurantVendor resVan = new RestaurantVendor();
+		resVan.setRestaurant(restaurant);
+		resVan.setDeliveryUser(user);
+		restaurantVendorRepository.save(resVan);
+		
+		profile.setCount(Optional.ofNullable(profile.getCount()).orElse(0) + 1);
+		profileRepository.save(profile);
+		
+		ApplyDeliveryResponse dto = new ApplyDeliveryResponse(
+                restaurant.getId(),
+                user.getId(),
+                profile.getCount(),
+                resVan.getStatus()
+        );
+		return ApiResponse.builder().success(1).code(HttpStatus.OK.value())
+                .data(dto)
+                .message("Delivery staff apply Successfully")
+                .build();
+	}
 }
