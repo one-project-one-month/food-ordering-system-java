@@ -55,21 +55,14 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Transactional
     @Override
-    public ApiResponse createProfile(final Long userId,final MultipartFile file,final ProfileRequestDto profileRequest) {
+    public ApiResponse createProfile(final Long userId,final ProfileRequestDto profileRequest) {
 
          User user = this.userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Profile profile = modelMapper.map(profileRequest, Profile.class);
         profile.setUser(user);
-        final String filename = storageService.store(file);
 
-        final String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/files/")
-                .path(filename)
-                .toUriString();
-
-        profile.setProfilePic(fileUrl);
         this.profileRepository.save(profile);
 
         ProfileResponseDto response = modelMapper.map(profile, ProfileResponseDto.class);

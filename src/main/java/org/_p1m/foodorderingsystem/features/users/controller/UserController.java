@@ -2,6 +2,7 @@ package org._p1m.foodorderingsystem.features.users.controller;
 
 import java.util.Map;
 
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import org._p1m.foodorderingsystem.common.util.JWTUtil;
 import org._p1m.foodorderingsystem.common.util.ServerUtil;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
@@ -58,6 +59,26 @@ public class UserController {
 //	}
 
 	@PostMapping("/login")
+	@Operation(
+			summary = "Login User",
+			description = "Verifies if the provided email and password exists or is valid",
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+					description = "Login request",
+					required = true,
+					content = @Content(
+							mediaType = "application/json",
+							examples = @ExampleObject(
+									name = "VerifyEmailRequest",
+									summary = "Example request",
+									value = "{ \"email\": \"user@example.com\", \"password\": \"123456\" }"
+							)
+					)
+			),
+			responses = {
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Verified Email successfully"),
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request")
+			}
+	)
 	public ResponseEntity<ApiResponse> verifyUser(@RequestBody AuthRequestDto requestDto , HttpServletRequest request){
 		Authentication authentication = authManager.authenticate(
 				new UsernamePasswordAuthenticationToken(requestDto.getEmail(), requestDto.getPassword()));
@@ -128,6 +149,26 @@ public class UserController {
 	}
 
 	@PostMapping("/verifyEmail")
+	@Operation(
+			summary = "Verify Email",
+			description = "Verifies if the provided email exists or is valid",
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+					description = "Verify Email request",
+					required = true,
+					content = @Content(
+							mediaType = "application/json",
+							examples = @ExampleObject(
+									name = "VerifyEmailRequest",
+									summary = "Example request",
+									value = "{ \"email\": \"user@example.com\" }"
+							)
+					)
+			),
+			responses = {
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Verified Email successfully"),
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request")
+			}
+	)
 	public ResponseEntity<ApiResponse> verifyEmail(@RequestBody Map<String , String> body, HttpServletRequest request){
 		String email = body.get("email");
 		final ApiResponse response = this.userService.verifyEmail(email);
@@ -135,6 +176,26 @@ public class UserController {
 	}
 
 	@PostMapping("/verifyAccount")
+	@Operation(
+			summary = "Verify Account",
+			description = "Verifies if the provided email and OTP exists or is valid",
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+					description = "Verify Account request",
+					required = true,
+					content = @Content(
+							mediaType = "application/json",
+							examples = @ExampleObject(
+									name = "VerifyEmailRequest",
+									summary = "Example request",
+									value = "{ \"email\": \"user@example.com\", \"code\": \"123456\" }"
+							)
+					)
+			),
+			responses = {
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Verified Email successfully"),
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request")
+			}
+	)
 	public ResponseEntity<ApiResponse> verifyAccount(@RequestBody Map<String, String> body , HttpServletRequest request){
 			long code = Long.parseLong(body.get("code"));
 			String email = body.get("email");
@@ -143,6 +204,26 @@ public class UserController {
     }
 
 	@PostMapping("resendCode")
+	@Operation(
+			summary = "Resend Code",
+			description = "Verifies if the provided Email exists or is valid",
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+					description = "Resend Code request",
+					required = true,
+					content = @Content(
+							mediaType = "application/json",
+							examples = @ExampleObject(
+									name = "VerifyEmailRequest",
+									summary = "Example request",
+									value = "{ \"email\": \"user@example.com\" }"
+							)
+					)
+			),
+			responses = {
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Verified Email successfully"),
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request")
+			}
+	)
 	public ResponseEntity<ApiResponse> resendCode(@RequestBody Map<String ,String> body , HttpServletRequest request){
 		final ApiResponse response = this.userService.resendCode(body.get("email"));
 		return ResponseUtils.buildResponse(request, response);
