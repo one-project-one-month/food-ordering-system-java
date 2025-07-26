@@ -1,12 +1,13 @@
 name: CI & Publish Workflow
 
+
 on:
   push:
     branches:
       - main
       - dev
       - "ft/*"
-      - "dev-*"
+
   pull_request:
     branches:
       - main

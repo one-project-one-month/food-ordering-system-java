@@ -15,12 +15,15 @@ import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
 import org._p1m.foodorderingsystem.features.profile.dto.request.ProfileRequestDto;
 import org._p1m.foodorderingsystem.features.profile.dto.response.ProfileResponseDto;
 import org._p1m.foodorderingsystem.features.profile.util.ApiErrorResponse;
+import org._p1m.foodorderingsystem.features.users.dto.request.UploadProfilePictureRequest;
 import org._p1m.foodorderingsystem.features.users.service.ProfileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,16 +35,16 @@ public class ProfileController {
 
     @PostMapping(
             value = "/{userId}/create",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+            consumes = MediaType.APPLICATION_JSON_VALUE
     )
     @Operation(
-            summary = "Create profile picture",
-            description = "Create a profile picture for the specified user.",
+            summary = "Create a profile",
+            description = "Create a profile for the specified user using only profile data (no image).",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Multipart form with image file",
+                    description = "JSON profile data",
                     required = true,
                     content = @Content(
-                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ProfileRequestDto.class)
                     )
             ),
@@ -50,25 +53,24 @@ public class ProfileController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Failed to create profile")
             }
     )
-    public ResponseEntity<ApiResponse> createProfilePicture(
+    public ResponseEntity<ApiResponse> createProfile(
             @Parameter(description = "User ID", required = true)
             @PathVariable("userId") final Long userId,
 
-            @Valid @RequestPart("data") final ProfileRequestDto profileRequest,  // JSON part
-
-            @RequestPart("file") final MultipartFile file,// File part
+            @Valid @RequestBody final ProfileRequestDto profileRequest, // Now using @RequestBody instead of @RequestPart
             final HttpServletRequest request
     ) {
         try {
-            final ApiResponse response = this.profileService.createProfile(userId,file,profileRequest);
+            final ApiResponse response = this.profileService.createProfile(userId, profileRequest);
             return ResponseUtils.buildResponse(request, response);
         } catch (Exception e) {
             return ResponseUtils.buildResponse(
                     request,
-                    ApiErrorResponse.error(HttpStatus.BAD_REQUEST.value(), "failed to create file")
+                    ApiErrorResponse.error(HttpStatus.BAD_REQUEST.value(), "Failed to create profile")
             );
         }
     }
+
 
 
     @DeleteMapping("/{userId}/delete")
@@ -92,37 +94,75 @@ public class ProfileController {
         }
     }
 
-
-  @PostMapping(value = "/{userId}/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  @Operation(
-          summary = "Update profile data",
-          description = "Update a user's profile information.",
-          requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                  required = true,
-                  content = @Content(
-                          mediaType = MediaType.APPLICATION_JSON_VALUE,
-                          schema = @Schema(implementation = ProfileRequestDto.class)
-                  )
-          ),
-          responses = {
-                  @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Profile updated successfully"),
-                  @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid input or error updating profile")
-          }
-  )
-  public ResponseEntity<ApiResponse> updateProfile(
+    @PostMapping(
+            value = "/{userId}/update",
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(
+            summary = "Update profile data",
+            description = "Update a user's profile information. ( no image) ",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ProfileRequestDto.class)
+                    )
+            ),
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Profile updated successfully"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid input or error updating profile")
+            }
+    )
+    public ResponseEntity<ApiResponse> updateProfile(
             @PathVariable("userId") final Long userId,
-          @Valid @RequestPart("data") ProfileRequestDto profileRequest,
-            @RequestPart("file") MultipartFile file,
+            @Valid @RequestBody ProfileRequestDto profileRequest,
             HttpServletRequest request
-  ){
-      try {
-          ApiResponse response = this.profileService.updateProfile(userId, profileRequest);
-          return ResponseUtils.buildResponse(request, response);
-      } catch (Exception e) {
-          return ResponseUtils.buildResponse(request,
-                  ApiErrorResponse.error(HttpStatus.BAD_REQUEST.value(), "Invalid Input or error updating profile"));
-      }
-  }
+    ) {
+        try {
+            ApiResponse response = this.profileService.updateProfile(userId, profileRequest);
+            return ResponseUtils.buildResponse(request, response);
+        } catch (Exception e) {
+            return ResponseUtils.buildResponse(request,
+                    ApiErrorResponse.error(HttpStatus.BAD_REQUEST.value(), "Invalid input or error updating profile"));
+        }
+    }
+
+
+
+    @PostMapping(
+            value = "/{userId}/profile-picture",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    @Operation(
+            summary = "Upload profile picture",
+            description = "Uploads a user's profile picture",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Multipart form with image file",
+                    required = true,
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(implementation = UploadProfilePictureRequest.class)
+                    )
+            ),
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "File uploaded successfully"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Failed to upload file")
+            }
+    )
+    public ResponseEntity<?> uploadProfilePicture(
+            @Parameter(description = "User ID", required = true)
+            @PathVariable("userId") final Long userId,
+
+            @Parameter(hidden = true)
+            @RequestParam("file") final MultipartFile file
+    ) {
+        try {
+            final String fileUrl = this.profileService.uploadProfilePicture(userId, file);
+            return ResponseEntity.ok(Map.of("url", fileUrl));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to upload file: " + e.getMessage());
+        }
+    }
 
 
     @GetMapping("/{id}")
