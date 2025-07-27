@@ -10,7 +10,7 @@ public interface ProfileService {
 
     public String uploadProfilePicture(final Long userId, final MultipartFile file);
 
-    public ApiResponse createProfile(final Long userId,final ProfileRequestDto profileRequest);
+    public ApiResponse createProfile(final Long userId,final ProfileRequestDto profileRequest,final MultipartFile file);
 
     public ApiResponse softDeleteProfile(final Long userId);
 
