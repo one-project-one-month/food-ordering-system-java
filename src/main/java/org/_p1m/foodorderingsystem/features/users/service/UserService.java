@@ -23,4 +23,6 @@ public interface UserService {
     public ApiResponse verifyEmail(String email);
 
     public ApiResponse getUserAuthData(AuthRequestDto requestDto , String token);
+
+    public ApiResponse getRefreshToken(AuthRequestDto requestDto, String token);
 }

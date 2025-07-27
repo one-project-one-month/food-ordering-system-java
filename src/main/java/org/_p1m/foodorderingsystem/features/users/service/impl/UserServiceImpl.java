@@ -170,4 +170,14 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @Override
+    public ApiResponse getRefreshToken(AuthRequestDto requestDto, String token) {
+        try{
+
+        } catch(EntityNotFoundException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }
