@@ -26,9 +26,7 @@ public class PaymentData extends MasterData {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "deliver_id")
-    private User deliveryUser;
+    
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "res_id", nullable = false)
