@@ -40,27 +40,45 @@ public class ProfileServiceImpl implements ProfileService {
         final Profile profile = this.profileRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Profile not found for user ID: " + userId));
 
-        final String filename = storageService.store(file);
 
-        final String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/files/")
-                .path(filename)
-                .toUriString();
+        if (file != null && !file.isEmpty()) {
+            String filename = storageService.store(file);
+            String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/files/")
+                    .path(filename)
+                    .toUriString();
+            profile.setProfilePic(fileUrl);
+            this.profileRepository.save(profile);
+            return fileUrl;
 
-        profile.setProfilePic(fileUrl);
-        this.profileRepository.save(profile);
+        } else {
+            return profile.getProfilePic();
+        }
 
-        return fileUrl;
     }
 
     @Transactional
     @Override
-    public ApiResponse createProfile(final Long userId,final ProfileRequestDto profileRequest) {
+    public ApiResponse createProfile(final Long userId,final ProfileRequestDto profileRequest,final  MultipartFile file) {
 
          User user = this.userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Profile profile = modelMapper.map(profileRequest, Profile.class);
+
+
+        if (file != null && !file.isEmpty()) {
+            String filename = storageService.store(file);
+            String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/files/")
+                    .path(filename)
+                    .toUriString();
+            profile.setProfilePic(fileUrl);
+        } else {
+            profile.setProfilePic(null); // or set a default image URL if you want
+        }
+
+
         profile.setUser(user);
 
         this.profileRepository.save(profile);
