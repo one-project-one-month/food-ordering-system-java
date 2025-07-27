@@ -5,6 +5,7 @@ import com.cloudinary.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,43 +34,6 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
-//    @PostMapping(
-//            value = "/{userId}/create",
-//            consumes = MediaType.APPLICATION_JSON_VALUE
-//    )
-//    @Operation(
-//            summary = "Create a profile",
-//            description = "Create a profile for the specified user using only profile data (no image).",
-//            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-//                    description = "JSON profile data",
-//                    required = true,
-//                    content = @Content(
-//                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-//                            schema = @Schema(implementation = ProfileRequestDto.class)
-//                    )
-//            ),
-//            responses = {
-//                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Profile created successfully"),
-//                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Failed to create profile")
-//            }
-//    )
-//    public ResponseEntity<ApiResponse> createProfile(
-//            @Parameter(description = "User ID", required = true)
-//            @PathVariable("userId") final Long userId,
-//
-//            @Valid @RequestBody final ProfileRequestDto profileRequest, // Now using @RequestBody instead of @RequestPart
-//            final HttpServletRequest request
-//    ) {
-//        try {
-//            final ApiResponse response = this.profileService.createProfile(userId, profileRequest);
-//            return ResponseUtils.buildResponse(request, response);
-//        } catch (Exception e) {
-//            return ResponseUtils.buildResponse(
-//                    request,
-//                    ApiErrorResponse.error(HttpStatus.BAD_REQUEST.value(), "Failed to create profile")
-//            );
-//        }
-//    }
 
 
     @PostMapping(
