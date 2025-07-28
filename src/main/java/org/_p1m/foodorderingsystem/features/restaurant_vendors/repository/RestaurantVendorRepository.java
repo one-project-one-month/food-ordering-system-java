@@ -27,4 +27,9 @@ public interface RestaurantVendorRepository extends JpaRepository<RestaurantVend
     Optional<RestaurantVendor> findByRestaurantIdAndDeliveryUserId(@NotNull(message = "Restaurant Id is required") Long restaurantId, @NotNull(message = "Delivery Id is required") Long deliveryId);
 
     List<RestaurantVendor> findByRestaurantId(Long restaurantId);
+    
+    boolean existsByRestaurantIdAndDeliveryUserId(Long restaurantId, Long userId);
+
+    List<RestaurantVendor> findByDeliveryUserId(Long deliveryUserId);
+
 }
