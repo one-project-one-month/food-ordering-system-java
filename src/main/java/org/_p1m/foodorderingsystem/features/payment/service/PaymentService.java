@@ -1,8 +1,9 @@
 package org._p1m.foodorderingsystem.features.payment.service;
 
-import org._p1m.foodorderingsystem.features.payment.dto.PaymentDTO;
+import org._p1m.foodorderingsystem.features.payment.dto.PaymentRequestDTO;
+import org._p1m.foodorderingsystem.features.payment.dto.PaymentResponseDTO;
 
 public interface PaymentService {
-    PaymentDTO createPayment(PaymentDTO paymentDTO);
-    PaymentDTO getPaymentById(Long id);
+    PaymentResponseDTO createPayment(PaymentRequestDTO paymentRequestDTO);
+    PaymentResponseDTO getPaymentById(Long id);
 }
