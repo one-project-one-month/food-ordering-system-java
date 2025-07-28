@@ -14,5 +14,4 @@ public class UserToken extends MasterData {
 
     private String token;
     private String username;
-    private String password;
 }

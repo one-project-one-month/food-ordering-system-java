@@ -170,7 +170,6 @@ public class UserServiceImpl implements UserService {
         if(saveRefreshToken){
             UserToken userToken = new UserToken();
             userToken.setUsername(requestDto.getEmail());
-            userToken.setPassword(passwordEncoder.encode(requestDto.getPassword()));
             userToken.setToken(refreshToken); // Refresh Token
             userTokenRepository.save(userToken);
         }
@@ -195,33 +194,32 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public ApiResponse getRefreshToken(AuthRequestDto requestDto, String refreshToken) {
-        Map<String, Object> data = null;
-        try {
-            UserToken tokenData = userTokenRepository.findByUsername(requestDto.getEmail());
-            if (tokenData != null) {
-                userTokenRepository.deleteByUsername(requestDto.getEmail());
-            }
-            UserToken userToken = new UserToken();
-            userToken.setUsername(requestDto.getEmail());
-            userToken.setPassword(passwordEncoder.encode(requestDto.getPassword()));
-            userToken.setToken(refreshToken); // Refresh Token
-            userTokenRepository.save(userToken);
+        Map<String, Object> data;
 
-            data = Map.of(
-                    "userName", requestDto.getEmail(),
-                    "RefreshToken", refreshToken
-            );
-
-        } catch (EntityNotFoundException e) {
-            e.printStackTrace();
+        UserToken existingToken = userTokenRepository.findByUsername(requestDto.getEmail());
+        if (existingToken != null) {
+            userTokenRepository.deleteByUsername(requestDto.getEmail());
         }
+
+        // Save new token
+        UserToken userToken = new UserToken();
+        userToken.setUsername(requestDto.getEmail());
+        userToken.setToken(refreshToken);
+        userTokenRepository.save(userToken);
+
+        data = Map.of(
+                "userName", requestDto.getEmail(),
+                "refreshToken", refreshToken
+        );
+
         return ApiResponse.builder()
                 .success(1)
                 .code(200)
                 .meta(null)
                 .data(data)
-                .message("Generate Refresh Token Successfully.")
+                .message("Generated refresh token successfully.")
                 .build();
     }
+
 
 }
