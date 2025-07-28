@@ -69,7 +69,8 @@ public class UserController {
 		Authentication authentication = authManager.authenticate(
 				new UsernamePasswordAuthenticationToken(requestDto.getEmail(), requestDto.getPassword()));
 		String token =serverUtil.generateToken((UserDetails)  authentication.getPrincipal());
-		final ApiResponse response = this.userService.getUserAuthData(requestDto , token);
+		String refreshToken = serverUtil.generateRefreshToken((UserDetails)  authentication.getPrincipal());
+		final ApiResponse response = this.userService.getUserAuthData(requestDto , token , refreshToken);
 		return ResponseUtils.buildResponse(request , response);
 	}
     
@@ -227,7 +228,7 @@ public class UserController {
 				.getBody();
 	}
 
-	@PostMapping("/refreshToken")
+	@PostMapping("/getRefreshToken")
 	@Operation(
 			summary = "Get Refresh Token",
 			description = "Get Refresh Token after Access Token Expired.",
@@ -244,15 +245,15 @@ public class UserController {
 					)
 			),
 			responses = {
-					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Get Refresh Token Successfully"),
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Generate Refresh Token Successfully"),
 					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request")
 			}
 	)
 	public ResponseEntity<ApiResponse> getRefreshToken(@RequestBody AuthRequestDto requestDto , HttpServletRequest request){
 		Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken
 				(requestDto.getEmail() , requestDto.getPassword()));
-		String token = serverUtil.generateRefreshToken((UserDetails) authentication.getPrincipal());
-		final ApiResponse response = this.userService.getRefreshToken(requestDto , token);
+		String refreshToken = serverUtil.generateRefreshToken((UserDetails) authentication.getPrincipal());
+		final ApiResponse response = this.userService.getRefreshToken(requestDto , refreshToken);
 		return ResponseUtils.buildResponse(request , response);
 	}
 }

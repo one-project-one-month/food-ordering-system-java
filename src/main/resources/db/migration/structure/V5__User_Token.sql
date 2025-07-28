@@ -1,4 +1,4 @@
-CREATE TABLE user_token
+CREATE TABLE user_tokens
 (
     id            BIGINT NOT NULL AUTO_INCREMENT,
     createdAt     DATETIME(6) NOT NULL,

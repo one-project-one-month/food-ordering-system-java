@@ -22,7 +22,7 @@ public interface UserService {
 
     public ApiResponse verifyEmail(String email);
 
-    public ApiResponse getUserAuthData(AuthRequestDto requestDto , String token);
+    public ApiResponse getUserAuthData(AuthRequestDto requestDto , String token , String refreshToken);
 
-    public ApiResponse getRefreshToken(AuthRequestDto requestDto, String token);
+    public ApiResponse getRefreshToken(AuthRequestDto requestDto, String refreshToken);
 }

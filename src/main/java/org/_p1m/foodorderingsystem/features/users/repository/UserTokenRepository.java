@@ -9,4 +9,7 @@ import org.springframework.stereotype.Repository;
 @EnableJpaRepositories
 public interface UserTokenRepository extends JpaRepository<UserToken , Long> {
 
+    UserToken findByUsername(String email);
+
+    void deleteByUsername(String email);
 }
