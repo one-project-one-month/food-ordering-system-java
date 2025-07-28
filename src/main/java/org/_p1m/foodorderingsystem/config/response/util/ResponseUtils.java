@@ -1,10 +1,10 @@
 package org._p1m.foodorderingsystem.config.response.util;
 
 import java.util.HashMap;
-import java.util.List;
 
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
+import org._p1m.foodorderingsystem.features.processOrder.dto.response.OrderResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -25,32 +25,20 @@ public class ResponseUtils {
 
         return new ResponseEntity<>(response, status);
     }
-    
+    public static Object success(OrderResponseDTO response, String s) {
+        return null;
+    }
     public static <T> ResponseEntity<PaginatedApiResponse<T>> buildPaginatedResponse(
             final HttpServletRequest request,
             PaginatedApiResponse<T> paginatedResponse) {
 
         final HttpStatus status = HttpStatus.valueOf(paginatedResponse.getCode());
-
-//        PaginatedApiResponse<T> paginatedResponse = PaginatedApiResponse.<T>builder()
-//                .success(baseResponse.getSuccess())
-//                .code(baseResponse.getCode())
-//                .message(baseResponse.getMessage())
-//                .totalItems(totalItems)
-//                .totalPages(totalPages)
-//                .currentPage(currentPage)
-//                .pageSize(pageSize)
-//                .data(data)
-//                .build();
-
         if (paginatedResponse.getMeta() == null) {
             final String method = request.getMethod();
             final String endpoint = request.getRequestURI();
-            paginatedResponse.setMeta(new HashMap<>());
-            paginatedResponse.getMeta().put("method", method);
-            paginatedResponse.getMeta().put("endpoint", endpoint);
+            paginatedResponse.getMeta().setMethod(method);
+            paginatedResponse.getMeta().setEndpoint(endpoint);
         }
-
         return new ResponseEntity<>(paginatedResponse, status);
     }
 }

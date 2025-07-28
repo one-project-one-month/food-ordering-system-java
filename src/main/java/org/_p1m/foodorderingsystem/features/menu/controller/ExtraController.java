@@ -1,18 +1,27 @@
 package org._p1m.foodorderingsystem.features.menu.controller;
 
+import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
+import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
+import org._p1m.foodorderingsystem.features.menu.dto.request.ExtraRequest;
+import org._p1m.foodorderingsystem.features.menu.dto.request.UpdateExtraRequest;
+import org._p1m.foodorderingsystem.features.menu.service.ExtraService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
-import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
-import org._p1m.foodorderingsystem.features.menu.dto.request.*;
-import org._p1m.foodorderingsystem.features.menu.service.ExtraService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("${api.base.path}/extras")
@@ -32,7 +41,16 @@ public class ExtraController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Request body with new dish size data",
                     required = true,
-                    content = @Content(schema = @Schema(implementation = ExtraRequest.class))
+            		content = @Content(
+            			    schema = @Schema(implementation = ExtraRequest.class),
+            			    examples = @ExampleObject(value = """
+            			    {
+            			      "name": "Nga Yote Thii",
+            			      "price": 100,
+            			      "menuId": 10
+            			    }
+            			    """)
+            			  )
             ),
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Extra for menu created successfully"),

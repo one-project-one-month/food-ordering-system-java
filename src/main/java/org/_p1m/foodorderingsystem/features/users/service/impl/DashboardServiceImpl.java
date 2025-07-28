@@ -1,9 +1,13 @@
 package org._p1m.foodorderingsystem.features.users.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
+import org._p1m.foodorderingsystem.config.response.dto.PaginationMeta;
+import org._p1m.foodorderingsystem.features.order.dto.response.OrderResponseDto;
 import org._p1m.foodorderingsystem.features.users.dto.request.DashboardRequestDto;
 import org._p1m.foodorderingsystem.features.users.dto.response.AdminDashboardResponseDto;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
@@ -35,16 +39,17 @@ public class DashboardServiceImpl implements DashboardService {
 			    .stream()
 			    .map(user -> new AdminDashboardResponseDto(user.getId(), user.getEmail()))
 			    .collect(Collectors.toList());
-		return PaginatedApiResponse.<AdminDashboardResponseDto>builder()
-              .success(1)
-              .code(HttpStatus.OK.value())
-              .message("User data for admin dashboard retrieved successfully.")
-              .totalItems(pageResult.getTotalElements())
-              .totalPages(pageResult.getTotalPages())
-              .currentPage(page)
-              .pageSize(size)
-              .data(data)
-              .build();
+		PaginationMeta meta = new PaginationMeta();
+        meta.setTotalItems(pageResult.getTotalElements());
+        meta.setTotalPages(pageResult.getTotalPages());
+        meta.setCurrentPage(page);
+        return PaginatedApiResponse.<AdminDashboardResponseDto>builder()
+                .success(1)
+                .code(HttpStatus.OK.value())
+                .message("User data for admin dashboard retrieved successfully.")
+                .meta(meta)
+                .data(data)
+                .build();
 	}
 
 }

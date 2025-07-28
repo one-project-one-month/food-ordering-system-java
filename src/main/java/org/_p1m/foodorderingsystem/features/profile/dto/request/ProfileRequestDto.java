@@ -11,14 +11,14 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
+@Schema(description = "Profile request body")
 public class ProfileRequestDto {
 
     @NotBlank(message = "Name must not be empty")
     @Schema(description = "User's full name", example = "Ko PU")
     private String name;
 
-    @Pattern(regexp = "^(1[0-4]|[1-9])/[A-Z]{3}\\(N\\)\\d{6}$",
-            message = "NRC must start with number 1 to 14 followed by / and then pattern like ABC(N)123456")
+
     @Schema(description = "User's NRC", example = "12/ABC(N)123456")
     private String nrc;
 
