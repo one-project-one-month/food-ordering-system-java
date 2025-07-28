@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("${api.base.path}/orders")
 public class ProcessOrderController {
     private final OrderService orderService;
 
