@@ -1,15 +1,18 @@
 package org._p1m.foodorderingsystem.features.order.service.impl;
 
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org._p1m.foodorderingsystem.common.constant.DeliveryStatus;
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
 import org._p1m.foodorderingsystem.config.response.dto.PaginationMeta;
-import org._p1m.foodorderingsystem.features.menu.dto.responses.MenuResponseDto;
+import org._p1m.foodorderingsystem.features.address.repository.AddressRepository;
 import org._p1m.foodorderingsystem.features.order.dto.request.OrderRequestDto;
 import org._p1m.foodorderingsystem.features.order.dto.response.OrderResponseDto;
 import org._p1m.foodorderingsystem.features.order.repository.OrderRepo;
 import org._p1m.foodorderingsystem.features.order.repository.PaymentRepo;
 import org._p1m.foodorderingsystem.features.order.service.OrderService;
+import org._p1m.foodorderingsystem.model.Address;
 import org._p1m.foodorderingsystem.model.OrderData;
 import org._p1m.foodorderingsystem.model.PaymentData;
 import org.springframework.data.domain.Page;
@@ -17,10 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +28,8 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepo orderRepo;
     private final PaymentRepo paymentRepo;
-
+    private final AddressRepository addressRepo;
+    
     @Override
     public PaginatedApiResponse<OrderResponseDto> getAllOrders(Pageable pageable) {
         Page<OrderData> page = orderRepo.findAll(pageable);
@@ -38,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
                     OrderResponseDto dto = new OrderResponseDto();
                     dto.setId(order.getId());
                     dto.setOrderDateTime(order.getOrderDateTime());
-                    dto.setUserAddress(order.getUserAddress());
+                    dto.setAddressId(order.getUserAddress().getId());
                     dto.setTotalAmount(order.getTotalAmount());
                     dto.setDeliveryStatus(order.getDeliveryStatus());
                     dto.setPaymentId(order.getPayment().getId());
@@ -62,9 +63,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Long createOrder(OrderRequestDto dto) {
+    	Address address = addressRepo.findById(dto.getAddressId())
+                .orElseThrow(() -> new RuntimeException("Address not found"));
         OrderData order = new OrderData();
         order.setOrderDateTime(LocalDateTime.now());
-        order.setUserAddress(dto.getUserAddress());
+        order.setUserAddress(address);
         order.setTotalAmount(dto.getTotalAmount());
         order.setDeliveryStatus(DeliveryStatus.PENDING);
 
@@ -80,8 +83,10 @@ public class OrderServiceImpl implements OrderService {
     public void updateOrder(Long id, OrderRequestDto dto) {
         OrderData order = orderRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
+        Address address = addressRepo.findById(dto.getAddressId())
+                .orElseThrow(() -> new RuntimeException("Address not found"));
         order.setOrderDateTime(dto.getOrderDateTime());
-        order.setUserAddress(dto.getUserAddress());
+        order.setUserAddress(address);
         order.setTotalAmount(dto.getTotalAmount());
 
         PaymentData payment = paymentRepo.findById(dto.getPaymentId())
@@ -99,7 +104,7 @@ public class OrderServiceImpl implements OrderService {
         OrderResponseDto dto = new OrderResponseDto();
         dto.setId(order.getId());
         dto.setOrderDateTime(order.getOrderDateTime());
-        dto.setUserAddress(order.getUserAddress());
+        dto.setAddressId(order.getUserAddress().getId());
         dto.setTotalAmount(order.getTotalAmount());
         dto.setDeliveryStatus(order.getDeliveryStatus());
         dto.setPaymentId(order.getPayment().getId());

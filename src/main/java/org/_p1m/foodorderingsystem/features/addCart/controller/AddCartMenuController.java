@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/cart")
+@RequestMapping("${api.base.path}/cart")
 @RequiredArgsConstructor
 public class AddCartMenuController {
 

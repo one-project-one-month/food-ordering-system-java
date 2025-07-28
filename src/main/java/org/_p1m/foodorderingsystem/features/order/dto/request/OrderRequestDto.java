@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class OrderRequestDto {
     private LocalDateTime orderDateTime;
-    private String userAddress;
+    private Long AddressId;
     private BigDecimal totalAmount;
     private Long paymentId;
 }

@@ -1,13 +1,19 @@
 package org._p1m.foodorderingsystem.features.order.service.impl;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org._p1m.foodorderingsystem.common.util.ServerUtil;
 import org._p1m.foodorderingsystem.features.order.repository.OrderDataRepository;
 import org._p1m.foodorderingsystem.features.order.service.SendOrderConfirmationMail;
 import org._p1m.foodorderingsystem.model.AddCartData;
+import org._p1m.foodorderingsystem.model.Address;
 import org._p1m.foodorderingsystem.model.Extra;
 import org._p1m.foodorderingsystem.model.Menu;
 import org._p1m.foodorderingsystem.model.OrderData;
@@ -17,11 +23,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -56,7 +61,19 @@ public class SendOrderConfirmationMailImpl implements SendOrderConfirmationMail 
         currencyFormat.setMinimumFractionDigits(0);
 
         String username = cart.getCustomer().getProfile().getName();
-        String userAddress = order.getUserAddress();
+        Address address = order.getUserAddress();
+
+        String userAddress = Stream.of(
+                address.getRegion(),
+                address.getCity(),
+                address.getTownship(),
+                address.getRoad(),
+                address.getStreet()
+            )
+            .filter(Objects::nonNull)
+            .filter(s -> !s.isBlank())
+            .collect(Collectors.joining(", "));
+
         String userEmail = cart.getCustomer().getEmail();
         Integer quantity = cart.getQuantity();
         String formattedOrderId = "ORDER_00" + orderId;

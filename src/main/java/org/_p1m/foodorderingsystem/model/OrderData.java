@@ -20,10 +20,14 @@ public class OrderData extends MasterData {
     @Column(name = "order_date_time", nullable = false)
     private LocalDateTime orderDateTime;
 
-    @Lob
-    @Column(name = "user_address", nullable = false)
-    private String userAddress;
-
+//    @Lob
+//    @Column(name = "user_address", nullable = false)
+//    private String userAddress;
+    
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id", referencedColumnName = "id", nullable = false)
+    private Address userAddress;
+    
     @Column(name = "total_amount", nullable = false, precision = 19, scale = 4)
     private BigDecimal totalAmount;
 
@@ -47,7 +51,7 @@ public class OrderData extends MasterData {
 
     public OrderData() {}
 
-    public OrderData(final LocalDateTime orderDateTime, final String userAddress, final BigDecimal totalAmount, final PaymentData payment, final DeliveryData deliveryData) {
+    public OrderData(final LocalDateTime orderDateTime, final Address userAddress, final BigDecimal totalAmount, final PaymentData payment, final DeliveryData deliveryData) {
         this.orderDateTime = orderDateTime;
         this.userAddress = userAddress;
         this.totalAmount = totalAmount;
