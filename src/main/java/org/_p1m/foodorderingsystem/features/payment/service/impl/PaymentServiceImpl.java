@@ -1,8 +1,7 @@
 package org._p1m.foodorderingsystem.features.payment.service.impl;
 
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
-import org._p1m.foodorderingsystem.features.order.repository.OrderDataRepository;
-import org._p1m.foodorderingsystem.features.order.repository.OrderRepository;
+import org._p1m.foodorderingsystem.features.order.repository.OrderRepo;
 import org._p1m.foodorderingsystem.features.payment.dto.PaymentRequestDTO;
 import org._p1m.foodorderingsystem.features.payment.dto.PaymentResponseDTO;
 import org._p1m.foodorderingsystem.features.payment.repository.PaymentRepository;
@@ -23,10 +22,10 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
-    private final OrderDataRepository orderRepository;
+    private final OrderRepo orderRepository;
     private final ModelMapper modelMapper;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository, UserRepository userRepository, RestaurantRepository restaurantRepository, OrderRepository orderRepository, ModelMapper modelMapper) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, UserRepository userRepository, RestaurantRepository restaurantRepository, OrderRepo orderRepository, ModelMapper modelMapper) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
         this.restaurantRepository = restaurantRepository;
