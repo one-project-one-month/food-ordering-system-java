@@ -1,16 +1,19 @@
 package org._p1m.foodorderingsystem.features.processOrder.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org._p1m.foodorderingsystem.model.OrderData;
-import org._p1m.foodorderingsystem.model.Restaurant;
-import org._p1m.foodorderingsystem.model.User;
 
 @Getter
 @Setter
 public class ProcessOrderRequest {
 
-    private OrderData orderData;
+    @NotNull(message = "Order ID cannot be null")
+    private Long orderId;
+
+    @NotNull(message = "Delivery Staff ID cannot be null")
     private Long deliveryStaffId;
+
+    @NotNull(message = "Restaurant ID cannot be null")
     private Long restaurantId;
 }

@@ -30,4 +30,6 @@ public interface RestaurantVendorRepository extends JpaRepository<RestaurantVend
     
     boolean existsByRestaurantIdAndDeliveryUserId(Long restaurantId, Long userId);
 
+    List<RestaurantVendor> findByDeliveryUserId(Long deliveryUserId);
+
 }
