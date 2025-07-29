@@ -1,7 +1,10 @@
 package org._p1m.foodorderingsystem.features.users.controller;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import org._p1m.foodorderingsystem.common.util.JWTUtil;
 import org._p1m.foodorderingsystem.common.util.ServerUtil;
@@ -41,23 +44,6 @@ public class UserController {
 	private final ServerUtil serverUtil;
 	private final JWTUtil jwtUtil;
 
-//	@PostMapping("/login")
-//	public ResponseEntity<String> varifiedUser(@RequestBody UserCreateRequest userCreateRequest) {
-//		User user=new User();
-//		user.setEmail(userCreateRequest.getEmail());
-//		user.setPassword(userCreateRequest.getPassword());
-//		String returnString=userService.varifiedUser(user);
-//		return ResponseEntity.ok(returnString);
-//	}
-
-//	@PostMapping("/login")
-//	public ResponseEntity<AuthResponseDto> varifyUser(@RequestBody AuthRequestDto request) {
-//		Authentication authentication = authManager.authenticate(
-//				new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-//		String token =serverUtil.generateToken((UserDetails)  authentication.getPrincipal());
-//		return ResponseEntity.ok(new AuthResponseDto(token));
-//	}
-
 	@PostMapping("/login")
 	@Operation(
 			summary = "Login User",
@@ -83,7 +69,8 @@ public class UserController {
 		Authentication authentication = authManager.authenticate(
 				new UsernamePasswordAuthenticationToken(requestDto.getEmail(), requestDto.getPassword()));
 		String token =serverUtil.generateToken((UserDetails)  authentication.getPrincipal());
-		final ApiResponse response = this.userService.getUserAuthData(requestDto , token);
+		String refreshToken = serverUtil.generateRefreshToken((UserDetails)  authentication.getPrincipal());
+		final ApiResponse response = this.userService.getUserAuthData(requestDto , token , refreshToken);
 		return ResponseUtils.buildResponse(request , response);
 	}
     
@@ -227,5 +214,46 @@ public class UserController {
 	public ResponseEntity<ApiResponse> resendCode(@RequestBody Map<String ,String> body , HttpServletRequest request){
 		final ApiResponse response = this.userService.resendCode(body.get("email"));
 		return ResponseUtils.buildResponse(request, response);
+	}
+
+
+	// To Test Token Data
+	@PostMapping("/extractToken")
+	public Claims extractToken(@RequestBody Map<String , String> body){
+		String token = body.get("token");
+		return Jwts.parserBuilder()
+				.setSigningKey(serverUtil.getSecretKey().getBytes(StandardCharsets.UTF_8))
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
+	}
+
+	@PostMapping("/getRefreshToken")
+	@Operation(
+			summary = "Get Refresh Token",
+			description = "Get Refresh Token after Access Token Expired.",
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+					description = "Get Refresh Token",
+					required = true,
+					content = @Content(
+							mediaType = "application/json",
+							examples = @ExampleObject(
+									name = "VerifyEmailRequest",
+									summary = "Example request",
+									value = "{ \"email\": \"user@example.com\", \"password\": \"123456\" }"
+							)
+					)
+			),
+			responses = {
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Generate Refresh Token Successfully"),
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request")
+			}
+	)
+	public ResponseEntity<ApiResponse> getRefreshToken(@RequestBody AuthRequestDto requestDto , HttpServletRequest request){
+		Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken
+				(requestDto.getEmail() , requestDto.getPassword()));
+		String refreshToken = serverUtil.generateRefreshToken((UserDetails) authentication.getPrincipal());
+		final ApiResponse response = this.userService.getRefreshToken(requestDto , refreshToken);
+		return ResponseUtils.buildResponse(request , response);
 	}
 }

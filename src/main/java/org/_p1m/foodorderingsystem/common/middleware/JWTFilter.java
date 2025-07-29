@@ -37,17 +37,17 @@ private final UserDetailServiceImpl userDetailService;
             token =authHeader.substring(7);
             email=jwtUtil.extractEmail(token);
 
-            if (email !=null && SecurityContextHolder.getContext().getAuthentication()==null){
-                UserDetails userDetails=userDetailService.loadUserByUsername(email);
+            if (email !=null && SecurityContextHolder.getContext().getAuthentication()==null) {
+                UserDetails userDetails = userDetailService.loadUserByUsername(email);
 
-                if (jwtUtil.ValidateToken(token,userDetails)){
+                if (jwtUtil.ValidateToken(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken
-                            =new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+                            = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-filterChain.doFilter(request,response);
+            filterChain.doFilter(request,response);
     }
 }
