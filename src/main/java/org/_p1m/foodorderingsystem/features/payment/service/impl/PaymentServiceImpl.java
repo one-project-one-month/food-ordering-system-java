@@ -1,5 +1,9 @@
 package org._p1m.foodorderingsystem.features.payment.service.impl;
 
+import java.time.LocalDateTime;
+
+import org._p1m.foodorderingsystem.common.storage.StorageService;
+import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
 import org._p1m.foodorderingsystem.features.order.repository.OrderRepo;
 import org._p1m.foodorderingsystem.features.payment.dto.PaymentRequestDTO;
@@ -10,13 +14,20 @@ import org._p1m.foodorderingsystem.features.restaurant.repository.RestaurantRepo
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
 import org._p1m.foodorderingsystem.model.OrderData;
 import org._p1m.foodorderingsystem.model.PaymentData;
+import org._p1m.foodorderingsystem.model.Profile;
 import org._p1m.foodorderingsystem.model.Restaurant;
 import org._p1m.foodorderingsystem.model.User;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
@@ -24,13 +35,11 @@ public class PaymentServiceImpl implements PaymentService {
     private final RestaurantRepository restaurantRepository;
     private final OrderRepo orderRepository;
     private final ModelMapper modelMapper;
-
-    public PaymentServiceImpl(PaymentRepository paymentRepository, UserRepository userRepository, RestaurantRepository restaurantRepository, OrderRepo orderRepository, ModelMapper modelMapper) {
-        this.paymentRepository = paymentRepository;
-        this.userRepository = userRepository;
-        this.restaurantRepository = restaurantRepository;
-        this.orderRepository = orderRepository;
-        this.modelMapper = modelMapper;
+    private StorageService storageService;
+    
+    @Autowired
+    public void setStorageService(StorageServiceFactory factory) {
+        this.storageService = factory.getConfiguredStorageService();
     }
 
     @Override
@@ -49,9 +58,9 @@ public class PaymentServiceImpl implements PaymentService {
         Restaurant restaurant = restaurantRepository.findById(paymentDTO.getRestaurantId())
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with id: " + paymentDTO.getRestaurantId()));
         paymentData.setRestaurant(restaurant);
-
+        paymentData.setDateTime(LocalDateTime.now());
         // Set fields from DTO
-        paymentData.setPaymentScreenshot(paymentDTO.getPaymentScreenshot());
+//        paymentData.setPaymentScreenshot(paymentDTO.getPaymentScreenshot());
         // paymentData.setPaymentMethod(paymentDTO.getPaymentMethod()); // Assuming PaymentData has this field
 
         PaymentData savedPayment = paymentRepository.save(paymentData);
@@ -65,4 +74,22 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new EntityNotFoundException("Payment not found with id: " + id));
         return modelMapper.map(paymentData, PaymentResponseDTO.class);
     }
+
+	@Override
+	@Transactional
+	public String uploadPaymentPicture(Long paymentId, MultipartFile file) {
+		final PaymentData payment = this.paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new EntityNotFoundException("Payment not found for ID: " + paymentId));
+
+        final String filename = storageService.store(file);
+
+        final String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/files/")
+                .path(filename)
+                .toUriString();
+
+        payment.setPaymentScreenshot(fileUrl);
+        this.paymentRepository.save(payment);
+        return fileUrl;
+	}
 }

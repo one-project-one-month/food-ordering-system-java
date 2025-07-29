@@ -1,0 +1,5 @@
+ALTER TABLE order_data
+MODIFY COLUMN payment_id BIGINT NULL;
+
+ALTER TABLE order_data
+ADD COLUMN order_status INT NOT NULL DEFAULT 1;
