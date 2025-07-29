@@ -51,7 +51,7 @@ public class OrderData extends MasterData {
     private DeliveryStatus deliveryStatus = DeliveryStatus.PENDING;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "payment_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "payment_id", referencedColumnName = "id")
     private PaymentData payment;
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
