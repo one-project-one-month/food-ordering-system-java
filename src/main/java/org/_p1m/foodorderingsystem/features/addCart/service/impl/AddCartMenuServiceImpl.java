@@ -1,9 +1,6 @@
 package org._p1m.foodorderingsystem.features.addCart.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import org._p1m.foodorderingsystem.features.menu.repository.DishSizeRepo;
-import org._p1m.foodorderingsystem.features.menu.repository.ExtraRepo;
-
+import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.features.addCart.dto.request.AddCartMenuRequest;
 import org._p1m.foodorderingsystem.features.addCart.dto.response.AddCartMenuResponse;
 import org._p1m.foodorderingsystem.features.addCart.repository.AddCartMenuRepo;
@@ -15,6 +12,7 @@ import org._p1m.foodorderingsystem.model.AddCartData;
 import org._p1m.foodorderingsystem.model.DishSize;
 import org._p1m.foodorderingsystem.model.Extra;
 import org._p1m.foodorderingsystem.model.User;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -30,7 +28,7 @@ public class AddCartMenuServiceImpl implements AddCartMenuService {
     private final ExtraRepo extraRepository;
 
     @Override
-    public AddCartMenuResponse addToCart(AddCartMenuRequest request) {
+    public ApiResponse addToCart(AddCartMenuRequest request) {
         User user = userRepository.findById(request.getCustomerId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -62,7 +60,30 @@ public class AddCartMenuServiceImpl implements AddCartMenuService {
         response.setCustomerId(saved.getCustomer().getId());
         response.setDishSizeId(saved.getDishSize() != null ? saved.getDishSize().getId() : null);
         response.setExtraId(saved.getExtra() != null ? saved.getExtra().getId() : null);
-        return response;
+        return ApiResponse.builder().success(1).code(HttpStatus.OK.value())
+                .data(response)
+                .message("Successfully added to cart.").build();
+    }
+
+    @Override
+    public ApiResponse removeFromCart(Long id) {
+        if (!cartRepo.existsById(id)) {
+            return ApiResponse.builder()
+                .success(0)
+                .code(HttpStatus.NOT_FOUND.value())
+                .message("Item not found in cart.")
+                .data(null)
+                .build();
+        }
+
+        cartRepo.deleteById(id);
+
+        return ApiResponse.builder()
+            .success(1)
+            .code(HttpStatus.OK.value())
+            .message("Successfully removed from cart.")
+            .data(null)
+            .build();
     }
 
 

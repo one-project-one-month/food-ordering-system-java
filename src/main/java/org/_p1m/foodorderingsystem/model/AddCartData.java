@@ -25,7 +25,7 @@ public class AddCartData extends MasterData {
     @JoinColumn(name = "extra_id")
     private Extra extra;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private OrderData order;
 

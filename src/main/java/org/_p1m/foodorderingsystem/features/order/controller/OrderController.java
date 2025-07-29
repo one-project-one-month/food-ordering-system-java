@@ -3,13 +3,14 @@ package org._p1m.foodorderingsystem.features.order.controller;
 import java.util.Collections;
 import java.util.List;
 
+import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
-import org._p1m.foodorderingsystem.features.order.dto.request.OrderRequestDto;
+import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
+import org._p1m.foodorderingsystem.features.order.dto.request.OrderRequest;
 import org._p1m.foodorderingsystem.features.order.dto.response.OrderResponseDto;
 import org._p1m.foodorderingsystem.features.order.service.OrderService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,13 +20,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("${api.base.path}/requestOrder")
+@RequestMapping("${api.base.path}/orders")
 @RequiredArgsConstructor
 @Tag(name = "Order API", description = "Endpoints for managing orders")
 public class OrderController {
@@ -43,23 +48,35 @@ public class OrderController {
     }
 
 
-    @PostMapping("/create-orders")
-    public ResponseEntity<PaginatedApiResponse<Long>> createOrder(@RequestBody @Valid OrderRequestDto dto) {
-        Long id = orderService.createOrder(dto);
+    @PostMapping
+    @Operation(
+            summary = "Create an order",
+            description = "Create an order with request body before payment.",
+            		requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                            description = "Order creation request",
+                            required = true,
+                            content = @Content(schema = @Schema(implementation = OrderRequest.class))
+                    ),
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Order created successfully"),
+            }
+    )
+    public ResponseEntity<ApiResponse> createOrder(@RequestBody OrderRequest odRequest, HttpServletRequest request) {
+        ApiResponse response = orderService.createOrder(odRequest);
 
-        PaginatedApiResponse<Long> response = PaginatedApiResponse.<Long>builder()
-                .success(1)
-                .code(201)
-                .message("Order created successfully")
-                .meta(null)
-                .data(Collections.singletonList(id))
-                .build();
+//        PaginatedApiResponse<Long> response = PaginatedApiResponse.<Long>builder()
+//                .success(1)
+//                .code(201)
+//                .message("Order created successfully")
+//                .meta(null)
+//                .data(Collections.singletonList(id))
+//                .build();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseUtils.buildResponse(request, response);
     }
 
     @PutMapping("/update-order/{id}")
-    public ResponseEntity<PaginatedApiResponse<Void>> updateOrder(@PathVariable Long id, @RequestBody @Valid OrderRequestDto dto) {
+    public ResponseEntity<PaginatedApiResponse<Void>> updateOrder(@PathVariable Long id, @RequestBody @Valid OrderRequest dto) {
         orderService.updateOrder(id, dto);
 
         PaginatedApiResponse<Void> response = PaginatedApiResponse.<Void>builder()

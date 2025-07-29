@@ -1,14 +1,22 @@
 package org._p1m.foodorderingsystem.features.delivery.controller;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
+import org._p1m.foodorderingsystem.features.delivery.dto.request.ApplyDeliveryStaffRequest;
 import org._p1m.foodorderingsystem.features.delivery.dto.request.AssignDeliveryRequest;
 import org._p1m.foodorderingsystem.features.delivery.service.DeliveryDataService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("${api.base.path}/delivery-data")
@@ -33,5 +41,9 @@ public class DeliveryDataController {
        return ResponseUtils.buildResponse(request, response);
    }
 
-
+   @PostMapping("/applyDelivery")
+   public ResponseEntity<ApiResponse> applyRestaurantByDeliveryStaff(@Valid @RequestBody ApplyDeliveryStaffRequest staffRequest, HttpServletRequest request){
+       final ApiResponse response = this.deliveryDataService.applyRestaurantByDeliveryStaff(staffRequest);
+       return ResponseUtils.buildResponse(request, response);
+   }
 }

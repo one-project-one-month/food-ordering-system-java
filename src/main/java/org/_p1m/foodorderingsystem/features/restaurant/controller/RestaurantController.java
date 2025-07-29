@@ -44,6 +44,22 @@ public class RestaurantController {
     	ApiResponse response = restaurantService.getRestaurantByUserId(userId);
     	return ResponseUtils.buildResponse(request, response);
     }
+
+    @GetMapping("/delivery/{deliveryId}")
+    @Operation(
+            summary = "Get applied restaurants by delivery ID",
+            description = "Retrieves a list of restaurants a delivery staff has applied to.",
+            parameters = {
+                    @Parameter(name = "deliveryId", description = "ID of delivery staff to retrieve applications for", required = true)
+            },
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Applied restaurant list retrieved successfully"),
+            }
+    )
+    public ResponseEntity<ApiResponse> getAppliedRestaurantsByDeliveryId(@PathVariable(name="deliveryId") Long deliveryId, HttpServletRequest request){
+        ApiResponse response = restaurantService.getAppliedRestaurantsByDeliveryId(deliveryId);
+        return ResponseUtils.buildResponse(request, response);
+    }
 }
 
 
