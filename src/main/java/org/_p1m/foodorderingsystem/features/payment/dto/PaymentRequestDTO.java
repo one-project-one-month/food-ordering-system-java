@@ -17,10 +17,10 @@ public class PaymentRequestDTO {
     @NotNull(message = "Restaurant ID cannot be null")
     private Long restaurantId;
 
-    private Long couponId;
+//    private Long couponId;
 
     @NotNull(message = "Payment Method cannot be null")
     private String paymentMethod;
 
-    private String paymentScreenshot;
+//    private String paymentScreenshot;
 }
