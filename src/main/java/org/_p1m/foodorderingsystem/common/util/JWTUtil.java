@@ -2,6 +2,7 @@ package org._p1m.foodorderingsystem.common.util;
 
 //import io.lettuce.core.dynamic.annotation.Value;
 import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.HttpServletRequest;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -27,6 +28,13 @@ public class JWTUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+    public String extractTokenFromRequest(HttpServletRequest request) {
+        final String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return null;
     }
 
     public boolean ValidateToken(String token, UserDetails userDetails){

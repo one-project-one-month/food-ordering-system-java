@@ -15,7 +15,9 @@ import org._p1m.foodorderingsystem.features.users.dto.request.UploadProfilePictu
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
 import org._p1m.foodorderingsystem.features.users.dto.response.AuthResponseDto;
 import org._p1m.foodorderingsystem.features.users.service.UserService;
+import org._p1m.foodorderingsystem.features.users.service.impl.UserDetailServiceImpl;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,6 +45,7 @@ public class UserController {
 	private final AuthenticationManager authManager;
 	private final ServerUtil serverUtil;
 	private final JWTUtil jwtUtil;
+	private final UserDetailServiceImpl userDetailService;
 
 	@PostMapping("/login")
 	@Operation(
@@ -231,29 +234,28 @@ public class UserController {
 	@PostMapping("/getRefreshToken")
 	@Operation(
 			summary = "Get Refresh Token",
-			description = "Get Refresh Token after Access Token Expired.",
-			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-					description = "Get Refresh Token",
-					required = true,
-					content = @Content(
-							mediaType = "application/json",
-							examples = @ExampleObject(
-									name = "VerifyEmailRequest",
-									summary = "Example request",
-									value = "{ \"email\": \"user@example.com\", \"password\": \"123456\" }"
-							)
-					)
-			),
+			description = "Generate Refresh Token using Access Token",
 			responses = {
-					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Generate Refresh Token Successfully"),
-					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request")
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Refresh token generated successfully"),
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized")
 			}
 	)
-	public ResponseEntity<ApiResponse> getRefreshToken(@RequestBody AuthRequestDto requestDto , HttpServletRequest request){
-		Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken
-				(requestDto.getEmail() , requestDto.getPassword()));
-		String refreshToken = serverUtil.generateRefreshToken((UserDetails) authentication.getPrincipal());
-		final ApiResponse response = this.userService.getRefreshToken(requestDto , refreshToken);
+	public ResponseEntity<ApiResponse> getRefreshToken(HttpServletRequest request){
+		String accessToken = jwtUtil.extractTokenFromRequest(request);
+		String email = jwtUtil.extractEmail(accessToken);
+
+		if (email == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(ApiResponse.builder()
+							.success(0)
+							.code(401)
+							.message("Invalid token")
+							.build());
+		}
+
+		UserDetails userDetails = userDetailService.loadUserByUsername(email);
+		String refreshToken = serverUtil.generateRefreshToken(userDetails);
+		final ApiResponse response = this.userService.getRefreshToken(email , refreshToken);
 		return ResponseUtils.buildResponse(request , response);
 	}
 }
