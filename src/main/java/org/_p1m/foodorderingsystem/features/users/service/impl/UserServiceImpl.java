@@ -164,6 +164,7 @@ public class UserServiceImpl implements UserService {
             long hoursBetween = ChronoUnit.HOURS.between(createdAt, LocalDateTime.now());
             if (hoursBetween < 12) {
                 saveRefreshToken = false; // Only save if more than 12 hours have passed
+                refreshToken = tokenData.getToken(); // Use existing Token in db instead of creating new one.
             }
         }
 
