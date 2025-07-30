@@ -6,4 +6,6 @@ import org._p1m.foodorderingsystem.features.addCart.dto.request.AddCartMenuReque
 public interface AddCartMenuService {
 	ApiResponse addToCart(AddCartMenuRequest request);
 	ApiResponse removeFromCart(Long id);
+	ApiResponse forceRemoveFromCart();
+	ApiResponse getCartItemsByCustomerId(Long customerId);
 }

@@ -164,6 +164,7 @@ public class UserServiceImpl implements UserService {
             long hoursBetween = ChronoUnit.HOURS.between(createdAt, LocalDateTime.now());
             if (hoursBetween < 12) {
                 saveRefreshToken = false; // Only save if more than 12 hours have passed
+                refreshToken = tokenData.getToken(); // Use existing Token in db instead of creating new one.
             }
         }
 
@@ -193,22 +194,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ApiResponse getRefreshToken(AuthRequestDto requestDto, String refreshToken) {
-        Map<String, Object> data;
+    public ApiResponse getRefreshToken(String email, String refreshToken) {
 
-        UserToken existingToken = userTokenRepository.findByUsername(requestDto.getEmail());
+        Map<String, Object> data;
+        UserToken existingToken = userTokenRepository.findByUsername(email);
         if (existingToken != null) {
-            userTokenRepository.deleteByUsername(requestDto.getEmail());
+            userTokenRepository.deleteByUsername(email);
         }
 
         // Save new token
         UserToken userToken = new UserToken();
-        userToken.setUsername(requestDto.getEmail());
+        userToken.setUsername(email);
         userToken.setToken(refreshToken);
         userTokenRepository.save(userToken);
 
         data = Map.of(
-                "userName", requestDto.getEmail(),
+                "userName", email,
                 "refreshToken", refreshToken
         );
 

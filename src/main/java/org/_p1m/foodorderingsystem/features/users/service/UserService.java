@@ -24,5 +24,5 @@ public interface UserService {
 
     public ApiResponse getUserAuthData(AuthRequestDto requestDto , String token , String refreshToken);
 
-    public ApiResponse getRefreshToken(AuthRequestDto requestDto, String refreshToken);
+    public ApiResponse getRefreshToken(String email, String refreshToken);
 }
