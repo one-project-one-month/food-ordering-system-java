@@ -14,12 +14,7 @@ import org._p1m.foodorderingsystem.features.addCart.dto.request.AddCartMenuReque
 import org._p1m.foodorderingsystem.features.addCart.service.AddCartMenuService;
 import org._p1m.foodorderingsystem.features.address.dto.request.AddressCreateRequestDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -81,6 +76,24 @@ public class AddCartMenuController {
     public ResponseEntity<ApiResponse> forceRemoveFromCart(
             HttpServletRequest request) {
         final ApiResponse response = addCartMenuService.forceRemoveFromCart();
+        return ResponseUtils.buildResponse(request, response);
+    }
+
+    @GetMapping("/customer/{customerId}")
+    @Operation(
+            summary = "Get all items in cart for a customer.",
+            description = "Retrieves a list of all items in a customer's cart that have not been ordered yet.",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Successfully retrieved cart items."),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "User not found."),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Item not found in cart.")
+            }
+    )
+    public ResponseEntity<ApiResponse> getCartItemsByCustomerId(
+            @Parameter(name = "customerId", description = "The ID of the customer", required = true)
+            @PathVariable final Long customerId,
+            final HttpServletRequest request) {
+        ApiResponse response = addCartMenuService.getCartItemsByCustomerId(customerId);
         return ResponseUtils.buildResponse(request, response);
     }
 }

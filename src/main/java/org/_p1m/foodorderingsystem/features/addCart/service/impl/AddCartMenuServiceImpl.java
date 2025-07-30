@@ -3,22 +3,23 @@ package org._p1m.foodorderingsystem.features.addCart.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.features.addCart.dto.request.AddCartMenuRequest;
-import org._p1m.foodorderingsystem.features.addCart.dto.response.AddCartMenuResponse;
+import org._p1m.foodorderingsystem.features.addCart.dto.response.*;
 import org._p1m.foodorderingsystem.features.addCart.repository.AddCartMenuRepo;
 import org._p1m.foodorderingsystem.features.addCart.service.AddCartMenuService;
 import org._p1m.foodorderingsystem.features.menu.repository.DishSizeRepo;
 import org._p1m.foodorderingsystem.features.menu.repository.ExtraRepo;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
-import org._p1m.foodorderingsystem.model.AddCartData;
-import org._p1m.foodorderingsystem.model.DishSize;
-import org._p1m.foodorderingsystem.model.Extra;
-import org._p1m.foodorderingsystem.model.User;
+import org._p1m.foodorderingsystem.model.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -119,5 +120,83 @@ public class AddCartMenuServiceImpl implements AddCartMenuService {
         }
     }
 
+    @Override
+    public ApiResponse getCartItemsByCustomerId(final Long customerId) {
+        if (!userRepository.existsById(customerId)) {
+            return ApiResponse.builder()
+                    .success(0)
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message("Customer not found.")
+                    .build();
+        }
 
+        final List<AddCartData> cartItems = cartRepo.findUnorderedCartItemsByCustomerId(customerId);
+
+        if (CollectionUtils.isEmpty(cartItems)) {
+            return ApiResponse.builder()
+                    .success(0)
+                    .code(HttpStatus.NOT_FOUND.value())
+                    .message("Item not found in cart.")
+                    .data(null)
+                    .build();
+        }
+        final List<CartItemDetailResponse> responseData = cartItems.stream()
+                .map(this::mapToCartItemDetail)
+                .collect(Collectors.toList());
+
+        return ApiResponse.builder()
+                .success(1)
+                .code(HttpStatus.OK.value())
+                .message("Successfully retrieved cart items.")
+                .data(responseData)
+                .build();
+    }
+
+    private CartItemDetailResponse mapToCartItemDetail(final AddCartData cartItem) {
+        final DishSize dishSize = cartItem.getDishSize();
+        final Extra extra = cartItem.getExtra();
+
+        final DishResponse dishResponse = getDishResponse(dishSize);
+
+        ExtraResponse extraResponse = null;
+        if (extra != null) {
+            extraResponse = new ExtraResponse(
+                    extra.getId(),
+                    extra.getName(),
+                    extra.getPrice()
+            );
+        }
+
+        return CartItemDetailResponse.builder()
+                .cartId(cartItem.getId())
+                .quantity(cartItem.getQuantity())
+                .dish(dishResponse)
+                .extra(extraResponse)
+                .build();
+    }
+
+    private static DishResponse getDishResponse(final DishSize dishSize) {
+        DishResponse dishResponse = null;
+        if (dishSize != null && dishSize.getMenu() != null) {
+            final Menu menu = dishSize.getMenu();
+            final Restaurant restaurant = menu.getRestaurant();
+
+            RestaurantResponse restaurantResponse = null;
+            if (restaurant != null) {
+                restaurantResponse = new RestaurantResponse(
+                        restaurant.getId(),
+                        restaurant.getRestaurantName()
+                );
+            }
+
+            dishResponse = new DishResponse(
+                    menu.getId(),
+                    menu.getDish(),
+                    menu.getDishImg(),
+                    dishSize.getPrice(),
+                    restaurantResponse
+            );
+        }
+        return dishResponse;
+    }
 }

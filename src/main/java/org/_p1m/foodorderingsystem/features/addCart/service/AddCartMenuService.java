@@ -7,4 +7,5 @@ public interface AddCartMenuService {
 	ApiResponse addToCart(AddCartMenuRequest request);
 	ApiResponse removeFromCart(Long id);
 	ApiResponse forceRemoveFromCart();
+	ApiResponse getCartItemsByCustomerId(Long customerId);
 }
