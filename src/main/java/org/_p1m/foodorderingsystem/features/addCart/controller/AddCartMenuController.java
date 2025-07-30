@@ -68,4 +68,19 @@ public class AddCartMenuController {
     	ApiResponse response = addCartMenuService.removeFromCart(id);
         return ResponseUtils.buildResponse(request, response);
     }
+
+    @DeleteMapping("/remove/force")
+    @Operation(
+            summary = "Remove cart item.",
+            description = "Remove an item from cart ",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Successfully force removed from cart."),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "An error occurred while cleaning the cart.")
+            }
+    )
+    public ResponseEntity<ApiResponse> forceRemoveFromCart(
+            HttpServletRequest request) {
+        final ApiResponse response = addCartMenuService.forceRemoveFromCart();
+        return ResponseUtils.buildResponse(request, response);
+    }
 }

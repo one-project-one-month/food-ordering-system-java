@@ -1,5 +1,6 @@
 package org._p1m.foodorderingsystem.features.addCart.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.features.addCart.dto.request.AddCartMenuRequest;
 import org._p1m.foodorderingsystem.features.addCart.dto.response.AddCartMenuResponse;
@@ -12,13 +13,16 @@ import org._p1m.foodorderingsystem.model.AddCartData;
 import org._p1m.foodorderingsystem.model.DishSize;
 import org._p1m.foodorderingsystem.model.Extra;
 import org._p1m.foodorderingsystem.model.User;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AddCartMenuServiceImpl implements AddCartMenuService {
 
 
@@ -26,6 +30,7 @@ public class AddCartMenuServiceImpl implements AddCartMenuService {
     private final UserRepository userRepository;
     private final DishSizeRepo dishSizeRepository;
     private final ExtraRepo extraRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public ApiResponse addToCart(AddCartMenuRequest request) {
@@ -84,6 +89,34 @@ public class AddCartMenuServiceImpl implements AddCartMenuService {
             .message("Successfully removed from cart.")
             .data(null)
             .build();
+    }
+
+    @Override
+    public ApiResponse forceRemoveFromCart() {
+        try {
+            final String sql = "DELETE FROM add_cart_data WHERE order_id IS NULL";
+
+            final int rowsAffected = this.jdbcTemplate.update(sql);
+
+            log.info("Successfully force removed {} item(s) from the cart.", rowsAffected);
+
+            return ApiResponse.builder()
+                    .success(1)
+                    .code(HttpStatus.OK.value())
+                    .message("Successfully force removed from cart.")
+                    .data(null)
+                    .build();
+
+        } catch (DataAccessException e) {
+            log.error("Error during force removal from cart: {}", e.getMessage());
+
+            return ApiResponse.builder()
+                    .success(0)
+                    .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .message("An error occurred while cleaning the cart.")
+                    .data(e.getMessage())
+                    .build();
+        }
     }
 
 
