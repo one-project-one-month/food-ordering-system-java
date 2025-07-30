@@ -2,6 +2,7 @@ package org._p1m.foodorderingsystem.features.menu.service.impl;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -272,8 +273,21 @@ public class ManageMenuServiceImpl implements ManageMenuService {
     @Override
     public PaginatedApiResponse<MenuResponseDto> getAllMenusByRestaurantId(Long restaurantId, GetAllMenuRequest getAllMenuRequest) {
 
-        restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with id: " + restaurantId));
+        if (!restaurantRepository.existsById(restaurantId)) {
+            final int page = getAllMenuRequest.page();
+            PaginationMeta meta = new PaginationMeta();
+            meta.setTotalItems(0L);
+            meta.setTotalPages(0);
+            meta.setCurrentPage(page);
+
+            return PaginatedApiResponse.<MenuResponseDto>builder()
+                    .success(1)
+                    .code(HttpStatus.OK.value())
+                    .message("Restaurant not found with id: " + restaurantId)
+                    .meta(meta)
+                    .data(Collections.emptyList())
+                    .build();
+        }
         return getPaginatedMenus(restaurantId, getAllMenuRequest);
     }
 
