@@ -131,6 +131,7 @@ public class ManageMenuServiceImpl implements ManageMenuService {
                 .message("Menu retrieved successfully").build();
     }
 
+    /*
     @Override
     public PaginatedApiResponse<MenuResponseDto> getAllMenus(GetAllMenuRequest getAllMenuRequest) {
 
@@ -152,10 +153,21 @@ public class ManageMenuServiceImpl implements ManageMenuService {
                 .data(data)
                 .build();
     }
+     */
 
-    private Specification<Menu> menuSpecification(GetAllMenuRequest getAllMenuRequest) {
+    @Override
+    public PaginatedApiResponse<MenuResponseDto> getAllMenus(GetAllMenuRequest getAllMenuRequest) {
+        return getPaginatedMenus(null, getAllMenuRequest);
+    }
+
+    private Specification<Menu> menuSpecification(GetAllMenuRequest getAllMenuRequest, Long restaurantId) {
         return (root, query, cb) -> {
             Predicate predicate = cb.conjunction();
+
+            if (restaurantId != null) {
+                predicate = cb.and(predicate,
+                        cb.equal(root.get("restaurant").get("id"), restaurantId));
+            }
 
             if (getAllMenuRequest.dish() != null && !getAllMenuRequest.dish().isBlank()) {
                 predicate = cb.and(predicate,
@@ -257,4 +269,34 @@ public class ManageMenuServiceImpl implements ManageMenuService {
         );
     }
 
+    @Override
+    public PaginatedApiResponse<MenuResponseDto> getAllMenusByRestaurantId(Long restaurantId, GetAllMenuRequest getAllMenuRequest) {
+
+        restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with id: " + restaurantId));
+        return getPaginatedMenus(restaurantId, getAllMenuRequest);
+    }
+
+    private PaginatedApiResponse<MenuResponseDto> getPaginatedMenus(Long restaurantId, GetAllMenuRequest getAllMenuRequest) {
+        final int page = getAllMenuRequest.page();
+        final int size = getAllMenuRequest.size();
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Specification<Menu> spec = menuSpecification(getAllMenuRequest, restaurantId);
+        Page<Menu> pageResult = manageMenuRepository.findAll(spec, pageable);
+
+        PaginationMeta meta = new PaginationMeta();
+        meta.setTotalItems(pageResult.getTotalElements());
+        meta.setTotalPages(pageResult.getTotalPages());
+        meta.setCurrentPage(page);
+
+        List<MenuResponseDto> data = pageResult.map(this::mapToDto).toList();
+
+        return PaginatedApiResponse.<MenuResponseDto>builder()
+                .success(1)
+                .code(HttpStatus.OK.value())
+                .message("Menus retrieved successfully.")
+                .meta(meta)
+                .data(data)
+                .build();
+    }
 }
