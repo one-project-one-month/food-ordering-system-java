@@ -14,4 +14,5 @@ public class CartItemDetailResponse {
 
     private DishResponse dish;
     private ExtraResponse extra; // Will be null if no extra is selected
+    private MenuResponse menu;
 }
