@@ -91,7 +91,7 @@ public class AddCartMenuController {
     )
     public ResponseEntity<ApiResponse> getCartItemsByCustomerId(
             @Parameter(name = "customerId", description = "The ID of the customer", required = true)
-            @PathVariable final Long customerId,
+            @PathVariable(name = "customerId") final Long customerId,
             final HttpServletRequest request) {
         ApiResponse response = addCartMenuService.getCartItemsByCustomerId(customerId);
         return ResponseUtils.buildResponse(request, response);
