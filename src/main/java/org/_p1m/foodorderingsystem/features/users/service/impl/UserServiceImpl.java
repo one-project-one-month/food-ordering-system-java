@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import org._p1m.foodorderingsystem.common.storage.StorageService;
 import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
 import org._p1m.foodorderingsystem.common.util.ServerUtil;
+import org._p1m.foodorderingsystem.config.exceptions.DuplicateEntityException;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.features.users.dto.request.AuthRequestDto;
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
@@ -66,7 +67,9 @@ public class UserServiceImpl implements UserService {
     public ApiResponse createUser(UserCreateRequest request) {
         final Role role = roleRepository.findByName(request.getRole())
                 .orElseThrow(() -> new EntityNotFoundException("Role not found."));
-
+        if(userRepository.existsByEmail(request.getEmail())) {
+        	throw new DuplicateEntityException("Email is already in use.");
+        }
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
