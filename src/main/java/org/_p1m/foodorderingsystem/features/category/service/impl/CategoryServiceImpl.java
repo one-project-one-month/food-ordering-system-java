@@ -15,7 +15,10 @@ import org._p1m.foodorderingsystem.model.Restaurant;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -48,16 +51,18 @@ public class CategoryServiceImpl implements CategoryService {
     public ApiResponse getAllCategoriesByResId(Long restaurantId) {
 
         List<Category> categories = this.categoryRepository.findByRestaurantId(restaurantId);
-        if (categories.isEmpty()) {
-            throw new EntityNotFoundException("No categories found for restaurant ID " + restaurantId);
+        List<CategoryResponseDto> dtos = new ArrayList<>();
+        if (CollectionUtils.isEmpty(categories)) {
+            System.out.println("No categories found for restaurant with id: " + restaurantId + ".");
+        } else {
+            dtos = categories.stream()
+                    .map(category -> CategoryResponseDto.builder()
+                            .id(category.getId())
+                            .name(category.getName())
+                            .restaurantId(category.getRestaurant().getId())
+                            .build())
+                    .toList();
         }
-        List<CategoryResponseDto> dtos = categories.stream()
-                .map(category -> CategoryResponseDto.builder()
-                        .id(category.getId())
-                        .name(category.getName())
-                        .restaurantId(category.getRestaurant().getId())
-                        .build())
-                .toList();
         return ApiResponse.builder().success(1).code(HttpStatus.OK.value())
                 .data(Map.of("categories", dtos))
                 .message("Fetch all categories successful.").build();

@@ -1,5 +1,7 @@
 package org._p1m.foodorderingsystem.features.users.service.impl;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -7,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import org._p1m.foodorderingsystem.common.storage.StorageService;
 import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
 import org._p1m.foodorderingsystem.common.util.ServerUtil;
+import org._p1m.foodorderingsystem.config.exceptions.DuplicateEntityException;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.features.users.dto.request.AuthRequestDto;
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
@@ -14,10 +17,12 @@ import org._p1m.foodorderingsystem.features.users.dto.response.UserResponseDto;
 import org._p1m.foodorderingsystem.features.users.repository.ProfileRepository;
 import org._p1m.foodorderingsystem.features.users.repository.RoleRepository;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
+import org._p1m.foodorderingsystem.features.users.repository.UserTokenRepository;
 import org._p1m.foodorderingsystem.features.users.service.UserService;
 import org._p1m.foodorderingsystem.model.Profile;
 import org._p1m.foodorderingsystem.model.Role;
 import org._p1m.foodorderingsystem.model.User;
+import org._p1m.foodorderingsystem.model.UserToken;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -44,6 +49,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
     private final ServerUtil serverUtil;
+    private final UserTokenRepository userTokenRepository;
     private StorageService storageService;
 
     private final AuthenticationManager authenticationManager;
@@ -61,7 +67,9 @@ public class UserServiceImpl implements UserService {
     public ApiResponse createUser(UserCreateRequest request) {
         final Role role = roleRepository.findByName(request.getRole())
                 .orElseThrow(() -> new EntityNotFoundException("Role not found."));
-
+        if(userRepository.existsByEmail(request.getEmail())) {
+        	throw new DuplicateEntityException("Email is already in use.");
+        }
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -81,7 +89,7 @@ public class UserServiceImpl implements UserService {
         UserResponseDto dto = modelMapper.map(user, UserResponseDto.class);
         return ApiResponse.builder().success(1).code(HttpStatus.OK.value())
 		.data(Map.of("currentUser", dto))
-		.message("User account created and send Confirmation Mail.").build();
+		.message("User account created Successfully.").build();
     }
 
     @Transactional
@@ -147,20 +155,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse getUserAuthData(AuthRequestDto requestDto , String token) {
+    public ApiResponse getUserAuthData(AuthRequestDto requestDto , String token , String refreshToken) {
+        boolean saveRefreshToken = true;
         User userData = userRepository.findByEmail(requestDto.getEmail());
         long roleId = userData.getRole().getId();
         String roleName = userData.getRole().getName();
 
+        UserToken tokenData = userTokenRepository.findByUsername(requestDto.getEmail());
+        if(tokenData != null){
+            LocalDateTime createdAt = tokenData.getCreatedAt();
+            long hoursBetween = ChronoUnit.HOURS.between(createdAt, LocalDateTime.now());
+            if (hoursBetween < 12) {
+                saveRefreshToken = false; // Only save if more than 12 hours have passed
+                refreshToken = tokenData.getToken(); // Use existing Token in db instead of creating new one.
+            }
+        }
+
+        if(saveRefreshToken){
+            UserToken userToken = new UserToken();
+            userToken.setUsername(requestDto.getEmail());
+            userToken.setToken(refreshToken); // Refresh Token
+            userTokenRepository.save(userToken);
+        }
+
         Map<String, Object> data = Map.of(
                 "token", token,
+                "RefreshToken", refreshToken,
                 "userId", userData.getId(),
                 "roleId", roleId,
                 "email", userData.getEmail(),
                 "roleName", roleName
         );
-
-
         return ApiResponse.builder()
                 .success(1)
                 .code(200)
@@ -169,5 +194,36 @@ public class UserServiceImpl implements UserService {
                 .message("Account Login successfully.")
                 .build();
     }
+
+    @Override
+    @Transactional
+    public ApiResponse getRefreshToken(String email, String refreshToken) {
+
+        Map<String, Object> data;
+        UserToken existingToken = userTokenRepository.findByUsername(email);
+        if (existingToken != null) {
+            userTokenRepository.deleteByUsername(email);
+        }
+
+        // Save new token
+        UserToken userToken = new UserToken();
+        userToken.setUsername(email);
+        userToken.setToken(refreshToken);
+        userTokenRepository.save(userToken);
+
+        data = Map.of(
+                "userName", email,
+                "refreshToken", refreshToken
+        );
+
+        return ApiResponse.builder()
+                .success(1)
+                .code(200)
+                .meta(null)
+                .data(data)
+                .message("Generated refresh token successfully.")
+                .build();
+    }
+
 
 }

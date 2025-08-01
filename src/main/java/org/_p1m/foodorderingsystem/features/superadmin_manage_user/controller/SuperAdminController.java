@@ -36,18 +36,13 @@ public class SuperAdminController {
     @Operation(
             summary = "Delete a user",
             description = "Change user status to Inactive.",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "User deleting request",
-                    required = true,
-                    content = @Content(schema = @Schema(implementation = UserCreateRequest.class))
-            ),
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "User is successfully deleted"),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Invalid user")
             }
     )
     public ResponseEntity<ApiResponse> deletedUser(
-            @PathVariable final Long id, HttpServletRequest request){
+            @PathVariable(name="id") final Long id, HttpServletRequest request){
 
         final ApiResponse response = superAdminService.deleteById(id);
         return ResponseUtils.buildResponse(request, response);

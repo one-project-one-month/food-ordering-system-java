@@ -1,8 +1,11 @@
 package org._p1m.foodorderingsystem.features.addCart.service;
 
+import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.features.addCart.dto.request.AddCartMenuRequest;
-import org._p1m.foodorderingsystem.features.addCart.dto.response.AddCartMenuResponse;
 
 public interface AddCartMenuService {
-    AddCartMenuResponse addToCart(AddCartMenuRequest request);
+	ApiResponse addToCart(AddCartMenuRequest request);
+	ApiResponse removeFromCart(Long id);
+	ApiResponse forceRemoveFromCart();
+	ApiResponse getCartItemsByCustomerId(Long customerId);
 }

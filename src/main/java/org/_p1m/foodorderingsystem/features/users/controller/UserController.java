@@ -1,7 +1,10 @@
 package org._p1m.foodorderingsystem.features.users.controller;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import org._p1m.foodorderingsystem.common.util.JWTUtil;
 import org._p1m.foodorderingsystem.common.util.ServerUtil;
@@ -12,7 +15,9 @@ import org._p1m.foodorderingsystem.features.users.dto.request.UploadProfilePictu
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
 import org._p1m.foodorderingsystem.features.users.dto.response.AuthResponseDto;
 import org._p1m.foodorderingsystem.features.users.service.UserService;
+import org._p1m.foodorderingsystem.features.users.service.impl.UserDetailServiceImpl;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,23 +45,7 @@ public class UserController {
 	private final AuthenticationManager authManager;
 	private final ServerUtil serverUtil;
 	private final JWTUtil jwtUtil;
-
-//	@PostMapping("/login")
-//	public ResponseEntity<String> varifiedUser(@RequestBody UserCreateRequest userCreateRequest) {
-//		User user=new User();
-//		user.setEmail(userCreateRequest.getEmail());
-//		user.setPassword(userCreateRequest.getPassword());
-//		String returnString=userService.varifiedUser(user);
-//		return ResponseEntity.ok(returnString);
-//	}
-
-//	@PostMapping("/login")
-//	public ResponseEntity<AuthResponseDto> varifyUser(@RequestBody AuthRequestDto request) {
-//		Authentication authentication = authManager.authenticate(
-//				new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-//		String token =serverUtil.generateToken((UserDetails)  authentication.getPrincipal());
-//		return ResponseEntity.ok(new AuthResponseDto(token));
-//	}
+	private final UserDetailServiceImpl userDetailService;
 
 	@PostMapping("/login")
 	@Operation(
@@ -83,7 +72,8 @@ public class UserController {
 		Authentication authentication = authManager.authenticate(
 				new UsernamePasswordAuthenticationToken(requestDto.getEmail(), requestDto.getPassword()));
 		String token =serverUtil.generateToken((UserDetails)  authentication.getPrincipal());
-		final ApiResponse response = this.userService.getUserAuthData(requestDto , token);
+		String refreshToken = serverUtil.generateRefreshToken((UserDetails)  authentication.getPrincipal());
+		final ApiResponse response = this.userService.getUserAuthData(requestDto , token , refreshToken);
 		return ResponseUtils.buildResponse(request , response);
 	}
     
@@ -227,5 +217,45 @@ public class UserController {
 	public ResponseEntity<ApiResponse> resendCode(@RequestBody Map<String ,String> body , HttpServletRequest request){
 		final ApiResponse response = this.userService.resendCode(body.get("email"));
 		return ResponseUtils.buildResponse(request, response);
+	}
+
+
+	// To Test Token Data
+	@PostMapping("/extractToken")
+	public Claims extractToken(@RequestBody Map<String , String> body){
+		String token = body.get("token");
+		return Jwts.parserBuilder()
+				.setSigningKey(serverUtil.getSecretKey().getBytes(StandardCharsets.UTF_8))
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
+	}
+
+	@PostMapping("/getRefreshToken")
+	@Operation(
+			summary = "Get Refresh Token",
+			description = "Generate Refresh Token using Access Token",
+			responses = {
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Refresh token generated successfully"),
+					@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized")
+			}
+	)
+	public ResponseEntity<ApiResponse> getRefreshToken(HttpServletRequest request){
+		String accessToken = jwtUtil.extractTokenFromRequest(request);
+		String email = jwtUtil.extractEmail(accessToken);
+
+		if (email == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(ApiResponse.builder()
+							.success(0)
+							.code(401)
+							.message("Invalid token")
+							.build());
+		}
+
+		UserDetails userDetails = userDetailService.loadUserByUsername(email);
+		String refreshToken = serverUtil.generateRefreshToken(userDetails);
+		final ApiResponse response = this.userService.getRefreshToken(email , refreshToken);
+		return ResponseUtils.buildResponse(request , response);
 	}
 }
