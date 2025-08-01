@@ -7,7 +7,7 @@ import org._p1m.foodorderingsystem.features.order.dto.response.OrderResponseDto;
 import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
-        PaginatedApiResponse<OrderResponseDto> getAllOrders(Pageable pageable);
+        PaginatedApiResponse<OrderResponseDto> getAllOrders(Pageable pageable,Long restaurantId);
         ApiResponse createOrder(OrderRequest dto);
         void updateOrder(Long id, OrderRequest dto);
         OrderResponseDto getOrder(Long id);

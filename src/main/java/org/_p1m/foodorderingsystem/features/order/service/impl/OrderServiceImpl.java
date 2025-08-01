@@ -26,9 +26,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepo orderRepo;
@@ -38,18 +40,20 @@ public class OrderServiceImpl implements OrderService {
     private final ModelMapper modelMapper;
     
     @Override
-    public PaginatedApiResponse<OrderResponseDto> getAllOrders(Pageable pageable) {
-        Page<OrderData> page = orderRepo.findAll(pageable);
-
+    public PaginatedApiResponse<OrderResponseDto> getAllOrders(Pageable pageable,Long restaurantId) {
+    	System.out.println("start");
+        Page<OrderData> page = orderRepo.findOrdersByRestaurantId(restaurantId,pageable);
+        System.out.println("found");
         List<OrderResponseDto> data = page.getContent().stream()
                 .map(order -> {
+                	System.out.println("start mapping");
                     OrderResponseDto dto = new OrderResponseDto();
                     dto.setId(order.getId());
                     dto.setOrderDateTime(order.getOrderDateTime());
-                    dto.setAddressId(order.getUserAddress().getId());
+                    dto.setAddressId(order.getUserAddress() != null ? order.getUserAddress().getId() : null);
                     dto.setTotalAmount(order.getTotalAmount());
                     dto.setDeliveryStatus(order.getDeliveryStatus());
-                    dto.setPaymentId(order.getPayment().getId());
+                    dto.setPaymentId(order.getPayment() != null ? order.getPayment().getId() : null);
                     dto.setCreatedAt(order.getCreatedAt());
                     return dto;
                 })
