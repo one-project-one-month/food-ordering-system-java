@@ -14,9 +14,7 @@ env:
   #define the logging level
   TF_LOG: "verbose"
 
-  AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY}}
-  AWS_SECRECT_KEY: ${{secrets.AWS_SECRECT_KEY}}
-  AWS_REGION: "us_east_1"
+  AWS_REGION: "ap_southeast_1"
   CLUSTER_NAME: ${{vars.CLUSTER_NAME}}
   VPC_ID: ${{vars.VPC_ID}}
   SUBNET_IDS: ${{vars.SUBNET_IDS}}
@@ -44,8 +42,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY}}
-          aws-secret-access-key: ${{ secrets.AWS_SECRECT_KEY }}
+          role-to-assume: ${{AWS_ROLE_ARN}}
           aws-region: ${{ env.AWS_REGION }}
 
       #Set up Terraform on the runner, be the same version with local

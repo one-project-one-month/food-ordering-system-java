@@ -16,14 +16,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -37,13 +38,24 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping("/all-orders")
+    @GetMapping("/all-orders/{restaurantId}")
+    @Operation(
+            summary = "Fetching Orders",
+            description = "Fetching orders with pagination",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Users are fetched successfully"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Invalid Request")
+            }
+    )
     public ResponseEntity<PaginatedApiResponse<OrderResponseDto>> getAllOrders(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+    		@Parameter(description = "Page number") 
+    		@RequestParam(value = "page", defaultValue = "0") int page,
+    		@Parameter(description = "Page size") 
+    		@RequestParam(value = "size", defaultValue = "20") int size,
+    		@PathVariable(name="restaurantId") final Long restaurantId
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PaginatedApiResponse<OrderResponseDto> response = orderService.getAllOrders(pageable);
+        PaginatedApiResponse<OrderResponseDto> response = orderService.getAllOrders(pageable,restaurantId);
         return ResponseEntity.ok(response);
     }
 
