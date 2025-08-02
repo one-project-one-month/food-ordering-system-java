@@ -3,6 +3,7 @@ package org._p1m.foodorderingsystem.features.order.controller;
 import java.util.Collections;
 import java.util.List;
 
+import org._p1m.foodorderingsystem.common.constant.DeliveryStatus;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
@@ -52,10 +53,11 @@ public class OrderController {
     		@RequestParam(value = "page", defaultValue = "0") int page,
     		@Parameter(description = "Page size") 
     		@RequestParam(value = "size", defaultValue = "20") int size,
+    		@RequestParam(value = "status", defaultValue = "PENDING") DeliveryStatus status,
     		@PathVariable(name="restaurantId") final Long restaurantId
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PaginatedApiResponse<OrderResponseDto> response = orderService.getAllOrders(pageable,restaurantId);
+        PaginatedApiResponse<OrderResponseDto> response = orderService.getAllOrders(pageable,restaurantId,status);
         return ResponseEntity.ok(response);
     }
 

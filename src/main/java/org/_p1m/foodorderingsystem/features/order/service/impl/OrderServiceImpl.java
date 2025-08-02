@@ -40,13 +40,10 @@ public class OrderServiceImpl implements OrderService {
     private final ModelMapper modelMapper;
     
     @Override
-    public PaginatedApiResponse<OrderResponseDto> getAllOrders(Pageable pageable,Long restaurantId) {
-    	System.out.println("start");
-        Page<OrderData> page = orderRepo.findOrdersByRestaurantId(restaurantId,pageable);
-        System.out.println("found");
+    public PaginatedApiResponse<OrderResponseDto> getAllOrders(Pageable pageable,Long restaurantId,DeliveryStatus status) {
+        Page<OrderData> page = orderRepo.findOrdersByRestaurantIdWithStatus(restaurantId,pageable,status);
         List<OrderResponseDto> data = page.getContent().stream()
                 .map(order -> {
-                	System.out.println("start mapping");
                     OrderResponseDto dto = new OrderResponseDto();
                     dto.setId(order.getId());
                     dto.setOrderDateTime(order.getOrderDateTime());

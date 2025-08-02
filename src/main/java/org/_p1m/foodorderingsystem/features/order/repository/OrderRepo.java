@@ -1,5 +1,6 @@
 package org._p1m.foodorderingsystem.features.order.repository;
 
+import org._p1m.foodorderingsystem.common.constant.DeliveryStatus;
 import org._p1m.foodorderingsystem.model.OrderData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,8 +16,10 @@ public interface OrderRepo extends JpaRepository<OrderData, Long> {
 		    JOIN ds.menu m
 		    JOIN m.restaurant r
 		    WHERE r.id = :restaurantId
+		    AND o.deliveryStatus = :status
 		""")
-		Page<OrderData> findOrdersByRestaurantId(@Param("restaurantId") Long restaurantId, Pageable pageable);
+		Page<OrderData> findOrdersByRestaurantIdWithStatus(@Param("restaurantId") Long restaurantId, Pageable pageable,
+				@Param("status") DeliveryStatus status);
 
 }
 
