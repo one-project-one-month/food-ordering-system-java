@@ -8,12 +8,15 @@ import org._p1m.foodorderingsystem.common.constant.DeliveryStatus;
 import org._p1m.foodorderingsystem.common.constant.Status;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
+import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
+import org._p1m.foodorderingsystem.config.response.dto.PaginationMeta;
 import org._p1m.foodorderingsystem.features.delivery.dto.request.ApplyDeliveryStaffRequest;
 import org._p1m.foodorderingsystem.features.delivery.dto.request.AssignDeliveryRequest;
 import org._p1m.foodorderingsystem.features.delivery.dto.response.ApplyDeliveryResponse;
 import org._p1m.foodorderingsystem.features.delivery.dto.response.AssignDeliveryResponseDto;
 import org._p1m.foodorderingsystem.features.delivery.dto.response.GetAllVendorsResponseDto;
 import org._p1m.foodorderingsystem.features.delivery.service.DeliveryDataService;
+import org._p1m.foodorderingsystem.features.order.dto.response.OrderResponseDto;
 import org._p1m.foodorderingsystem.features.order.repository.OrderDataRepository;
 import org._p1m.foodorderingsystem.features.restaurant.repository.RestaurantRepository;
 import org._p1m.foodorderingsystem.features.restaurant_vendors.repository.RestaurantVendorRepository;
@@ -24,6 +27,9 @@ import org._p1m.foodorderingsystem.model.Profile;
 import org._p1m.foodorderingsystem.model.Restaurant;
 import org._p1m.foodorderingsystem.model.RestaurantVendor;
 import org._p1m.foodorderingsystem.model.User;
+import org.apache.coyote.BadRequestException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -78,30 +84,50 @@ public class DeliveryDataServiceImpl implements DeliveryDataService {
     }
 
     @Override
-    public ApiResponse getAllDeliveryStaffData(Long restaurantId) {
-        List<RestaurantVendor> restaurantVendors = this.restaurantVendorRepository.findByRestaurantId(restaurantId);
-
-        if(restaurantVendors.isEmpty()){
-            return ApiResponse.builder().success(1).code(HttpStatus.OK.value())
-                    .message("No delivery in this restaurant")
-                    .build();
-        }
-
+    public PaginatedApiResponse<GetAllVendorsResponseDto>  getAllDeliveryStaffData(Pageable pageable,Long restaurantId,Status status) {
+    	Page<RestaurantVendor> page = this.restaurantVendorRepository.findDeliveryByRestaurantIdWithStatus(restaurantId,status,pageable);
+//        List<RestaurantVendor> restaurantVendors = this.restaurantVendorRepository.findByRestaurantId(restaurantId);
+        
+    	if (page.isEmpty()) {
+    	    throw new RuntimeException("No delivery data is found for this restaurant");
+    	}
+        
+        List<GetAllVendorsResponseDto> data = page.getContent().stream()
+                .map(vendors -> {
+                	GetAllVendorsResponseDto dto = new GetAllVendorsResponseDto();
+                    dto.setDeliveryStaffId(vendors.getDeliveryUser().getId());
+                    dto.setDeliveryName(vendors.getDeliveryUser().getProfile().getName());
+                    dto.setDeliveryStatus(vendors.getStatus());
+                    return dto;
+                })
+                .toList();
+        PaginationMeta meta = new PaginationMeta();
+        meta.setTotalItems(page.getTotalElements());
+        meta.setTotalPages(page.getTotalPages());
+        meta.setCurrentPage(pageable.getPageNumber()+1);
+        return PaginatedApiResponse.<GetAllVendorsResponseDto>builder()
+                .success(1)
+                .code(HttpStatus.OK.value())
+                .message("Deliveries are fetched successfully")
+                .meta(meta)
+                .data(data)
+                .build();
     // if we want free delivery staffs
 //        List<RestaurantVendor> activeVendors = restaurantVendors.stream()
 //                .filter(v -> v.getStatus() == Status.ACTIVE)
 //                .toList();
-        List<GetAllVendorsResponseDto> dto = restaurantVendors.stream()
-                .map(vendor -> new GetAllVendorsResponseDto(
-                        vendor.getDeliveryUser().getId(),
-                        vendor.getStatus()
-                ))
-                .toList();
+//        List<GetAllVendorsResponseDto> dto = restaurantVendors.stream()
+//                .map(vendor -> new GetAllVendorsResponseDto(
+//                        vendor.getDeliveryUser().getId(),
+//                        vendor.getDeliveryUser().getProfile().getName(),
+//                        vendor.getStatus()
+//                ))
+//                .toList();
 
-        return ApiResponse.builder().success(1).code(HttpStatus.OK.value())
-                .data(Map.of("Delivery Staff Data", dto))
-                .message("Retrieve Delivery Staff Data Successfully")
-                .build();
+//        return ApiResponse.builder().success(1).code(HttpStatus.OK.value())
+//                .data(Map.of("Delivery Staff Data", dto))
+//                .message("Retrieve Delivery Staff Data Successfully")
+//                .build();
     }
 
 	@Override
