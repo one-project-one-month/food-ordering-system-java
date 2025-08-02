@@ -7,6 +7,7 @@ import org._p1m.foodorderingsystem.common.constant.DeliveryStatus;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
+import org._p1m.foodorderingsystem.features.delivery.dto.response.GetAllAssignedDelivery;
 import org._p1m.foodorderingsystem.features.order.dto.request.OrderRequest;
 import org._p1m.foodorderingsystem.features.order.dto.response.OrderResponseDto;
 import org._p1m.foodorderingsystem.features.order.service.OrderService;
@@ -117,6 +118,27 @@ public class OrderController {
                 .build();
 
         return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/{customerId}")
+    @Operation(
+            summary = "Fetch customer orders by delivery status",
+            description = "Retrieves a paginated list of orders for a specific customer filtered by delivery status.",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Fetched successfully"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Invalid Request")
+            }
+    )
+    public ResponseEntity<PaginatedApiResponse<OrderResponseDto>> getAllAssignedDelivery(
+ 		@Parameter(description = "Page number") 
+    		@RequestParam(value = "page", defaultValue = "0") int page,
+    		@Parameter(description = "Page size")
+    		@RequestParam(value = "size", defaultValue = "20") int size,
+    		@RequestParam(value = "status", defaultValue = "PENDING") DeliveryStatus status,
+ 		@PathVariable(name="customerId") final Long customerId, HttpServletRequest request){
+ 	   Pageable pageable = PageRequest.of(page, size);
+        final PaginatedApiResponse<OrderResponseDto> response = this.orderService.getAllOrdersWithStatus(pageable,customerId,status);
+        return ResponseUtils.buildPaginatedResponse(request, response);
     }
 
     @GetMapping("/checkDeliveryStatus/{id}")

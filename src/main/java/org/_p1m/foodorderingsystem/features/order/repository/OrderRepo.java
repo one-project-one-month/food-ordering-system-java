@@ -20,6 +20,15 @@ public interface OrderRepo extends JpaRepository<OrderData, Long> {
 		""")
 		Page<OrderData> findOrdersByRestaurantIdWithStatus(@Param("restaurantId") Long restaurantId, Pageable pageable,
 				@Param("status") DeliveryStatus status);
-
+		
+	@Query("""
+		    SELECT DISTINCT o FROM OrderData o
+		    JOIN o.addCartItems ac
+		    JOIN ac.customer c
+		    WHERE c.id = :customerId
+		    AND o.deliveryStatus = :status
+		""")
+		Page<OrderData> findOrdersByCustomerIdWithStatus(@Param("customerId") Long customerId, Pageable pageable,
+				@Param("status") DeliveryStatus status);
 }
 
