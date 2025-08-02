@@ -12,5 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface AddCartMenuRepo extends JpaRepository<AddCartData,Long> {
 	@Query("SELECT a FROM AddCartData a WHERE a.customer.id = :customerId AND a.order IS NULL")
 	List<AddCartData> findUnorderedCartItemsByCustomerId(@Param("customerId") Long customerId);
-
+	
+	@Query("SELECT a FROM AddCartData a WHERE a.order.id = :orderId")
+	List<AddCartData> findCartItemsByOrderId(@Param("orderId") Long orderId);
 }
