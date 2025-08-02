@@ -63,9 +63,11 @@ public class ProcessOrderServiceImpl implements ProcessOrderService {
     @Override
     @Transactional
     public OrderResponseDTO processOrder(ProcessOrderRequest request) {
-        OrderData orderData = request.getOrderData();
+        // Fetch the order from the database using the ID from the request
+        OrderData orderData = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + request.getOrderId()));
 
-        // Fetch managed entities from the database
+        // Fetch other managed entities from the database
         User orderingUser = userRepository.findById(orderData.getPayment().getUser().getId())
                 .orElseThrow(() -> new EntityNotFoundException("Ordering user not found with id: " + orderData.getPayment().getUser().getId()));
 

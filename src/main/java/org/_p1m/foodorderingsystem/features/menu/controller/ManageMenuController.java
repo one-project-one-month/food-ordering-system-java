@@ -166,4 +166,22 @@ public class ManageMenuController {
         final ApiResponse response = manageMenuService.deleteMenu(id);
         return ResponseUtils.buildResponse(request, response);
     }
+
+    @GetMapping("/restaurant/{restaurantId}")
+    @Operation(
+            summary = "Get all Menus by Restaurant ID",
+            description = "Retrieve a paginated list of all menus for a specific restaurant.",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Menus retrieved successfully"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Restaurant not found")
+            }
+    )
+    public ResponseEntity<PaginatedApiResponse<MenuResponseDto>> getAllMenusByRestaurantId(
+            @Parameter(description = "ID of the restaurant to retrieve menus for", required = true) @PathVariable Long restaurantId,
+            @Valid GetAllMenuRequest getAllMenuRequest,
+            HttpServletRequest request) {
+        final PaginatedApiResponse<MenuResponseDto> response = manageMenuService.getAllMenusByRestaurantId(restaurantId, getAllMenuRequest);
+        return ResponseUtils.buildPaginatedResponse(request, response);
+    }
 }

@@ -22,4 +22,6 @@ public interface ManageMenuService {
     ApiResponse deleteMenu(Long id);
 
     PaginatedApiResponse<MenuResponseDto> getAllMenus(GetAllMenuRequest getAllMenuRequest);
+
+    PaginatedApiResponse<MenuResponseDto> getAllMenusByRestaurantId(Long restaurantId, GetAllMenuRequest getAllMenuRequest);
 }

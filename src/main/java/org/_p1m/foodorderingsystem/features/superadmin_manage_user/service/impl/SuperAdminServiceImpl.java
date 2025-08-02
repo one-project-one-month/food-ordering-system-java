@@ -41,11 +41,11 @@ public class SuperAdminServiceImpl implements SuperAdminService {
         User user = userRepo.findById(id)
                             .orElseThrow(() -> new EntityNotFoundException("User id " + id + " is not Found"));
 
-        user.setStatus(Status.INACTIVE);
         user.delete();
+        user.setEmail(null);
         User updatedUser = userRepo.save(user);
 
-        DeletedUserResponse deletedUserResponse = modelMapper.map(user,DeletedUserResponse.class);
+        DeletedUserResponse deletedUserResponse = modelMapper.map(updatedUser,DeletedUserResponse.class);
 
         deletedUserResponse.setDeletedAt(user.getDeletedAt().toString());
         deletedUserResponse.setRole(user.getRole().getName());

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class OrderResponseDto {
     private Long id;
     private LocalDateTime orderDateTime;
-    private String userAddress;
+    private Long addressId;
     private BigDecimal totalAmount;
     private DeliveryStatus deliveryStatus;
     private Long paymentId;
