@@ -1,6 +1,7 @@
 package org._p1m.foodorderingsystem.features.addCart.service.impl;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
@@ -16,6 +17,7 @@ import org._p1m.foodorderingsystem.features.addCart.service.AddCartMenuService;
 import org._p1m.foodorderingsystem.features.menu.repository.DishSizeRepo;
 import org._p1m.foodorderingsystem.features.menu.repository.ExtraRepo;
 import org._p1m.foodorderingsystem.features.menu.repository.ManageMenuRepository;
+import org._p1m.foodorderingsystem.features.processOrder.repository.OrderRepository;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
 import org._p1m.foodorderingsystem.model.AddCartData;
 import org._p1m.foodorderingsystem.model.DishSize;
@@ -47,6 +49,8 @@ public class AddCartMenuServiceImpl implements AddCartMenuService {
     private final ExtraRepo extraRepository;
     private final JdbcTemplate jdbcTemplate;
     private final ManageMenuRepository menuRepository;
+    private final OrderRepository orderRepository;
+    
     @Override
     public ApiResponse addToCart(AddCartMenuRequest request) {
         User user = userRepository.findById(request.getCustomerId())
@@ -142,15 +146,39 @@ public class AddCartMenuServiceImpl implements AddCartMenuService {
 
     @Override
     public ApiResponse getCartItemsByCustomerId(final Long customerId) {
-        if (!userRepository.existsById(customerId)) {
+        return getCartItems(
+            userRepository.existsById(customerId),
+            () -> cartRepo.findUnorderedCartItemsByCustomerId(customerId),
+            "Customer not found.",
+            "Successfully retrieved cart items."
+        );
+    }
+
+    @Override
+    public ApiResponse getCartItemsByOrderId(final Long orderId) {
+        return getCartItems(
+            orderRepository.existsById(orderId),
+            () -> cartRepo.findCartItemsByOrderId(orderId),
+            "Order not found.",
+            "Successfully retrieved cart items."
+        );
+    }
+    
+    private ApiResponse getCartItems(
+            boolean exists,
+            Supplier<List<AddCartData>> cartSupplier,
+            String notFoundMessage,
+            String successMessage
+    ) {
+        if (!exists) {
             return ApiResponse.builder()
                     .success(0)
                     .code(HttpStatus.NOT_FOUND.value())
-                    .message("Customer not found.")
+                    .message(notFoundMessage)
                     .build();
         }
 
-        final List<AddCartData> cartItems = cartRepo.findUnorderedCartItemsByCustomerId(customerId);
+        List<AddCartData> cartItems = cartSupplier.get();
 
         if (CollectionUtils.isEmpty(cartItems)) {
             return ApiResponse.builder()
@@ -160,18 +188,19 @@ public class AddCartMenuServiceImpl implements AddCartMenuService {
                     .data(null)
                     .build();
         }
-        final List<CartItemDetailResponse> responseData = cartItems.stream()
+
+        List<CartItemDetailResponse> responseData = cartItems.stream()
                 .map(this::mapToCartItemDetail)
                 .collect(Collectors.toList());
 
         return ApiResponse.builder()
                 .success(1)
                 .code(HttpStatus.OK.value())
-                .message("Successfully retrieved cart items.")
+                .message(successMessage)
                 .data(responseData)
                 .build();
     }
-
+    
     private CartItemDetailResponse mapToCartItemDetail(final AddCartData cartItem) {
         final DishSize dishSize = cartItem.getDishSize();
         final Extra extra = cartItem.getExtra();
