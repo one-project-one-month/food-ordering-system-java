@@ -40,34 +40,10 @@ public class OrderServiceImpl implements OrderService {
     private final ModelMapper modelMapper;
     
     @Override
-    public PaginatedApiResponse<OrderResponseDto> getAllOrders(Pageable pageable,Long restaurantId,DeliveryStatus status) {
-        Page<OrderData> page = orderRepo.findOrdersByRestaurantIdWithStatus(restaurantId,pageable,status);
-        List<OrderResponseDto> data = page.getContent().stream()
-                .map(order -> {
-                    OrderResponseDto dto = new OrderResponseDto();
-                    dto.setId(order.getId());
-                    dto.setOrderDateTime(order.getOrderDateTime());
-                    dto.setAddressId(order.getUserAddress() != null ? order.getUserAddress().getId() : null);
-                    dto.setTotalAmount(order.getTotalAmount());
-                    dto.setDeliveryStatus(order.getDeliveryStatus());
-                    dto.setPaymentId(order.getPayment() != null ? order.getPayment().getId() : null);
-                    dto.setCreatedAt(order.getCreatedAt());
-                    return dto;
-                })
-                .toList();
-        PaginationMeta meta = new PaginationMeta();
-        meta.setTotalItems(page.getTotalElements());
-        meta.setTotalPages(page.getTotalPages());
-        meta.setCurrentPage(pageable.getPageNumber()+1);
-        return PaginatedApiResponse.<OrderResponseDto>builder()
-                .success(1)
-                .code(HttpStatus.OK.value())
-                .message("Fetched successfully")
-                .meta(meta)
-                .data(data)
-                .build();
+    public PaginatedApiResponse<OrderResponseDto> getAllOrders(Pageable pageable, Long restaurantId, DeliveryStatus status) {
+        Page<OrderData> page = orderRepo.findOrdersByRestaurantIdWithStatus(restaurantId, pageable, status);
+        return buildPaginatedResponse(page, pageable);
     }
-
 
     @Override
     public ApiResponse createOrder(OrderRequest dto) {
@@ -132,5 +108,46 @@ public class OrderServiceImpl implements OrderService {
                 .map(order -> order.getDeliveryStatus().name())
                 .orElse("NOT_FOUND");
     }
+
+
+    @Override
+    public PaginatedApiResponse<OrderResponseDto> getAllOrdersWithStatus(Pageable pageable, Long customerId, DeliveryStatus status) {
+        Page<OrderData> page = orderRepo.findOrdersByCustomerIdWithStatus(customerId, pageable, status);
+        return buildPaginatedResponse(page, pageable);
+    }
+
+	
+	private OrderResponseDto convertToDto(OrderData order) {
+	    OrderResponseDto dto = new OrderResponseDto();
+	    dto.setId(order.getId());
+	    dto.setOrderDateTime(order.getOrderDateTime());
+	    dto.setAddressId(order.getUserAddress() != null ? order.getUserAddress().getId() : null);
+	    dto.setTotalAmount(order.getTotalAmount());
+	    dto.setDeliveryStatus(order.getDeliveryStatus());
+	    dto.setPaymentId(order.getPayment() != null ? order.getPayment().getId() : null);
+	    dto.setCreatedAt(order.getCreatedAt());
+	    return dto;
+	}
+	
+	private PaginatedApiResponse<OrderResponseDto> buildPaginatedResponse(Page<OrderData> page, Pageable pageable) {
+	    List<OrderResponseDto> data = page.getContent().stream()
+	        .map(this::convertToDto)
+	        .toList();
+
+	    PaginationMeta meta = new PaginationMeta();
+	    meta.setTotalItems(page.getTotalElements());
+	    meta.setTotalPages(page.getTotalPages());
+	    meta.setCurrentPage(pageable.getPageNumber() + 1);
+
+	    return PaginatedApiResponse.<OrderResponseDto>builder()
+	            .success(1)
+	            .code(HttpStatus.OK.value())
+	            .message("Fetched successfully")
+	            .meta(meta)
+	            .data(data)
+	            .build();
+	}
+
+
 }
 
