@@ -82,8 +82,8 @@ public class UserServiceImpl implements UserService {
 //        user.setProfile(profile);
 
         userRepository.save(user);
-//        this.serverUtil.sendCodeToEmail(user.getEmail() , 15 ,
-//                "verifyAccountMail" , "verify-account:");
+        this.serverUtil.sendCodeToEmail(user.getEmail() , 15 ,
+                "verifyAccountMail" , "verify-account:");
 
         UserResponseDto dto = modelMapper.map(user, UserResponseDto.class);
         return ApiResponse.builder().success(1).code(HttpStatus.OK.value())
