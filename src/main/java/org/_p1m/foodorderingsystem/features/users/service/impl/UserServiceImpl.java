@@ -160,7 +160,7 @@ public class UserServiceImpl implements UserService {
         long roleId = userData.getRole().getId();
         String roleName = userData.getRole().getName();
 
-        UserToken tokenData = userTokenRepository.findByUsername(requestDto.getEmail());
+        UserToken tokenData = userTokenRepository.findTopByUsernameOrderByCreatedAtDesc(requestDto.getEmail());
         if(tokenData != null){
             LocalDateTime createdAt = tokenData.getCreatedAt();
             long hoursBetween = ChronoUnit.HOURS.between(createdAt, LocalDateTime.now());
@@ -199,7 +199,7 @@ public class UserServiceImpl implements UserService {
     public ApiResponse getRefreshToken(String email, String refreshToken) {
 
         Map<String, Object> data;
-        UserToken existingToken = userTokenRepository.findByUsername(email);
+        UserToken existingToken = userTokenRepository.findTopByUsernameOrderByCreatedAtDesc(email);
         if (existingToken != null) {
             userTokenRepository.deleteByUsername(email);
         }
