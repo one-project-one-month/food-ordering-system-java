@@ -7,6 +7,7 @@ import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
 import org._p1m.foodorderingsystem.config.response.util.ResponseUtils;
 import org._p1m.foodorderingsystem.features.delivery.dto.request.ApplyDeliveryStaffRequest;
 import org._p1m.foodorderingsystem.features.delivery.dto.request.AssignDeliveryRequest;
+import org._p1m.foodorderingsystem.features.delivery.dto.request.ChangeDeliveryStatusRequest;
 import org._p1m.foodorderingsystem.features.delivery.dto.response.GetAllAssignedDelivery;
 import org._p1m.foodorderingsystem.features.delivery.dto.response.GetAllVendorsResponseDto;
 import org._p1m.foodorderingsystem.features.delivery.service.DeliveryDataService;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -92,4 +95,34 @@ public class DeliveryDataController {
        final PaginatedApiResponse<GetAllAssignedDelivery> response = this.deliveryDataService.getAllAssignedDelivery(pageable,deliveryId,status);
        return ResponseUtils.buildPaginatedResponse(request, response);
    }
+   
+   @PatchMapping("/changeDeliveryStatus")
+   @Operation(
+       summary = "Change delivery status",
+       description = "Updates the status of a specific delivery based on the given request data",
+       requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+           description = "ChangeDeliveryStatusRequest body",
+           required = true,
+           content = @Content(
+               schema = @Schema(implementation = ChangeDeliveryStatusRequest.class)
+           )
+       ),
+       responses = {
+           @io.swagger.v3.oas.annotations.responses.ApiResponse(
+               responseCode = "200", 
+               description = "Delivery status updated successfully"
+           ),
+           @io.swagger.v3.oas.annotations.responses.ApiResponse(
+               responseCode = "400", 
+               description = "Invalid input data"
+           )
+       }
+   )
+   public ResponseEntity<ApiResponse> changeDeliveryStatus(
+           @Valid @RequestBody ChangeDeliveryStatusRequest changeDeliStatusReq,
+           HttpServletRequest request) {
+       final ApiResponse response = this.deliveryDataService.changeDeliveryStatus(changeDeliStatusReq);
+       return ResponseUtils.buildResponse(request, response);
+   }
+
 }

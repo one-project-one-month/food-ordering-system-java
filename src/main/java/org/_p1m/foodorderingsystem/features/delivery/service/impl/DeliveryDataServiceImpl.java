@@ -15,6 +15,7 @@ import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
 import org._p1m.foodorderingsystem.config.response.dto.PaginationMeta;
 import org._p1m.foodorderingsystem.features.delivery.dto.request.ApplyDeliveryStaffRequest;
 import org._p1m.foodorderingsystem.features.delivery.dto.request.AssignDeliveryRequest;
+import org._p1m.foodorderingsystem.features.delivery.dto.request.ChangeDeliveryStatusRequest;
 import org._p1m.foodorderingsystem.features.delivery.dto.response.ApplyDeliveryResponse;
 import org._p1m.foodorderingsystem.features.delivery.dto.response.AssignDeliveryResponseDto;
 import org._p1m.foodorderingsystem.features.delivery.dto.response.GetAllAssignedDelivery;
@@ -258,6 +259,18 @@ public class DeliveryDataServiceImpl implements DeliveryDataService {
 	    }
 
 	    return dto;
+	}
+
+	@Override
+	public ApiResponse changeDeliveryStatus(ChangeDeliveryStatusRequest changeDeliStatusReq) {
+		OrderData orderData = this.orderDataRepository.findById(changeDeliStatusReq.getOrderId())
+                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+		orderData.setDeliveryStatus(changeDeliStatusReq.getDeliveryStatus());
+		orderDataRepository.save(orderData);
+		return ApiResponse.builder().success(1).code(HttpStatus.ACCEPTED.value())
+                .data(null)
+                .message("Delivery status updated successfully")
+                .build();
 	}
 
 }
