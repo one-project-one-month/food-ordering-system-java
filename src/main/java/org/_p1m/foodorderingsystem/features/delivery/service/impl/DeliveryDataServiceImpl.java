@@ -2,7 +2,10 @@ package org._p1m.foodorderingsystem.features.delivery.service.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org._p1m.foodorderingsystem.common.constant.DeliveryStatus;
 import org._p1m.foodorderingsystem.common.constant.Status;
@@ -14,20 +17,24 @@ import org._p1m.foodorderingsystem.features.delivery.dto.request.ApplyDeliverySt
 import org._p1m.foodorderingsystem.features.delivery.dto.request.AssignDeliveryRequest;
 import org._p1m.foodorderingsystem.features.delivery.dto.response.ApplyDeliveryResponse;
 import org._p1m.foodorderingsystem.features.delivery.dto.response.AssignDeliveryResponseDto;
+import org._p1m.foodorderingsystem.features.delivery.dto.response.GetAllAssignedDelivery;
 import org._p1m.foodorderingsystem.features.delivery.dto.response.GetAllVendorsResponseDto;
 import org._p1m.foodorderingsystem.features.delivery.service.DeliveryDataService;
-import org._p1m.foodorderingsystem.features.order.dto.response.OrderResponseDto;
 import org._p1m.foodorderingsystem.features.order.repository.OrderDataRepository;
+import org._p1m.foodorderingsystem.features.processOrder.repository.DeliveryDataRepository;
 import org._p1m.foodorderingsystem.features.restaurant.repository.RestaurantRepository;
 import org._p1m.foodorderingsystem.features.restaurant_vendors.repository.RestaurantVendorRepository;
 import org._p1m.foodorderingsystem.features.users.repository.ProfileRepository;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
+import org._p1m.foodorderingsystem.model.AddCartData;
+import org._p1m.foodorderingsystem.model.Address;
+import org._p1m.foodorderingsystem.model.DeliveryData;
+import org._p1m.foodorderingsystem.model.DishSize;
 import org._p1m.foodorderingsystem.model.OrderData;
 import org._p1m.foodorderingsystem.model.Profile;
 import org._p1m.foodorderingsystem.model.Restaurant;
 import org._p1m.foodorderingsystem.model.RestaurantVendor;
 import org._p1m.foodorderingsystem.model.User;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -45,6 +52,7 @@ public class DeliveryDataServiceImpl implements DeliveryDataService {
     private final RestaurantVendorRepository restaurantVendorRepository;
     private final RestaurantRepository restaruantRepository;
     private final ProfileRepository profileRepository;
+    private final DeliveryDataRepository deliDataRepo;
     
     @Override
     @Transactional
@@ -64,13 +72,18 @@ public class DeliveryDataServiceImpl implements DeliveryDataService {
             throw new EntityNotFoundException("Your assign delivery staff is not free.");
         }
 
-        orderData.setDeliveryStatus(DeliveryStatus.ON_THE_WAY);
+        orderData.setDeliveryStatus(DeliveryStatus.ACCEPTED);
         this.orderDataRepository.save(orderData);
 
         this.restaurantVendorRepository.updateDeliveryStatus(assignDeliveryRequest.getRestaurantId(),
                 assignDeliveryRequest.getDeliveryId(),
                 Status.INACTIVE);
-
+        
+        DeliveryData deliData = new DeliveryData();
+        deliData.setOrder(orderData);
+        deliData.setDeliveryStaff(deliveryStaff);
+        deliDataRepo.save(deliData);
+        
         AssignDeliveryResponseDto dto = new AssignDeliveryResponseDto(
                 orderData.getId(),
                 deliveryStaff.getId(),
@@ -174,4 +187,77 @@ public class DeliveryDataServiceImpl implements DeliveryDataService {
                 .message("Delivery staff apply Successfully")
                 .build();
 	}
+	
+	@Override
+	public PaginatedApiResponse<GetAllAssignedDelivery> getAllAssignedDelivery(Pageable pageable, Long deliveryId, DeliveryStatus status) {
+	    Page<DeliveryData> page = this.deliDataRepo.findByDeliveryIdWithStatus(deliveryId, status, pageable);
+
+	    if (page.isEmpty()) {
+	        throw new EntityNotFoundException("No delivery data found.");
+	    }
+
+	    List<GetAllAssignedDelivery> data = page.getContent()
+	            .stream()
+	            .map(this::convertToDto)
+	            .toList();
+
+	    PaginationMeta meta = new PaginationMeta();
+	    meta.setTotalItems(page.getTotalElements());
+	    meta.setTotalPages(page.getTotalPages());
+	    meta.setCurrentPage(pageable.getPageNumber() + 1);
+	    
+	    return PaginatedApiResponse.<GetAllAssignedDelivery>builder()
+	            .success(1)
+	            .code(HttpStatus.OK.value())
+	            .message("Assigned deliveries fetched successfully")
+	            .meta(meta)
+	            .data(data)
+	            .build();
+	}
+
+	
+	private GetAllAssignedDelivery convertToDto(DeliveryData deliveries) {
+	    GetAllAssignedDelivery dto = new GetAllAssignedDelivery();
+
+	    OrderData order = deliveries.getOrder();
+	    if (order == null) {
+	        throw new IllegalStateException("Order is null for deliveryId: " + deliveries.getId());
+	    }
+
+	    dto.setOrderId(order.getId());
+
+	    List<AddCartData> cartItems = order.getAddCartItems();
+	    if (cartItems == null || cartItems.isEmpty()) {
+	        throw new IllegalStateException("No cart items found for order: " + order.getId());
+	    }
+
+	    DishSize dishSize = cartItems.get(0).getDishSize();
+	    if (dishSize == null || dishSize.getMenu() == null || dishSize.getMenu().getRestaurant() == null) {
+	        throw new IllegalStateException("Invalid menu/restaurant data for order: " + order.getId());
+	    }
+
+	    String restaurantName = dishSize.getMenu().getRestaurant().getRestaurantName();
+	    dto.setRestaurantName(restaurantName != null ? restaurantName : "Unknown");
+
+	    Address address = order.getUserAddress();
+	    if (address == null) {
+	        dto.setCustomerAddress("Address not available");
+	    } else {
+	        String userAddress = Stream.of(
+	                address.getRegion(),
+	                address.getCity(),
+	                address.getTownship(),
+	                address.getRoad(),
+	                address.getStreet()
+	        )
+	        .filter(Objects::nonNull)
+	        .filter(s -> !s.isBlank())
+	        .collect(Collectors.joining(", "));
+
+	        dto.setCustomerAddress(userAddress);
+	    }
+
+	    return dto;
+	}
+
 }
