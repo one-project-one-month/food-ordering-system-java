@@ -5,16 +5,23 @@ import lombok.RequiredArgsConstructor;
 import org._p1m.foodorderingsystem.common.constant.Status;
 import org._p1m.foodorderingsystem.config.exceptions.EntityNotFoundException;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
+import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
+import org._p1m.foodorderingsystem.config.response.dto.PaginationMeta;
 import org._p1m.foodorderingsystem.features.address.dto.request.AddressCreateRequestDto;
 import org._p1m.foodorderingsystem.features.address.dto.request.AddressUpdateRequestDto;
 import org._p1m.foodorderingsystem.features.address.dto.response.AddressDetailResponseDto;
 import org._p1m.foodorderingsystem.features.address.repository.AddressRepository;
 import org._p1m.foodorderingsystem.features.address.service.AddressService;
+import org._p1m.foodorderingsystem.features.order.dto.response.OrderResponseDto;
 import org._p1m.foodorderingsystem.model.Address;
+import org._p1m.foodorderingsystem.model.OrderData;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -97,5 +104,25 @@ public class AddressServieImpl implements AddressService {
                 .message("Address deleted successfully with id: "+id)
                 .build();
     }
+
+	@Override
+	public PaginatedApiResponse<AddressDetailResponseDto> getAddressesDetail(Pageable pageable,Long userId) {
+		Page<Address> page = addressRepository.findByEntityId(userId,pageable);
+		List<AddressDetailResponseDto> data = page.getContent().stream()
+			    .map(address -> modelMapper.map(address, AddressDetailResponseDto.class))
+			    .toList();
+		PaginationMeta meta = new PaginationMeta();
+	    meta.setTotalItems(page.getTotalElements());
+	    meta.setTotalPages(page.getTotalPages());
+	    meta.setCurrentPage(pageable.getPageNumber() + 1);
+
+	    return PaginatedApiResponse.<AddressDetailResponseDto>builder()
+	            .success(1)
+	            .code(HttpStatus.OK.value())
+	            .message("Fetched successfully")
+	            .meta(meta)
+	            .data(data)
+	            .build();
+	}
 
 }
