@@ -1,17 +1,19 @@
 package org._p1m.foodorderingsystem.features.order.service;
 
+import org._p1m.foodorderingsystem.common.constant.DeliveryStatus;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
 import org._p1m.foodorderingsystem.config.response.dto.PaginatedApiResponse;
+import org._p1m.foodorderingsystem.features.delivery.dto.response.GetAllAssignedDelivery;
 import org._p1m.foodorderingsystem.features.order.dto.request.OrderRequest;
 import org._p1m.foodorderingsystem.features.order.dto.response.OrderResponseDto;
 import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
-        PaginatedApiResponse<OrderResponseDto> getAllOrders(Pageable pageable);
+        PaginatedApiResponse<OrderResponseDto> getAllOrders(Pageable pageable,Long restaurantId,DeliveryStatus status);
         ApiResponse createOrder(OrderRequest dto);
         void updateOrder(Long id, OrderRequest dto);
         OrderResponseDto getOrder(Long id);
         String getDeliveryStatus(Long id); 
-        
+        PaginatedApiResponse<OrderResponseDto> getAllOrdersWithStatus(Pageable pageable,Long restaurantId,DeliveryStatus status);
 }
 

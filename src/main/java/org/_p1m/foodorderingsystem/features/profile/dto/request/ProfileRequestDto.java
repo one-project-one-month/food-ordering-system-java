@@ -19,7 +19,14 @@ public class ProfileRequestDto {
     private String name;
 
 
-    @Schema(description = "User's NRC", example = "12/ABC(N)123456")
+    @Schema(
+            description = "User's NRC",
+            example = "12/Takana(N)123456"
+    )
+    @Pattern(
+            regexp = "^(1[0-4]|[1-9])/[A-Za-z]+\\([A-Z]\\)\\d{6}$",
+            message = "Invalid NRC format. Must be in the format 1-14/Word(A-Z)123456"
+    )
     private String nrc;
 
     @Pattern(regexp = "^09\\d{9}$", message = "Phone number must start with 09 and be exactly 11 digits")

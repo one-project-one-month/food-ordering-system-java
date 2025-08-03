@@ -33,7 +33,7 @@ public class ResponseUtils {
             PaginatedApiResponse<T> paginatedResponse) {
 
         final HttpStatus status = HttpStatus.valueOf(paginatedResponse.getCode());
-        if (paginatedResponse.getMeta() == null) {
+        if (paginatedResponse.getMeta().getMethod() == null && paginatedResponse.getMeta().getEndpoint() == null) {
             final String method = request.getMethod();
             final String endpoint = request.getRequestURI();
             paginatedResponse.getMeta().setMethod(method);

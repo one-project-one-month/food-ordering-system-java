@@ -64,6 +64,8 @@ public class PaymentServiceImpl implements PaymentService {
         // paymentData.setPaymentMethod(paymentDTO.getPaymentMethod()); // Assuming PaymentData has this field
 
         PaymentData savedPayment = paymentRepository.save(paymentData);
+        order.setPayment(paymentData);
+        orderRepository.save(order);
         return modelMapper.map(savedPayment, PaymentResponseDTO.class);
     }
 

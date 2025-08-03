@@ -1,13 +1,18 @@
 package org._p1m.foodorderingsystem.features.restaurant_vendors.repository;
 
-import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.repository.query.Param;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
+
+import org._p1m.foodorderingsystem.model.OrderData;
 import org._p1m.foodorderingsystem.model.RestaurantVendor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org._p1m.foodorderingsystem.common.constant.DeliveryStatus;
 import org._p1m.foodorderingsystem.common.constant.Status;
 
 import java.util.List;
@@ -31,5 +36,13 @@ public interface RestaurantVendorRepository extends JpaRepository<RestaurantVend
     boolean existsByRestaurantIdAndDeliveryUserId(Long restaurantId, Long userId);
 
     List<RestaurantVendor> findByDeliveryUserId(Long deliveryUserId);
-
+    
+    @Query("""
+    	    SELECT rv FROM RestaurantVendor rv
+    	    WHERE rv.restaurant.id = :restaurantId
+    	""")
+    	Page<RestaurantVendor> findDeliveryByRestaurantIdWithStatus(
+    	    @Param("restaurantId") Long restaurantId,
+    	    Pageable pageable
+    	);
 }

@@ -3,8 +3,8 @@ package org._p1m.foodorderingsystem.features.users.service.impl;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org._p1m.foodorderingsystem.common.storage.StorageService;
 import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
@@ -30,7 +30,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -161,7 +160,7 @@ public class UserServiceImpl implements UserService {
         long roleId = userData.getRole().getId();
         String roleName = userData.getRole().getName();
 
-        UserToken tokenData = userTokenRepository.findByUsername(requestDto.getEmail());
+        UserToken tokenData = userTokenRepository.findTopByUsernameOrderByCreatedAtDesc(requestDto.getEmail());
         if(tokenData != null){
             LocalDateTime createdAt = tokenData.getCreatedAt();
             long hoursBetween = ChronoUnit.HOURS.between(createdAt, LocalDateTime.now());
@@ -200,7 +199,7 @@ public class UserServiceImpl implements UserService {
     public ApiResponse getRefreshToken(String email, String refreshToken) {
 
         Map<String, Object> data;
-        UserToken existingToken = userTokenRepository.findByUsername(email);
+        UserToken existingToken = userTokenRepository.findTopByUsernameOrderByCreatedAtDesc(email);
         if (existingToken != null) {
             userTokenRepository.deleteByUsername(email);
         }
