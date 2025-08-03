@@ -1,0 +1,12 @@
+env:
+  SPRING_DATASOURCE_URL: jdbc:mysql://mysql.default.svc.cluster.local:3306/food_ordering_system_db
+  SPRING_DATASOURCE_USERNAME: root
+  SPRING_DATASOURCE_PASSWORD: springboot
+
+  SPRING_REDIS_HOST: redis-master.default.svc.cluster.local
+  SPRING_REDIS_PORT: "6379"
+
+  SMTP_USERNAME: minzayarmaung2002@gmail.com
+  SMTP_PASSWORD: vgklvkranagneybo
+
+  JWT_SECRET: ZP4g8Nj6QbXWYr2NvG2kXsKcD1HLqEyV
