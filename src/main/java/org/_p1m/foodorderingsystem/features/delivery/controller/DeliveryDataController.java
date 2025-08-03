@@ -62,10 +62,9 @@ public class DeliveryDataController {
    		@RequestParam(value = "page", defaultValue = "0") int page,
    		@Parameter(description = "Page size") 
    		@RequestParam(value = "size", defaultValue = "20") int size,
-   		@RequestParam(value = "status", defaultValue = "ACTIVE") Status status,
 		@PathVariable(name="restaurantId") final Long restaurantId, HttpServletRequest request){
 	   Pageable pageable = PageRequest.of(page, size);
-       final PaginatedApiResponse<GetAllVendorsResponseDto> response = this.deliveryDataService.getAllDeliveryStaffData(pageable,restaurantId,status);
+       final PaginatedApiResponse<GetAllVendorsResponseDto> response = this.deliveryDataService.getAllDeliveryStaffData(pageable,restaurantId);
        return ResponseEntity.ok(response);
    }
 

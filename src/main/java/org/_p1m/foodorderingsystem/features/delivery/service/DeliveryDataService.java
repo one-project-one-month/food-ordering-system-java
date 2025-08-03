@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public interface DeliveryDataService {
     ApiResponse assignDelivery(AssignDeliveryRequest assignDeliveryRequest);
 
-    PaginatedApiResponse<GetAllVendorsResponseDto>  getAllDeliveryStaffData(Pageable pageable,Long restaurantId,Status status);
+    PaginatedApiResponse<GetAllVendorsResponseDto>  getAllDeliveryStaffData(Pageable pageable,Long restaurantId);
     
     ApiResponse applyRestaurantByDeliveryStaff(ApplyDeliveryStaffRequest request);
     
