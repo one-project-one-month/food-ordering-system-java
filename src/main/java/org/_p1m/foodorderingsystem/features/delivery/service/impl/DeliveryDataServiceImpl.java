@@ -98,8 +98,8 @@ public class DeliveryDataServiceImpl implements DeliveryDataService {
     }
 
     @Override
-    public PaginatedApiResponse<GetAllVendorsResponseDto>  getAllDeliveryStaffData(Pageable pageable,Long restaurantId,Status status) {
-    	Page<RestaurantVendor> page = this.restaurantVendorRepository.findDeliveryByRestaurantIdWithStatus(restaurantId,status,pageable);
+    public PaginatedApiResponse<GetAllVendorsResponseDto>  getAllDeliveryStaffData(Pageable pageable,Long restaurantId) {
+    	Page<RestaurantVendor> page = this.restaurantVendorRepository.findDeliveryByRestaurantIdWithStatus(restaurantId,pageable);
 //        List<RestaurantVendor> restaurantVendors = this.restaurantVendorRepository.findByRestaurantId(restaurantId);
         
     	if (page.isEmpty()) {

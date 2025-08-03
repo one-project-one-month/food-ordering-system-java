@@ -40,11 +40,9 @@ public interface RestaurantVendorRepository extends JpaRepository<RestaurantVend
     @Query("""
     	    SELECT rv FROM RestaurantVendor rv
     	    WHERE rv.restaurant.id = :restaurantId
-    	    AND rv.status = :status
     	""")
     	Page<RestaurantVendor> findDeliveryByRestaurantIdWithStatus(
     	    @Param("restaurantId") Long restaurantId,
-    	    @Param("status") Status status,
     	    Pageable pageable
     	);
 }
