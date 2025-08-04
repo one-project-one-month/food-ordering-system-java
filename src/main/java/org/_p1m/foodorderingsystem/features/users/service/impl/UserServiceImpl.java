@@ -3,7 +3,6 @@ package org._p1m.foodorderingsystem.features.users.service.impl;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org._p1m.foodorderingsystem.common.storage.StorageService;
@@ -11,6 +10,9 @@ import org._p1m.foodorderingsystem.common.storage.StorageServiceFactory;
 import org._p1m.foodorderingsystem.common.util.ServerUtil;
 import org._p1m.foodorderingsystem.config.exceptions.DuplicateEntityException;
 import org._p1m.foodorderingsystem.config.response.dto.ApiResponse;
+import org._p1m.foodorderingsystem.features.address.dto.response.AddressDetailResponseDto;
+import org._p1m.foodorderingsystem.features.address.repository.AddressRepository;
+import org._p1m.foodorderingsystem.features.profile.dto.response.ProfileResponseDto;
 import org._p1m.foodorderingsystem.features.users.dto.request.AuthRequestDto;
 import org._p1m.foodorderingsystem.features.users.dto.request.UserCreateRequest;
 import org._p1m.foodorderingsystem.features.users.dto.response.UserResponseDto;
@@ -19,6 +21,7 @@ import org._p1m.foodorderingsystem.features.users.repository.RoleRepository;
 import org._p1m.foodorderingsystem.features.users.repository.UserRepository;
 import org._p1m.foodorderingsystem.features.users.repository.UserTokenRepository;
 import org._p1m.foodorderingsystem.features.users.service.UserService;
+import org._p1m.foodorderingsystem.model.Address;
 import org._p1m.foodorderingsystem.model.Profile;
 import org._p1m.foodorderingsystem.model.Role;
 import org._p1m.foodorderingsystem.model.User;
@@ -49,6 +52,8 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final ServerUtil serverUtil;
     private final UserTokenRepository userTokenRepository;
+    private final AddressRepository addressRepository;
+    
     private StorageService storageService;
 
     private final AuthenticationManager authenticationManager;
@@ -157,9 +162,12 @@ public class UserServiceImpl implements UserService {
     public ApiResponse getUserAuthData(AuthRequestDto requestDto , String token , String refreshToken) {
         boolean saveRefreshToken = true;
         User userData = userRepository.findByEmail(requestDto.getEmail());
+        Profile profile = profileRepository.findByUser_Id(userData.getId()).orElseThrow(() ->
+        new EntityNotFoundException("Profile not found for user ID: " + userData.getId()));
+        Address address = addressRepository.findFirstByEntityId(userData.getId()).orElseThrow(() ->
+        new EntityNotFoundException("Address not found for user ID: " + userData.getId()));;
         long roleId = userData.getRole().getId();
         String roleName = userData.getRole().getName();
-
         UserToken tokenData = userTokenRepository.findTopByUsernameOrderByCreatedAtDesc(requestDto.getEmail());
         if(tokenData != null){
             LocalDateTime createdAt = tokenData.getCreatedAt();
@@ -176,14 +184,18 @@ public class UserServiceImpl implements UserService {
             userToken.setToken(refreshToken); // Refresh Token
             userTokenRepository.save(userToken);
         }
-
+        ProfileResponseDto profileResponse = modelMapper.map(profile, ProfileResponseDto.class);
+        AddressDetailResponseDto addressResponse = modelMapper.map(address, AddressDetailResponseDto.class);
+        
         Map<String, Object> data = Map.of(
                 "token", token,
                 "RefreshToken", refreshToken,
                 "userId", userData.getId(),
                 "roleId", roleId,
                 "email", userData.getEmail(),
-                "roleName", roleName
+                "roleName", roleName,
+                "profile",profileResponse,
+                "address",addressResponse
         );
         return ApiResponse.builder()
                 .success(1)
