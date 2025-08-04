@@ -1,78 +1,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "springboot-app.fullname" . }}
+  name: {{ include "food-app.fullname" . }}
   labels:
-    {{- include "springboot-app.labels" . | nindent 4 }}
+    app: {{ include "food-app.name" . }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
-      {{- include "springboot-app.selectorLabels" . | nindent 6 }}
+      app: {{ include "food-app.name" . }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "springboot-app.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
+        app: {{ include "food-app.name" . }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "springboot-app.serviceAccountName" . }}
-      {{- with .Values.podSecurityContext }}
-      securityContext:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+     #service account name
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+
       containers:
         - name: {{ .Chart.Name }}
-          {{- with .Values.securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
-          {{- with .Values.livenessProbe }}
-          livenessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.readinessProbe }}
-          readinessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.volumeMounts }}
-          volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-      {{- with .Values.volumes }}
-      volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+            - containerPort: {{ .Values.containerPort }}
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: {{ .Values.env.SPRING_DATASOURCE_URL | quote }}
+            - name: SPRING_DATASOURCE_USERNAME
+              value: {{ .Values.env.SPRING_DATASOURCE_USERNAME | quote }}
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: {{ .Values.env.SPRING_DATASOURCE_PASSWORD | quote }}
+            - name: SPRING_REDIS_HOST
+              value: {{ .Values.env.SPRING_REDIS_HOST | quote }}
+            - name: SPRING_REDIS_PORT
+              value: {{ .Values.env.SPRING_REDIS_PORT | quote }}
+            - name: AWS_REGION
+              value: {{ .Values.env.AWS_REGION | quote }}
+            - name: S3_BUCKET
+              value: {{ .Values.env.S3_BUCKET | quote }}

@@ -1,12 +1,43 @@
-env:
-  SPRING_DATASOURCE_URL: jdbc:mysql://mysql.default.svc.cluster.local:3306/food_ordering_system_db
-  SPRING_DATASOURCE_USERNAME: root
-  SPRING_DATASOURCE_PASSWORD: springboot
+image:
+  repository: 592867232570.dkr.ecr.ap-southeast-1.amazonaws.com/eks-cluster/food-ordering
+  tag: v1.0.0
+  pullPolicy: IfNotPresent
 
-  SPRING_REDIS_HOST: redis-master.default.svc.cluster.local
+replicaCount: 1
+
+service:
+  type: LoadBalancer
+  port: 80
+
+containerPort: 8080
+
+aws:
+  irsaRoleArn: arn:aws:iam::592867232570:role/MyS3AccessRole  # <-- Replace 123456789012 with your real account ID
+
+serviceAccount:
+  create: true             # Add this to ensure Helm creates the SA
+  name: myapp-sa
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::592867232570:role/MyS3AccessRole  # Use same ARN here (replace account ID)
+
+
+
+env:
+  SPRING_DATASOURCE_URL: jdbc:mysql://mysql.food-ordering.svc.cluster.local:3306/food_ordering_system_db
+  SPRING_DATASOURCE_USERNAME: root
+  SPRING_DATASOURCE_PASSWORD: root
+
+
+  SPRING_REDIS_HOST: redis-master.food-ordering.svc.cluster.local
   SPRING_REDIS_PORT: "6379"
+
 
   SMTP_USERNAME: minzayarmaung2002@gmail.com
   SMTP_PASSWORD: vgklvkranagneybo
 
+  AWS_REGION: ap-southeast-1
+  S3_BUCKET: your-s3-bucket-name
+
   JWT_SECRET: ZP4g8Nj6QbXWYr2NvG2kXsKcD1HLqEyV
+
+
