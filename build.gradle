@@ -37,6 +37,7 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.260'
 	implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
@@ -48,10 +49,11 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation("com.cloudinary:cloudinary-http45:1.39.0")
+    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+	
 }
 
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
-
