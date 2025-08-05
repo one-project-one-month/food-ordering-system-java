@@ -4,10 +4,14 @@ image:
   pullPolicy: IfNotPresent
 
 replicaCount: 1
+ingress:
+    enabled: false
+
 
 service:
   type: LoadBalancer
   port: 80
+  targetPort: 8080
 
 containerPort: 8080
 
@@ -24,8 +28,8 @@ serviceAccount:
 
 env:
   SPRING_DATASOURCE_URL: jdbc:mysql://mysql.food-ordering.svc.cluster.local:3306/food_ordering_system_db
-  SPRING_DATASOURCE_USERNAME: root
-  SPRING_DATASOURCE_PASSWORD: root
+  SPRING_DATASOURCE_USERNAME: adminUser
+  SPRING_DATASOURCE_PASSWORD: admin
 
 
   SPRING_REDIS_HOST: redis-master.food-ordering.svc.cluster.local
@@ -40,4 +44,8 @@ env:
 
   JWT_SECRET: ZP4g8Nj6QbXWYr2NvG2kXsKcD1HLqEyV
 
-
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80

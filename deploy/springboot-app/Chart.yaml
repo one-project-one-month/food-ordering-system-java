@@ -1,5 +1,5 @@
 apiVersion: v2
-name: food-app
+name: springboot-app
 description: Spring Boot API application
 type: application
 version: 1.0.0

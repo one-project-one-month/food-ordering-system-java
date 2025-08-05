@@ -19,4 +19,4 @@ auth:
   rootPassword: FIUt5fSNjO
   username: adminUser
   password: admin
-  database: testing_db
+  database: food_ordering_system_db

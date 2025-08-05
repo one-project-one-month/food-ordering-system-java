@@ -56,6 +56,11 @@ jobs:
         run: |
            echo "Pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
+      - name: Deploy via Helm
+        run: |
+          helm upgrade --install springboot-api ./deploy/springboot-app \
+          --set image.tag=$SHORT_SHA
+
 
 
 
