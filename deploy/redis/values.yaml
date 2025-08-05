@@ -19,9 +19,14 @@ replica:
                 operator: In
                 values:
                   - ap-southeast-1a
+  tolerations:
+    - key: "type"
+      operator: "Equal"
+      value: "opom-services"
+      effect: "NoSchedule"
   persistence:
     enabled: true
-    size: 5Gi
+    size: 3Gi
     storageClass: gp2
   resources:
     requests:
@@ -43,6 +48,11 @@ master:
                 operator: In
                 values:
                   - ap-southeast-1a
+  tolerations:
+    - key: "type"
+      operator: "Equal"
+      value: "opom-services"
+      effect: "NoSchedule"
   persistence:
     enabled: true
     size: 5Gi

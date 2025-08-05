@@ -36,7 +36,7 @@ env:
   SMTP_PASSWORD: vgklvkranagneybo
 
   AWS_REGION: ap-southeast-1
-  S3_BUCKET: your-s3-bucket-name
+  S3_BUCKET:
 
   JWT_SECRET: ZP4g8Nj6QbXWYr2NvG2kXsKcD1HLqEyV
 

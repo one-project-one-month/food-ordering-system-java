@@ -4,7 +4,7 @@ primary:
 
   persistence:
     enabled: true
-    size: 1Gi
+    size: 5Gi
     storageClass: gp2
 
   resources:
@@ -15,3 +15,8 @@ primary:
       cpu: 500m
       memory: 1Gi
 
+auth:
+  rootPassword: FIUt5fSNjO
+  username: adminUser
+  password: admin
+  database: testing_db
