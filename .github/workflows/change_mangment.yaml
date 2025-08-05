@@ -38,14 +38,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # AWS Credential setup
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
-          role-to-assume: ${{AWS_ROLE_ARN}}
-          aws-region: ${{ env.AWS_REGION }}
+          # Login in with OIDC to AWS
+          role-to-assume: ${{secrets.AWS_ROLE_ARN}}
+          aws-region: ${{secrets.AWS_REGION}}
 
-      #Set up Terraform on the runner, be the same version with local
+          #Set up Terraform on the runner, be the same version with local
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
