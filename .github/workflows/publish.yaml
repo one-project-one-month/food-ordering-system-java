@@ -20,7 +20,6 @@ jobs:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
       ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-      IMAGE_TAG: ${{ github.sha }}
 
     permissions:
       id-token: write # This is required for requesting the JWT
@@ -34,12 +33,16 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
+          # Login in with OIDC to AWS
           role-to-assume: ${{secrets.AWS_ROLE_ARN}}
           aws-region: ${{secrets.AWS_REGION}}
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set short SHA
+        run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Build Docker image
         run: |
