@@ -3,9 +3,9 @@ image:
   tag: v1.0.0
   pullPolicy: IfNotPresent
 
-replicaCount: 1
 ingress:
     enabled: false
+
 
 
 service:
@@ -38,14 +38,19 @@ env:
 
   SMTP_USERNAME: minzayarmaung2002@gmail.com
   SMTP_PASSWORD: vgklvkranagneybo
+  SPRING_MAIL_HOST: smtp.gmail.com
+  SPRING_MAIL_PORT: "587"
+  SPRING_MAIL_PROTOCOL: smtp
+  SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+  SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
 
   AWS_REGION: ap-southeast-1
-  S3_BUCKET:
+  S3_BUCKET:  food-ordering-save-profile
 
   JWT_SECRET: ZP4g8Nj6QbXWYr2NvG2kXsKcD1HLqEyV
 
 autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 3
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
   targetCPUUtilizationPercentage: 80
