@@ -6,8 +6,6 @@ image:
 ingress:
     enabled: false
 
-
-
 service:
   type: LoadBalancer
   port: 80
@@ -49,6 +47,7 @@ env:
 
   JWT_SECRET: ZP4g8Nj6QbXWYr2NvG2kXsKcD1HLqEyV
 
+#scaling policy
 autoscaling:
   enabled: true
   minReplicas: 2
