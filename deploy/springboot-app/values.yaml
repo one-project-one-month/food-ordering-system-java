@@ -25,8 +25,6 @@ serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: arn:aws:iam::592867232570:role/MyS3AccessRole  # Use same ARN here (replace account ID)
 
-
-
 env:
   SPRING_DATASOURCE_URL: jdbc:mysql://mysql.food-ordering.svc.cluster.local:3306/food_ordering_system_db
   SPRING_DATASOURCE_USERNAME: adminUser

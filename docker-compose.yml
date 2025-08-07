@@ -1,84 +1,58 @@
-version: '3.8'
-
 services:
-  springboot-app:
+  mysql-db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: food_ordering_system_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 1223
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db_data:/var/lib/mysql
+  redis:
+    image: redis:7.2
+    container_name: redis
+    environment:
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  app:
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    container_name: food_delivery
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: springboot-app
-    depends_on:
-      - mysql
-      - redis
-      - minio
-      - mailhog
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/your_db?useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
-      - SPRING_REDIS_HOST=redis
-      - SPRING_REDIS_PORT=6379
-      - SPRING_MAIL_HOST=mailhog
-      - SPRING_MAIL_PORT=1025
-      - AWS_ACCESS_KEY_ID=minio
-      - AWS_SECRET_ACCESS_KEY=minio123
-      - S3_BUCKET_NAME=my-bucket
-      - S3_ENDPOINT=http://minio:9000
+      DB_HOST: mysql-db
+      DB_PORT: 3306
+      DB_NAME: food_ordering_system_db
+      DB_USER: root
+      DB_PASSWORD: root
+      SPRING_PROFILES_ACTIVE: uat
     ports:
       - "8080:8080"
-    networks:
-      - app-network
 
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
-    restart: always
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - mysql-db
+    ports:
+      #application is running on localhost port 8080. For phpmyadmin port 8081
+      - "8081:80"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: your_db
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - app-network
-
-  redis:
-    image: redis:7
-    container_name: redis
-    ports:
-      - "6379:6379"
-    networks:
-      - app-network
-
-  minio:
-    image: minio/minio
-    container_name: minio
-    command: server /data --console-address ":9001"
-    ports:
-      - "9000:9000"   # S3 endpoint
-      - "9001:9001"   # Web UI
-    environment:
-      MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: minio123
-    volumes:
-      - minio_data:/data
-    networks:
-      - app-network
-
-  mailhog:
-    image: mailhog/mailhog
-    container_name: mailhog
-    ports:
-      - "8025:8025"   # Web UI
-      - "1025:1025"   # SMTP port
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
-
+      PMA_HOST: mysql-db
+      PMA_USER: admin
+      PMA_PASSWORD: 1223
 volumes:
-  mysql_data:
-  minio_data:
+  db_data:

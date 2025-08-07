@@ -85,10 +85,17 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // cros config
+
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3001"));
+        //configuration.setAllowedOrigins(List.of("http://localhost:3001"));
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3001",
+                "http://k8s-foodorde-springbo-a5e266b054-8f98b5784c84b0cf.elb.ap-southeast-1.amazonaws.com"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE","PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
