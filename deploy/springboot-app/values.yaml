@@ -8,9 +8,12 @@ ingress:
 
 service:
   type: LoadBalancer
+  #for exporting to internet
+  annotations:
+      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+
   port: 80
   targetPort: 8080
-
 containerPort: 8080
 
 aws:

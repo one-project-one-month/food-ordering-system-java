@@ -22,6 +22,9 @@ FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
+# Install curl and net-tools for debugging
+RUN apt-get update && apt-get install -y curl net-tools iproute2 && rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /app/build/libs/app.jar /app/app.jar
 #COPY --from=build /app/build/libs/*.jar /app/app.jar
 

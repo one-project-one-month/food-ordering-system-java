@@ -1,6 +1,8 @@
 primary:
   nodeSelector:
     topology.kubernetes.io/zone: ap-southeast-1a
+  service:
+    type: ClusterIP
 
   persistence:
     enabled: true
@@ -20,3 +22,5 @@ auth:
   username: adminUser
   password: admin
   database: food_ordering_system_db
+
+
