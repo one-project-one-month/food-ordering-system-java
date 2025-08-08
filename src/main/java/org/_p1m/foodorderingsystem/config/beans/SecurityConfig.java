@@ -94,7 +94,7 @@ public class SecurityConfig {
         //configuration.setAllowedOrigins(List.of("http://localhost:3001"));
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3001",
-                "http://k8s-foodorde-springbo-a5e266b054-8f98b5784c84b0cf.elb.ap-southeast-1.amazonaws.com"
+                "http://k8s-foodorde-springbo-c3e5f16b99-1512885337.ap-southeast-1.elb.amazonaws.com"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE","PATCH"));
         configuration.setAllowedHeaders(List.of("*"));

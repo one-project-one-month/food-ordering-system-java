@@ -3,17 +3,25 @@ image:
   tag: v1.0.0
   pullPolicy: IfNotPresent
 
-ingress:
-    enabled: false
-
 service:
-  type: LoadBalancer
-  #for exporting to internet
-  annotations:
-      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
-
+  type: ClusterIP      # keep ClusterIP for ALB Ingress
   port: 80
   targetPort: 8080
+
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'   # only HTTP, no HTTPS for now
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health  # or your app's health endpoint
+  hosts:
+    - host: ""   # empty host means ALB will accept requests on any host
+      paths:
+        - path: /
+          pathType: Prefix
+
 containerPort: 8080
 
 aws:
