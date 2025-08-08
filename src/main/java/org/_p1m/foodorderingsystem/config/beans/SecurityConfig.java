@@ -40,7 +40,14 @@ public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
             "/api/v1/auth/**",
-            "/api/v1/auth/users/verifyEmail"
+            "/api/v1/auth/users/verifyEmail",
+
+    };
+
+    // health check route
+    private static final String[] HEALTH_WHITELIST = {
+            "/actuator/health",
+            "/actuator/info"
     };
 	
     @Autowired
@@ -76,6 +83,7 @@ public class SecurityConfig {
                 authorizeHttpRequests(auth -> auth
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()
+                        .requestMatchers(HEALTH_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
