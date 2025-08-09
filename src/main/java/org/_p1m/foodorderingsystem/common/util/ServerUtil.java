@@ -1,34 +1,32 @@
 package org._p1m.foodorderingsystem.common.util;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 import org._p1m.foodorderingsystem.common.service.EmailService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+import org.springframework.util.FileCopyUtils;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import org.springframework.stereotype.Component;
-import javax.crypto.SecretKey;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.security.SecureRandom;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -98,12 +96,21 @@ public class ServerUtil {
     }
 
 
+//    public String loadTemplate(String path) throws IOException {
+//        ClassPathResource resource = new ClassPathResource(path);
+//        byte[] bytes = Files.readAllBytes(resource.getFile().toPath());
+//        return new String(bytes, StandardCharsets.UTF_8);
+//    }
+    
     public String loadTemplate(String path) throws IOException {
         ClassPathResource resource = new ClassPathResource(path);
-        byte[] bytes = Files.readAllBytes(resource.getFile().toPath());
+        InputStream inputStream = resource.getInputStream();
+
+        byte[] bytes = FileCopyUtils.copyToByteArray(inputStream);
+
         return new String(bytes, StandardCharsets.UTF_8);
     }
-
+    
     public String generateToken(UserDetails userDetails){
         Map<String, Object> claims = new HashMap<>();
 
