@@ -39,7 +39,7 @@ services:
       DB_NAME: food_ordering_system_db
       DB_USER: root
       DB_PASSWORD: root
-      SPRING_PROFILES_ACTIVE: uat
+      SPRING_PROFILES_ACTIVE: dev
     ports:
       - "8080:8080"
 
