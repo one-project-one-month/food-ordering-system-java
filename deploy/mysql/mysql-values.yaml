@@ -1,0 +1,26 @@
+primary:
+  nodeSelector:
+    topology.kubernetes.io/zone: ap-southeast-1a
+  service:
+    type: ClusterIP
+
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: gp2
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+auth:
+  rootPassword: FIUt5fSNjO
+  username: adminUser
+  password: admin
+  database: food_ordering_system_db
+
+

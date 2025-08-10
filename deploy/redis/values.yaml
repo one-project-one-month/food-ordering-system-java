@@ -1,0 +1,66 @@
+global:
+  storageClass: gp2
+
+architecture: replication
+
+auth:
+  enabled: false
+
+replica:
+  replicaCount: 1
+  nodeSelector:
+    topology.kubernetes.io/zone: ap-southeast-1a
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                  - ap-southeast-1a
+  tolerations:
+    - key: "type"
+      operator: "Equal"
+      value: "opom-services"
+      effect: "NoSchedule"
+  persistence:
+    enabled: true
+    size: 3Gi
+    storageClass: gp2
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+master:
+  nodeSelector:
+    topology.kubernetes.io/zone: ap-southeast-1a
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                  - ap-southeast-1a
+  tolerations:
+    - key: "type"
+      operator: "Equal"
+      value: "opom-services"
+      effect: "NoSchedule"
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: gp2
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi

@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "springboot-app.fullname" . }}
+  labels:
+    app: {{ include "springboot-app.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "springboot-app.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "springboot-app.name" . }}
+    spec:
+     #service account name
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: {{ .Values.env.SPRING_DATASOURCE_URL | quote }}
+            - name: SPRING_DATASOURCE_USERNAME
+              value: {{ .Values.env.SPRING_DATASOURCE_USERNAME | quote }}
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: {{ .Values.env.SPRING_DATASOURCE_PASSWORD | quote }}
+            - name: SPRING_REDIS_HOST
+              value: {{ .Values.env.SPRING_REDIS_HOST | quote }}
+            - name: SPRING_REDIS_PORT
+              value: {{ .Values.env.SPRING_REDIS_PORT | quote }}
+            - name: SPRING_MAIL_HOST
+              value: {{ .Values.env.SPRING_MAIL_HOST | quote }}
+            - name: SPRING_MAIL_PORT
+              value: {{ .Values.env.SPRING_MAIL_PORT | quote }}
+            - name: SPRING_MAIL_PROTOCOL
+              value: {{ .Values.env.SPRING_MAIL_PROTOCOL | quote }}
+            - name: SPRING_MAIL_USERNAME
+              value: {{ .Values.env.SMTP_USERNAME | quote }}
+            - name: SPRING_MAIL_PASSWORD
+              value: {{ .Values.env.SMTP_PASSWORD | quote }}
+            - name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH
+              value: {{ .Values.env.SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH | quote }}
+            - name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE
+              value: {{ .Values.env.SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE | quote }}
+            - name: AWS_REGION
+              value: {{ .Values.env.AWS_REGION | quote }}
+            - name: S3_BUCKET
+              value: {{ .Values.env.S3_BUCKET | quote }}
+            - name: JWT_SECRET
+              value: {{ .Values.env.JWT_SECRET | quote }}

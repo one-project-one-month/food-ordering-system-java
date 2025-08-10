@@ -1,0 +1,45 @@
+name: CI & Publish Workflow
+
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - "ft/*"
+
+  pull_request:
+    branches:
+      - main
+      - dev
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+
+  #test:
+  #  needs: build
+  #  uses: ./.github/workflows/test.yaml
+
+  publish:
+    needs: build
+    if: (github.event_name == 'pull_request' && github.base_ref == 'main') ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/dev')
+    uses: ./.github/workflows/publish.yaml
+    secrets:
+      AWS_ROLE_ARN: ${{secrets.AWS_ROLE_ARN}}
+      AWS_REGION: ${{secrets.AWS_REGION}}
+      ECR_REGISTRY: ${{secrets.ECR_REGISTRY}}
+      ECR_REPOSITORY: ${{secrets.ECR_REPOSITORY}}
+

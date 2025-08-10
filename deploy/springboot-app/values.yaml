@@ -1,0 +1,64 @@
+image:
+  repository: 592867232570.dkr.ecr.ap-southeast-1.amazonaws.com/eks-cluster/food-ordering
+  tag: v1.0.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP      # keep ClusterIP for ALB Ingress
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'   # only HTTP, no HTTPS for now
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health  # or your app's health endpoint
+  hosts:
+    - host: ""   # empty host means ALB will accept requests on any host
+      paths:
+        - path: /
+          pathType: Prefix
+
+containerPort: 8080
+
+aws:
+  irsaRoleArn: arn:aws:iam::592867232570:role/MyS3AccessRole  # <-- Replace 123456789012 with your real account ID
+
+serviceAccount:
+  create: true             # Add this to ensure Helm creates the SA
+  name: myapp-sa
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::592867232570:role/MyS3AccessRole  # Use same ARN here (replace account ID)
+
+env:
+  SPRING_DATASOURCE_URL: jdbc:mysql://mysql.food-ordering.svc.cluster.local:3306/food_ordering_system_db
+  SPRING_DATASOURCE_USERNAME: adminUser
+  SPRING_DATASOURCE_PASSWORD: admin
+
+
+  SPRING_REDIS_HOST: redis-master.food-ordering.svc.cluster.local
+  SPRING_REDIS_PORT: "6379"
+
+
+  SMTP_USERNAME: minzayarmaung2002@gmail.com
+  SMTP_PASSWORD: vgklvkranagneybo
+  SPRING_MAIL_HOST: smtp.gmail.com
+  SPRING_MAIL_PORT: "587"
+  SPRING_MAIL_PROTOCOL: smtp
+  SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+  SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+
+  AWS_REGION: ap-southeast-1
+  S3_BUCKET:  food-ordering-save-profile
+
+  JWT_SECRET: ZP4g8Nj6QbXWYr2NvG2kXsKcD1HLqEyV
+
+#scaling policy
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 80
